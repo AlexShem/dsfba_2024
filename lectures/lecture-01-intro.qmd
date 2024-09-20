@@ -1,0 +1,466 @@
+---
+title: "Data Science for Business Analytics"
+subtitle: "Introduction"
+author: "Aleksandr Shemendyuk [aleksandr.shemendyuk@unil.ch]"
+date: "23/09/2024"
+format: 
+    beamer:
+        include-in-header: latex/header.tex
+        fontsize: 10pt
+execute:
+    echo: true
+---
+
+```{r setup, include = FALSE, echo = FALSE}
+source("../R/common.R")
+library(tidyverse)
+library(knitr)
+set.seed(0)
+```
+
+# Introduction
+
+## A little about me
+
+* Born and raised in Geneva
+* Education:
+    * B.Sc. Physics (EPFL, '10)
+    * M.Sc. Physics with minor in Financial Engineering (EPFL, '12)
+    * Ph.D. Statistics (HEC Lausanne, '16)
+* Then:
+    * Worked a bit as a quant in finance in Zurich
+    * Moved to New York
+        * Became Professor in Statistics at Columbia University
+        * Left academia to join Meta as a data scientist
+    * Now in Geneva as a Professor of Business Analytics at HEG
+* Hobbies:
+    * Running
+    * Spending time with my family
+    * Watching bay area teams (go 49ers and Warriors!)
+
+
+## What you will learn
+
+* Workflow of the modern Data Scientist
+
+```{r echo = FALSE, out.width = "100%"}
+include_graphics("../assets/data_science-process.png")
+```
+
+
+
+## Statistical computing \& data science
+
+* What's the difference between data science and statistics?
+
+\vspace{0.4cm}
+
+>
+>
+> "A data scientist is just a sexier word for statistician."
+>
+> `r tufte::quote_footer('--- Nate Silver (outdated)')`
+>
+>
+
+\vspace{0.4cm}
+
+>
+>
+> "A data scientist is a better computer scientist than a statistician
+> and is a better statistician than a computer scientist."
+>
+> `r tufte::quote_footer('--- Unknown (still accurate)')`
+>
+>
+
+* What does a data scientist do?
+    +  There is not one correct answer.
+    +  Transform data into valuable information!
+    +  A data scientist spends a significant portion of time processing data and less time modeling data.
+
+
+## What is Data Science?
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* \redbf{Wikipedia: } "the extraction of knowledge from data"
+* Precise definition a bit unclear and controversial...
+* Practitioners "agree" on the components of data science:
+    * database management
+    * gathering and cleaning
+    * exploratory analysis
+    * predictive modelling
+    * data summary and visualization
+
+
+:::
+::: {.column width='48%'}
+
+```{r echo = FALSE, out.width = "100%"}
+#include_graphics("figures/ds_modern"}")
+include_graphics("../assets/ds_venn.png")
+```
+:::
+::::
+
+
+## Applications
+
+```{r echo = FALSE}
+include_graphics("../assets//companies.png")
+```
+
+\begin{center}
+Some of the hiring partners of \href{https://www.thedataincubator.com/}{\emph{The Data Incubator}}
+\end{center}
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* E-marketing
+* Recommender systems
+* Sport analytics
+* Biotechnology
+* Image or speech recognition
+* Fraud and risk detection
+* Social media
+
+:::
+::: {.column width='48%'}
+
+* redbfit scoring
+* E-commerce
+* Government analysis
+* Gaming
+* Price comparisons
+* Airline routes planing
+* Delivery logistics
+
+:::
+::::
+
+# Organization
+
+## Course Description
+
+\vspace{0.5cm}
+
+* Lectures (10:15-12:00):
+    * Focus on introducing the concepts
+    * Details sometimes left for you to read up on
+* Exercise sessions (12:15-14:00):
+    * Work on assignments and project
+* Instructor: [Professor Alex](mailto:aleksandr.shemendyuk@unil.ch).
+* Teaching assistants
+    * [Ilia Azizi](mailto:ilia.azizi@unil.ch)
+    * [Léo Wenger](mailto:leo.wenger@unil.ch)
+    * [Elwin Freudiger](elwin.freudiger@unil.ch)
+    
+## Grading
+
+* Final grade based on:
+    * Multiple choice questions (20%)
+    * A project (80%)
+* Multiple choice questions:
+    * 15 minutes at the beginning of each of lectures 2, 3, 4, 5, 6
+    * Worst grade __might__ be dropped
+* Project:
+    * Project proposal (5%)
+    * Project update (5%)
+    * Video presentation (20%)
+    * Final report (50%)
+* For the project:
+    * Groups of 2 or 3 members
+    * More on that later
+* Grades based on academic performance only!
+
+
+## Milestones
+
+| Date |  Assignment |
+| :---  | :---  |
+| 10/02 | Quiz 1 |
+| 10/09 | Quiz 2 |
+| 10/15 | Project proposal |
+| 10/16 | Quiz 3 |
+| 10/23 | Quiz 4 |
+| 10/30 | Quiz 5 |
+| 11/12 | Project update |
+| 12/15 | Video presentation |
+| 12/22 | Final Report |
+
+
+## Notice of caution!!!
+
+* Course evaluations last time I taught:
+
+\vspace{-0.35cm}
+
+```{r echo = FALSE, out.width = "55%"}
+include_graphics("../assets/dsfba_evaluation.png")
+```
+
+## Tentative outline
+
+\footnotesize
+
+| Date  | Topic | Reading |
+| :-    | :-------  | :-----    |
+| 09/25 | Introduction |  |
+| 10/02 | Data Structures and Subsetting | ADVR 3+4 |
+| 10/09 | Control Flows and Functions | ADVR 5, 6, 9, 11 |
+| 10/16 | Data Wrangling | R4DS 4, 6, 8, 13-20 |
+| 10/23 | Visualization | R4DS 2, 10-12 |
+| 10/30 | R Projects and Quarto | R4DS 3, 5, 7, 9, 29, 30 |
+| 11/06 | Project Coaching |  |
+| 11/13 | Data Wrangling | R4DS 4, 6, 8, 13-20 |
+| 11/20 | Visualization | R4DS 2, 10-12 |
+| 11/27 | Project coaching |
+| 12/04 | Presentations/Dashboards/Interactivity | R4DS 29+30, [htmlwidgets](https://www.htmlwidgets.org/) |
+| 12/11 | Projects Coaching | |
+| 12/18 | Projects Presentations | |
+
+(numbers in the third column are book chapters)
+
+## Course website
+
+* Course website:
+    * \redbf{\url{https://moodle.unil.ch/course/view.php?id=29021}} <!-- LOL --> #TODO: update link
+    * Registration key: \redbf{dsfba\_2023} <!-- LOL --> #TODO: update key
+    * __A discussion forum__
+    * PDFs of the lectures
+    * Additional resources
+
+## Additional resources
+
+:::: {.columns}
+::: {.column width='28%'}
+
+```{r echo = FALSE}
+include_graphics("../assets/adv-r.png")
+```
+
+:::
+::: {.column width='35%'}
+
+```{r echo = FALSE}
+include_graphics("../assets/r4ds.jpg")
+```
+
+:::
+::::
+
+* Books:
+  * \href{https://adv-r.hadley.nz/}{Advanced R}
+  * \href{https://r4ds.hadley.nz/}{R for data science}
+* Additionally:
+  * \href{https://www.rstudio.com/resources/cheatsheets/}{Rstudio cheat sheets}
+  * \href{https://cran.r-project.org/}{The CRAN website}
+
+
+## Best place to look for answers?
+
+:::: {.columns}
+::: {.column width='48%'}
+
+
+```{r, echo = FALSE}
+knitr::include_graphics("../assets/logo_google.png")
+```
+
+:::
+::: {.column width='48%'}
+
+
+```{r, echo = FALSE}
+knitr::include_graphics("../assets/logo_chat_gpt.jpg")
+```
+
+
+:::
+::::
+
+\vspace{1cm}
+
+\redcbf{... and moodle's forum!}
+
+# R
+
+## S and R
+
+* S
+    * A statistical programming language
+    * First appeared in 1976
+    * Developed by John Chambers and (in earlier versions) Rick Becker and Allan Wilks of Bell Labs
+    * John Chambers, \emph{[the aim is] to turn ideas into software, quickly and faithfully}
+
+* R
+    * Modern implementation of S
+    * First appeared in 1993
+    * Created by Ross Ihaka and Robert Gentleman at the University of Auckland, New Zealand
+    * Currently developed by the \emph{R Development Core Team}
+
+## Some "technical" details about R
+
+* Technical features:
+    * \redbf{Available for Windows, macOS, and Linux} <!-- LOL -->
+    * Source code written primarily in C, Fortran, and R
+    * Multi-paradigm: object-oriented, functional, procedural
+    * Dynamically typed
+    * Scripting language (interpreted)
+    * \redbf{Wide variety of statistical and graphical techniques} <!-- LOL -->
+    * \redbf{Easily extensible through functions and packages} <!-- LOL -->
+    * \redbf{Read/write from/to various data sources} <!-- LOL -->
+
+
+
+## What about Excel?
+
+```{r echo = FALSE}
+include_graphics("../assets/R-vs-Excel.jpg")
+```
+
+\redcbf{\href{https://fantasyfootballanalytics.net/2014/01/why-r-is-better-than-excel.html}{source: fantasyfootballanalytics.net}}
+
+
+## Excel is great for certain things...
+
+```{r echo = FALSE}
+include_graphics("../assets//excel_good.png")
+```
+
+\redcbf{\href{https://github.com/jdwilson4/Intro-Data-Science}{source: github.com/jdwilson4}}
+
+## ...but not everything
+
+
+\redcbf{R's advantages:}
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* \redbf{Easier automation} <!-- LOL -->
+* \redbf{Better reproducibility} <!-- LOL -->
+* Faster computation
+* Supports larger data sets
+* Reads any type of data
+* More powerful data manipulation capabilities
+* Easier project organization
+
+:::
+::: {.column width='48%'}
+
+* Easier to find and fix errors
+* Free \& open source
+* Advanced statistics capabilities
+* State-of-the-art graphics
+* Runs on many platforms
+* Anyone can contribute packages to improve its functionality
+
+:::
+::::
+
+
+## Automation and reproducibility
+
+```{r echo = FALSE}
+include_graphics("../assets//geeks-vs-nongeeks.png")
+```
+
+\redcbf{\href{https://trendct.org/2015/06/12/r-for-beginners-how-to-transition-from-excel-to-r/}{source: trendct.org}}
+
+## CRAN
+
+```{r echo = FALSE}
+include_graphics("../assets//cran.png") #TODO: update image
+```
+
+\redcbf{\href{https://cran.r-project.org/}{source: cran.r-project.org}}
+
+
+## RStudio
+
+* An open-source integrated development environment (IDE)
+* RStudio Desktop available for Windows, macOS, and Linux
+
+```{r echo = FALSE}
+include_graphics("../assets/rstudio.png")
+```
+\redcbf{\href{https://posit.co/products/open-source/rstudio/}{source: rstudio.com}}
+
+## Base R
+
+* What is `Base R`?
+
+\vspace{0.2cm}
+
+>
+> "The package named base is in a way the core of R and contains the basic functions of the language,
+> particularly, for reading and manipulating data."
+>
+> `r tufte::quote_footer('--- R for Beginners, Emmanuel Paradis')`
+
+
+* `Base R` includes all default code for performing common data manipulation and statistical tasks.
+* You might recognize some `Base R` functions:
+    *  `mean()`, `median()`, `lm()`, `summary()`, `sort()`
+    *  `data.frame()`, `read.csv()`, `cbind()`, `grep()`, `regexpr()`
+    * Many many more...
+* If you don't recognize any `Base R` functions, don't worry!
+
+
+## The tidyverse
+
+* Common criticisms of `Base R`:
+    * The code doesn't flow as well as other languages.
+    * Function names/arguments are often inconsistent/confusing.
+    * `Base R` functions sometimes don't return type-stable objects.
+    * `Base R` functions are not refined to run as fast as possible.
+    * Other complaints exist...
+* So what is the tidyverse? A collection of R packages
+    * designed for data science,
+    * sharing an underlying design philosophy, grammar, and data structures.
+* Often perform the same tasks as `Base R`, but:
+    * Relies on a __pipe__ operator to help with the flow of the code.
+    * More descriptive function names and consistent inputs.
+    * Type-stable.
+    * Often faster than common `Base R` functions.
+
+
+## Core `tidyverse` packages
+
+* `ggplot2`: declarative graphics, based on The Grammar of Graphics.
+* `dplyr`: grammar of data manipulation.
+* `tidyr`:  functions that help you get to tidy data.
+* `readr`: reading in rectangular data.
+* `purrr`: enhancing R's functional programming (FP).
+* `tibble`: a modern `data.frame`.
+* `stringr`: makes working with strings as easy as possible.
+* `forcats`: useful tools for common problems with factors.
+
+More on the [tidyverse website](https://www.tidyverse.org/packages/)!
+
+
+## Base R versus tidyverse
+
+* Why ever use `Base R`?
+    * Gets the job done!
+    * To become an expert, you have to know `Base R`.
+    * Some `Base R` functions are very common/useful, e.g., `mean()`.
+
+* What should you learn first? `Base R` or `tidyverse`?
+    * Some believe you should learn `Base R` first, others the `tidyverse` first.
+    * Lately, more are shifting to `tidyverse`...
+
+
+## Install links
+
+* R:
+    * [MacOS](https://cran.r-project.org/bin/macosx/)
+        * Be mindful of the difference between Apple silicon (M1/M2) Macs and older Intel Macs
+    * [Windows](https://cran.r-project.org/bin/windows/)
+* RStudio Desktop:
+    * [MacOS 11+](https://download1.rstudio.org/electron/macos/RStudio-2023.06.2-561.dmg)
+    * [Windows 10/11](https://download1.rstudio.org/electron/windows/RStudio-2023.06.2-561.exe)
