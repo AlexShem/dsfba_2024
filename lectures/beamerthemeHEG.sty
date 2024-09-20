@@ -1,0 +1,239 @@
+\mode<presentation>
+
+% Requirement
+\RequirePackage{tikz, datetime, textpos, mdframed, pgf}
+
+% tikz settings for table of contents
+\usetikzlibrary{shapes,arrows}
+\tikzset{section number/.style={
+		draw=none,
+		rectangle,    
+		left color=HEGred,
+		right color=HEGred,
+		minimum size=1.5em,
+		text=white,
+	},
+	section/.style={
+		draw=none,
+		rectangle,    
+		minimum height=1.5em,
+		minimum width=0.9\textwidth,
+		text width=0.9\textwidth,
+		text=HEGred,
+		align=left
+	}
+}
+
+
+
+% Date format
+\ddmmyyyydate \renewcommand{\dateseparator}{.}
+
+% Define colors
+\definecolor{HEGred}{RGB}{246,80,88}
+\definecolor{HEGblack}{RGB}{104,104,105}
+\definecolor{bggray}{RGB}{250, 250, 250}
+\definecolor{HEGgray}{rgb}{0.2,0.2,0.2}% dark grey
+
+% set colors
+\setbeamercolor*{item}{fg=HEGred}
+\setbeamercolor*{subitem}{fg=HEGblack}
+\setbeamercolor*{subsubitem}{fg=HEGgray}
+\setbeamercolor*{title}{fg=HEGred}
+\setbeamercolor*{enumerate item}{fg=HEGred}
+\setbeamercolor*{enumerate subitem}{fg=HEGred}
+\setbeamercolor*{enumerate subsubitem}{fg=HEGgray}
+\setbeamercolor*{block title}{fg=white, bg=HEGgray}
+\setbeamercolor*{block body}{fg=HEGgray, bg=bggray}
+\setbeamercolor*{block title example}{fg=white, bg=HEGlightblue}
+\setbeamercolor*{block body example}{fg=HEGgray, bg=bggray}
+\setbeamercolor*{section in head/foot}{bg=white, fg=white}
+\setbeamercolor*{subsection in head/foot}{bg=wwhite, fg=white}
+\setbeamercolor*{title in head/foot}{bg=white, fg=white}
+\setbeamercolor*{date in head/foot}{bg=HEGgray, fg=white}
+\setbeamercolor*{frametitle continuation}{fg=HEGred}
+\setbeamercolor{normal text}{fg=HEGgray}
+
+% set fonts
+\setbeamerfont*{title}{size=\huge}
+\setbeamerfont*{subtitle}{size=\Large\normalfont\slshape}
+\setbeamerfont*{block title}{size=\bfseries}
+
+% other templates
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}[circle]
+\setbeamertemplate{itemize subitem}[triangle]
+\setbeamertemplate{itemize subsubitem}[triangle]
+\setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
+\setbeamertemplate{itemize/enumerate subsubbody begin}{\normalsize}
+\setbeamertemplate{theorems}[unnumbered] 
+
+
+\defbeamertemplate*{background}{HEG}
+{
+	\begin{tikzpicture}
+	\useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight); 
+	\ifnum\thepage>1\relax% Not the title page
+	\fill[color=HEGred] (0,8.4) rectangle(0.8,8.42);
+	\fill[color=HEGred] (0.9,8.4) rectangle(13.5, 8.42);
+	\else% Title page
+	\fill[color=HEGred] (0,-1) rectangle (\the\paperwidth,3.2);
+	\fi
+	\end{tikzpicture}
+}
+
+% define headline
+\defbeamertemplate*{headline}{HEG}{}
+
+% define footline
+\defbeamertemplate*{footline}{HEG}
+{
+	\hfill \textcolor{HEGred}{\insertframenumber{} / \inserttotalframenumber} \hspace{1pt}
+	\vskip4pt%
+}	
+% positioning of logo
+
+
+% define title page
+\defbeamertemplate*{title page}{HEG}[1][]
+{ 
+	\begin{tikzpicture}
+
+\node[anchor=north west,yshift=-0.3cm] at (0,0) {\hspace*{-0.5cm} \inserttitlegraphic};
+
+\node[anchor=west,text width=1.1\textwidth,align=left] at (0,-4.2) {
+	\hspace*{-0.4cm}\LARGE\color{HEGblack}{\inserttitle}
+};
+\node[anchor=west,text width=1.1\textwidth,align=left] at (0,-5.2) {
+	\Large\normalfont\slshape\insertsubtitle
+};
+
+\node[anchor=west] at (0,-8.2){\hspace*{-0.4cm}\textcolor{white}\insertinstitute};
+\node[anchor=west] at (0,-8.7){\hspace*{-0.4cm}\textcolor{white}{\insertauthor}};
+\node[anchor=west] at (\textheight,0){~};
+
+	\end{tikzpicture}
+}
+
+% page at beginning of section
+\AtBeginSection[]{
+	\setbeamercolor{section in toc}{fg=HEGred}
+	\setbeamercolor{subsection in toc}{fg=HEGblack}
+	\setcounter{tocdepth}{2}  
+	\frame{\frametitle{Agenda}
+	\bgroup
+	    \vskip1\baselineskip
+	    \fontsize{8}{14}\selectfont
+		\tableofcontents[currentsection, hideallsubsections]
+	    \vskip0pt plus 1fill
+	\egroup
+	}
+}
+
+% define section page
+\setbeamertemplate{section page}
+{
+	\begin{centering}
+		{\usebeamerfont{subsubsection name}\usebeamercolor[fg]{subsubsection name}\subsubsectionname~\insertsubsubsectionnumber}
+		\vskip1em\par
+		\begin{beamercolorbox}[sep=4pt,center]{part title}
+			\usebeamerfont{subsubsection title}\insertsubsubsection\par
+		\end{beamercolorbox}
+	\end{centering}
+}
+
+
+\setbeamertemplate{section in toc}{
+	\tikz[baseline=-0.5ex]\node[section number]{\inserttocsectionnumber};%
+	\tikz[baseline=-0.5ex]\node[section]{\inserttocsection};
+}
+
+%% frame title
+%\defbeamertemplate*{frametitle}{HEG}
+%{
+%	\vspace{0.2cm}
+%	\begin{beamercolorbox}{frametitle} 
+%		{\normalsize\color{HEGred}{\insertsectionnumber~ \insertsection}} \\[-0.2cm]
+%		{\small\color{HEGgray}{\insertsectionnumber.\insertsubsectionnumber~ \insertsubsection}}
+%	\end{beamercolorbox}
+%	
+%}
+
+% frame title
+\defbeamertemplate*{frametitle}{HEG}[1][]
+{
+	\vspace{0.2cm}
+	\ifx\insertframesubtitle\empty
+	\begin{beamercolorbox}{frametitle} 
+		{\Large\color{HEGred}{\bfseries\insertframetitle}}
+	\end{beamercolorbox}
+	\else \begin{beamercolorbox}{frametitle} 
+		{\Large\color{HEGred}{\bfseries\insertframetitle}} \\[-0.2cm]
+		{\small\color{HEGgray}{\insertframesubtitle}}
+	\end{beamercolorbox}
+	\fi
+}
+
+% new theorem environment
+\setbeamertemplate{theorem begin}
+{%
+	\setbeamercolor{block title}{use=structure,fg=white,bg=HEGred}
+	\setbeamercolor{block body}{use=structure,fg=HEGgray,bg=bggray}
+	\begin{\inserttheoremblockenv}
+		{%
+			\inserttheoremheadfont
+			\inserttheoremname 
+			\ifx\inserttheoremaddition\@empty\else\ (\inserttheoremaddition)\fi%
+		}%		
+	}
+	\setbeamertemplate{theorem end}{\end{\inserttheoremblockenv}}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{beispiel}[theorem]{Beispiel}
+
+
+\setbeamertemplate{proof begin}
+{%
+	\setbeamercolor{block title}{use=structure,fg=HEGred,bg=white}
+	\setbeamercolor{block body}{use=structure,fg=HEGgray,bg=white}
+	\begin{block}{{\normalfont\sl Proof.}}		
+	}
+	\setbeamertemplate{proof end}{\end{block}}
+
+\setbeamertemplate{qed symbol}{\textcolor{HEGred}{$\square$}}
+
+% bibliography style
+\setbeamertemplate{bibliography item}{}
+\setbeamercolor*{bibliography entry article}{fg=black}
+\setbeamercolor*{bibliography entry title}{fg=black}
+\setbeamercolor*{bibliography entry note}{fg=black}
+\setbeamercolor*{bibliography entry location}{fg=HEGgray}
+\setbeamercolor*{bibliography entry author}{fg=HEGred}
+
+% bigger spacing in itemize
+\let\olditemize=\itemize 
+\let\endolditemize=\enditemize 
+\renewenvironment{itemize}{\olditemize \vspace{0.5em} \itemsep1.0em}{\endolditemize}
+\let\oldenumerate=\enumerate 
+\let\endoldenumerate=\endenumerate
+\renewenvironment{enumerate}{\oldenumerate \vspace{0.5em} \itemsep0.7em}{\endoldenumerate \vspace{0.5em}}
+
+
+\usepackage{appendixnumberbeamer}
+
+% check mark symbol
+\usepackage{pifont}
+\newcommand{\cmark}{\cbgreen{\text{\ding{51}}}}
+\newcommand{\xmark}{\cbred{\text{\ding{55}}}}
+
+% hide switch to exclude stuff pre-lecture
+\def\prelecture{1}
+\newcommand{\hide}[1]{\ifnum\prelecture=0 #1 \fi}
+
+\mode<all>
+
+\hypersetup{colorlinks = true,
+            linkcolor = HEGred,
+            urlcolor  = HEGred,
+            citecolor = HEGred,
+            anchorcolor = HEGred}

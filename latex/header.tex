@@ -1,0 +1,98 @@
+\makeatletter
+\providecommand*{\theHtable}{\thetable}
+\makeatother
+
+% Load useful packages
+\usepackage[utf8]{inputenc}
+\usepackage{mathtools,bm,bbm,amssymb,amsthm,mathrsfs}
+\usepackage{centernot}
+\usepackage{natbib}
+\usepackage{textpos}
+
+% HEG settings
+\usepackage{xcolor}
+\usepackage{beamerthemeHEG}
+
+% custom commands
+\newcommand\redbf[1]{\textcolor{HEGred}{\textbf{#1}}}
+% \newcommand\redbf[1]{{\color{HEGred}\textbf{#1}}}
+\newcommand\redcbf[1]{\begin{center}\textcolor{HEGred}{\textbf{#1}}\end{center}}
+\newcommand{\heading}[1]{\vspace*{12pt} \textbf{\textcolor{HEGred}{#1}} \\[2pt] }
+
+
+
+
+% % For sections' TOC
+% \RequirePackage{ifthen} % package required
+% \newboolean{sectiontoc}
+% \setboolean{sectiontoc}{true} % default to true
+% \AtBeginSection[]
+% {
+% 	\ifthenelse{\boolean{sectiontoc}}{
+% 		\begin{frame}<beamer>{Outline}
+% 			\tableofcontents[currentsection]
+% 		\end{frame}
+% 	}
+% }
+% \newcommand{\toclesssection}[1]{
+% 	\setboolean{sectiontoc}{false}
+% 	\section{#1}
+% 	\setboolean{sectiontoc}{true}
+% }
+
+% Useful itemize environments
+\newenvironment{tightemize}{\vspace{-\topsep}\begin{itemize}\itemsep1pt \parskip0pt \parsep0pt}{\end{itemize}\vspace{-\topsep}}
+\newenvironment{widetemize}{\begin{itemize}\itemsep5pt \parskip2pt \parsep2pt}{\end{itemize}}
+
+
+\institute[HEG]{Haute Ecole de Gestion}
+\def \shorttitle2 {DSFBA}
+
+\def\bbeta{\mbox{\boldmath $\beta$}}
+\def\bheta{\mbox{\boldmath $\eta$}}
+\def\bmu{\mbox{\boldmath $\mu$}}
+\def\bbeta{\mbox{\boldmath $\beta$}}
+\def\bepsilon{\mbox{\boldmath $\varepsilon$}}
+
+\def\bSigma{\mbox{\boldmath $\Sigma$}}
+\def\bOmega{\mbox{\boldmath $\Omega$}}
+\def\bomega{\mbox{\boldmath $\omega$}}
+\def\bTheta{\mbox{\boldmath $\Theta$}}
+
+
+
+\def\bb{\mathbf{b}}
+\def\bc{\mathbf{c}}
+\def\be{\mathbf{e}}
+\def\bg{\mathbf{f}}
+\def\bs{\mathbf{s}}
+\def\bt{\mathbf{t}}
+\def\by{\mathbf{y}}
+\def\bx{\mathbf{x}}
+\def\bu{\mathbf{u}}
+
+\def\bA{\mathbf{A}}
+\def\bB{\mathbf{B}}
+\def\bC{\mathbf{C}}
+\def\bF{\mathbf{F}}
+\def\bK{\mathbf{K}}
+\def\bI{\mathbf{I}}
+\def\bM{\mathbf{M}}
+\def\bP{\mathbf{P}}
+\def\bQ{\mathbf{Q}}
+\def\bR{\mathbf{R}}
+\def\bS{\mathbf{S}}
+\def\bT{\mathbf{T}}
+\def\bX{\mathbf{X}}
+\def\bY{\mathbf{Y}}
+\def\bU{\mathbf{U}}
+\def\bW{\mathbf{W}}
+\def\bZ{\mathbf{Z}}
+
+
+\def\bzr{\mathbf{0}}
+\def\cor{\mbox{cor}}
+\def\cov{\mbox{cov}}
+\def\var{\mbox{var}}
+\def\E{\mathbb{E}}
+\def\P{\mathbf{P}}
