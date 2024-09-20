@@ -1,0 +1,14 @@
+---
+title: "Data Science for Business Analytics"
+format: html
+editor: visual
+---
+
+# Important Information
+
+-   **Zoom link**: [this link](#) for the lectures/exercise sessions (password is `dsfba_2024`).
+-   **NEXT DEADLINE**: [submit your final project and video presentation](#) by DECEMBER 19TH.
+
+# Aim of the Course
+
+The aim of this course is to learn the most important tools to...

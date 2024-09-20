@@ -1,0 +1,10 @@
+---
+title: "Lecutres"
+format: html
+editor: visual
+---
+
+# Lecture Slides
+
+-   [Lecture 1: Introduction](../../lectures/lecture-01-intro.pdf)
+-   More lectures to be added...
