@@ -71,7 +71,7 @@ include_graphics("../assets/data_science-process.png")
 
 ::: columns
 ::: {.column width="48%"}
--   \redbf{Wikipedia: } "the extraction of knowledge from data"
+-   \bluebf{Wikipedia: } "the extraction of knowledge from data"
 -   Precise definition a bit unclear and controversial...
 -   Practitioners "agree" on the components of data science:
     -   database management
@@ -206,8 +206,8 @@ include_graphics("../assets/dsfba_evaluation.png")
 ## Course website
 
 -   Course website:
-    -   \redbf{\url{https://moodle.unil.ch/course/view.php?id=29021}} <!-- #TODO: update link -->
-    -   Registration key: \redbf{dsfba\_2023} <!-- LOL #TODO: update key -->
+    -   \bluebf{\url{https://moodle.unil.ch/course/view.php?id=29021}} <!-- #TODO: update link -->
+    -   Registration key: \bluebf{dsfba\_2023} <!-- LOL #TODO: update key -->
     -   **A discussion forum**
     -   PDFs of the lectures
     -   Additional resources
@@ -253,7 +253,7 @@ knitr::include_graphics("../assets/logo_chat_gpt.jpg")
 
 \vspace{1cm}
 
-\redcbf{... and moodle's forum!}
+\bluecbf{... and moodle's forum!}
 
 # R
 
@@ -273,14 +273,14 @@ knitr::include_graphics("../assets/logo_chat_gpt.jpg")
 ## Some "technical" details about R
 
 -   Technical features:
-    -   \redbf{Available for Windows, macOS, and Linux} <!-- LOL -->
+    -   \bluebf{Available for Windows, macOS, and Linux} <!-- LOL -->
     -   Source code written primarily in C, Fortran, and R
     -   Multi-paradigm: object-oriented, functional, procedural
     -   Dynamically typed
     -   Scripting language (interpreted)
-    -   \redbf{Wide variety of statistical and graphical techniques} <!-- LOL -->
-    -   \redbf{Easily extensible through functions and packages} <!-- LOL -->
-    -   \redbf{Read/write from/to various data sources} <!-- LOL -->
+    -   \bluebf{Wide variety of statistical and graphical techniques} <!-- LOL -->
+    -   \bluebf{Easily extensible through functions and packages} <!-- LOL -->
+    -   \bluebf{Read/write from/to various data sources} <!-- LOL -->
 
 ## What about Excel?
 
@@ -288,7 +288,7 @@ knitr::include_graphics("../assets/logo_chat_gpt.jpg")
 include_graphics("../assets/R-vs-Excel.jpg")
 ```
 
-\redcbf{\href{https://fantasyfootballanalytics.net/2014/01/why-r-is-better-than-excel.html}{source: fantasyfootballanalytics.net}}
+\bluecbf{\href{https://fantasyfootballanalytics.net/2014/01/why-r-is-better-than-excel.html}{source: fantasyfootballanalytics.net}}
 
 ## Excel is great for certain things...
 
@@ -296,16 +296,16 @@ include_graphics("../assets/R-vs-Excel.jpg")
 include_graphics("../assets//excel_good.png")
 ```
 
-\redcbf{\href{https://github.com/jdwilson4/Intro-Data-Science}{source: github.com/jdwilson4}}
+\bluecbf{\href{https://github.com/jdwilson4/Intro-Data-Science}{source: github.com/jdwilson4}}
 
 ## ...but not everything
 
-\redcbf{R's advantages:}
+\bluecbf{R's advantages:}
 
 ::: columns
 ::: {.column width="48%"}
--   \redbf{Easier automation} <!-- LOL -->
--   \redbf{Better reproducibility} <!-- LOL -->
+-   \bluebf{Easier automation} <!-- LOL -->
+-   \bluebf{Better reproducibility} <!-- LOL -->
 -   Faster computation
 -   Supports larger data sets
 -   Reads any type of data
@@ -329,7 +329,7 @@ include_graphics("../assets//excel_good.png")
 include_graphics("../assets//geeks-vs-nongeeks.png")
 ```
 
-\redcbf{\href{https://trendct.org/2015/06/12/r-for-beginners-how-to-transition-from-excel-to-r/}{source: trendct.org}}
+\bluecbf{\href{https://trendct.org/2015/06/12/r-for-beginners-how-to-transition-from-excel-to-r/}{source: trendct.org}}
 
 ## CRAN
 
@@ -337,7 +337,7 @@ include_graphics("../assets//geeks-vs-nongeeks.png")
 include_graphics("../assets//cran.png") #TODO: update image
 ```
 
-\redcbf{\href{https://cran.r-project.org/}{source: cran.r-project.org}}
+\bluecbf{\href{https://cran.r-project.org/}{source: cran.r-project.org}}
 
 ## RStudio
 
@@ -348,7 +348,7 @@ include_graphics("../assets//cran.png") #TODO: update image
 include_graphics("../assets/rstudio.png")
 ```
 
-\redcbf{\href{https://posit.co/products/open-source/rstudio/}{source: rstudio.com}}
+\bluecbf{\href{https://posit.co/products/open-source/rstudio/}{source: rstudio.com}}
 
 ## Base R
 
