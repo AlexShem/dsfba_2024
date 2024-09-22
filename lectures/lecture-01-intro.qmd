@@ -22,25 +22,25 @@ set.seed(0)
 
 ## A little about me
 
--   Born and raised in Geneva
--   Education:
-    -   B.Sc. Physics (EPFL, '10)
-    -   M.Sc. Physics with minor in Financial Engineering (EPFL, '12)
-    -   Ph.D. Statistics (HEC Lausanne, '16)
--   Then:
-    -   Worked a bit as a quant in finance in Zurich
-    -   Moved to New York
-        -   Became Professor in Statistics at Columbia University
-        -   Left academia to join Meta as a data scientist
-    -   Now in Geneva as a Professor of Business Analytics at HEG
--   Hobbies:
-    -   Running
-    -   Spending time with my family
-    -   Watching bay area teams (go 49ers and Warriors!)
+-   Born and raised in Riga, Latvia
+-   **Education**:
+    -   B.Sc. in Applied Mathematics 2017 (HSE University, Moscow)
+    -   M.Sc. in Statistical Modelling 2019 (HSE University, Moscow)
+    -   Ph.D. in Actuarial Science 2024 (HEC Lausanne, UNIL)
+-   **Experience**:
+    -   Teaching assistant at HSE University and HEC Lausanne
+    -   Research using real data
+    -   Telegram Bot development in Python
+    -   AI in research and personal projects
+    -   AI automation
+-   **Hobbies**:
+    -   Chess
+    -   Guitar
+    -   Finance
 
 ## What you will learn
 
--   Workflow of the modern Data Scientist
+-   Workflow of the 'modern' Data Scientist
 
 ```{r echo = FALSE, out.width = "100%"}
 include_graphics("../assets/data_science-process.png")
@@ -52,7 +52,7 @@ include_graphics("../assets/data_science-process.png")
 
 \vspace{0.4cm}
 
-> "A data scientist is just a sexier word for statistician."
+> "A data scientist is just a sexier word for a statistician."
 >
 > `r tufte::quote_footer('--- Nate Silver (outdated)')`
 
@@ -63,16 +63,16 @@ include_graphics("../assets/data_science-process.png")
 > `r tufte::quote_footer('--- Unknown (still accurate)')`
 
 -   What does a data scientist do?
-    -   There is not one correct answer.
+    -   *Jack of all trades.*
     -   Transform data into valuable information!
-    -   A data scientist spends a significant portion of time processing data and less time modeling data.
+    -   A data scientist spends a significant portion of time processing data and less time modelling data.
 
 ## What is Data Science?
 
 ::: columns
 ::: {.column width="48%"}
--   \redbf{Wikipedia: } "the extraction of knowledge from data"
--   Precise definition a bit unclear and controversial...
+-   \bluebf{Wikipedia:} "the extraction of knowledge from data"
+-   The precise definition is a bit unclear and controversial...
 -   Practitioners "agree" on the components of data science:
     -   database management
     -   gathering and cleaning
@@ -83,7 +83,6 @@ include_graphics("../assets/data_science-process.png")
 
 ::: {.column width="48%"}
 ```{r echo = FALSE, out.width = "100%"}
-#include_graphics("figures/ds_modern"}")
 include_graphics("../assets/ds_venn.png")
 ```
 :::
@@ -91,15 +90,12 @@ include_graphics("../assets/ds_venn.png")
 
 ## Applications
 
-```{r echo = FALSE}
-include_graphics("../assets//companies.png")
-```
+::: {#fig-applications}
+![](../assets/companies.png)
 
-```{=tex}
-\begin{center}
-Some of the hiring partners of \href{https://www.thedataincubator.com/}{\emph{The Data Incubator}}
-\end{center}
-```
+Some of the hiring partners of [*The Data Incubator*](https://www.thedataincubator.com/)
+:::
+
 ::: columns
 ::: {.column width="48%"}
 -   E-marketing
@@ -117,63 +113,58 @@ Some of the hiring partners of \href{https://www.thedataincubator.com/}{\emph{Th
 -   Government analysis
 -   Gaming
 -   Price comparisons
--   Airline routes planing
+-   Airline routes planning
 -   Delivery logistics
 :::
 :::
 
-# Organization
+# Organisation
 
 ## Course Description
 
 \vspace{0.5cm}
 
--   Lectures (10:15-12:00):
-    -   Focus on introducing the concepts
-    -   Details sometimes left for you to read up on
--   Exercise sessions (12:15-14:00):
-    -   Work on assignments and project
--   Instructor: [**Professor Alex** (Aleksandr Shemendyuk)](mailto:aleksandr.shemendyuk@unil.ch).
--   Teaching assistants
+-   **Lectures** (10:15-12:00):
+    -   Focus on introducing the concepts.
+    -   Details are sometimes left for you to read up on
+-   **Exercise sessions** (12:15-14:00):
+    -   Work on assignments and project.
+-   **Instructor**: [Professor Alex (Aleksandr Shemendyuk)](mailto:aleksandr.shemendyuk@unil.ch).
+-   **Captains** (Teaching assistants):
     -   [Ilia Azizi](mailto:ilia.azizi@unil.ch)
     -   [Léo Wenger](mailto:leo.wenger@unil.ch)
     -   [Elwin Freudiger](mailto:elwin.freudiger@unil.ch)
 
 ## Grading
 
--   Final grade based on:
-    -   Multiple choice questions (20%)
-    -   A project (80%)
--   Multiple choice questions:
-    -   15 minutes at the beginning of each of lectures 2, 3, 4, 5, 6
-    -   Worst grade **might** be dropped
--   Project:
+-   The **Final grade** is composed based on two equally weighted components:
+    -   Online Exam
+    -   Group Project
+-   **Exam**:
+    -   Online closed/\bluebf{open}-book exam (50%)
+-   **Group Project**:
     -   Project proposal (5%)
     -   Project update (5%)
-    -   Video presentation (20%)
-    -   Final report (50%)
--   For the project:
-    -   Groups of 2 or 3 members
-    -   More on that later
--   Grades based on academic performance only!
+    -   Video presentation (15%)
+    -   Final report (25%)
+
+For the group project:
+
+-   Groups of 3 (or 4) members
+-   More details to come...
 
 ## Milestones
 
-| Date  | Assignment         |
-|:------|:-------------------|
-| 10/02 | Quiz 1             |
-| 10/09 | Quiz 2             |
-| 10/15 | Project proposal   |
-| 10/16 | Quiz 3             |
-| 10/23 | Quiz 4             |
-| 10/30 | Quiz 5             |
-| 11/12 | Project update     |
-| 12/15 | Video presentation |
-| 12/22 | Final Report       |
+| Date        | Assignment         |
+|:------------|:-------------------|
+| October 14  | Project proposal   |
+| November 11 | Project update     |
+| December 16 | Video presentation |
+| December 23 | Final Report       |
 
-## Notice of caution!!!
+## Course Evaluations in Fall 2022
 
--   Course evaluations last time I taught:
+-   **Workload - credits**: \~33% of students found it too high!
 
 \vspace{-0.35cm}
 
@@ -181,33 +172,33 @@ Some of the hiring partners of \href{https://www.thedataincubator.com/}{\emph{Th
 include_graphics("../assets/dsfba_evaluation.png")
 ```
 
-## Tentative outline
+## Schedule outline
 
 \footnotesize
 
-| Date  | Topic                                  | Reading                                                 |
+| Date         | Topic                                  | Reading                                                 |
 |:-----------------|:------------------------------|:----------------------|
-| 09/25 | Introduction                           |                                                         |
-| 10/02 | Data Structures and Subsetting         | ADVR 3+4                                                |
-| 10/09 | Control Flows and Functions            | ADVR 5, 6, 9, 11                                        |
-| 10/16 | Data Wrangling                         | R4DS 4, 6, 8, 13-20                                     |
-| 10/23 | Visualization                          | R4DS 2, 10-12                                           |
-| 10/30 | R Projects and Quarto                  | R4DS 3, 5, 7, 9, 29, 30                                 |
-| 11/06 | Project Coaching                       |                                                         |
-| 11/13 | Data Wrangling                         | R4DS 4, 6, 8, 13-20                                     |
-| 11/20 | Visualization                          | R4DS 2, 10-12                                           |
-| 11/27 | Project coaching                       |                                                         |
-| 12/04 | Presentations/Dashboards/Interactivity | R4DS 29+30, [htmlwidgets](https://www.htmlwidgets.org/) |
-| 12/11 | Projects Coaching                      |                                                         |
-| 12/18 | Projects Presentations                 |                                                         |
+| September 23 | Introduction                           |                                                         |
+| September 30 | Data Structures and Subsetting         | ADVR 3+4                                                |
+| October 7    | Control Flows and Functions            | ADVR 5, 6, 9, 11                                        |
+| October 14   | Data Wrangling                         | R4DS 4, 6, 8, 13-20                                     |
+| October 21   | Visualisation                          | R4DS 2, 10-12                                           |
+| October 28   | R Projects and Quarto                  | R4DS 3, 5, 7, 9, 29, 30                                 |
+| November 4   | Project Coaching                       |                                                         |
+| November 11  | Data Wrangling                         | R4DS 4, 6, 8, 13-20                                     |
+| November 18  | Visualisation                          | R4DS 2, 10-12                                           |
+| November 25  | Project Coaching                       |                                                         |
+| December 2   | Presentations / Dashboards / Interactivity | R4DS 29+30, [htmlwidgets](https://www.htmlwidgets.org/) |
+| December 9   | Projects Coaching                      |                                                         |
+| December 16  | Projects Presentations                 |                                                         |
 
 (numbers in the third column are book chapters)
 
 ## Course website
 
 -   Course website:
-    -   \redbf{\url{https://moodle.unil.ch/course/view.php?id=29021}} <!-- #TODO: update link -->
-    -   Registration key: \redbf{dsfba\_2023} <!-- LOL #TODO: update key -->
+    -   \bluebf{\url{https://moodle.unil.ch/course/view.php?id=32207}}
+    -   Registration key: \bluebf{dsfba2024}
     -   **A discussion forum**
     -   PDFs of the lectures
     -   Additional resources
@@ -232,28 +223,28 @@ include_graphics("../assets/r4ds.jpg")
     -   \href{https://adv-r.hadley.nz/}{Advanced R}
     -   \href{https://r4ds.hadley.nz/}{R for data science}
 -   Additionally:
-    -   \href{https://www.rstudio.com/resources/cheatsheets/}{Rstudio cheat sheets}
+    -   \href{https://posit.co/resources/cheatsheets/}{Rstudio cheat sheets}
     -   \href{https://cran.r-project.org/}{The CRAN website}
 
 ## Best place to look for answers?
 
 ::: columns
-::: {.column width="48%"}
+::: {.column width="28%"}
 ```{r, echo = FALSE}
 knitr::include_graphics("../assets/logo_google.png")
 ```
 :::
 
-::: {.column width="48%"}
+::: {.column width="70%"}
 ```{r, echo = FALSE}
-knitr::include_graphics("../assets/logo_chat_gpt.jpg")
+knitr::include_graphics("../assets/openai-lockup.png")
 ```
 :::
 :::
 
 \vspace{1cm}
 
-\redcbf{... and moodle's forum!}
+\bluecbf{... and our forum on Moodle.}
 
 # R
 
@@ -273,14 +264,14 @@ knitr::include_graphics("../assets/logo_chat_gpt.jpg")
 ## Some "technical" details about R
 
 -   Technical features:
-    -   \redbf{Available for Windows, macOS, and Linux} <!-- LOL -->
+    -   \bluebf{Available for Windows, macOS, and Linux} <!-- LOL -->
     -   Source code written primarily in C, Fortran, and R
     -   Multi-paradigm: object-oriented, functional, procedural
     -   Dynamically typed
     -   Scripting language (interpreted)
-    -   \redbf{Wide variety of statistical and graphical techniques} <!-- LOL -->
-    -   \redbf{Easily extensible through functions and packages} <!-- LOL -->
-    -   \redbf{Read/write from/to various data sources} <!-- LOL -->
+    -   \bluebf{Wide variety of statistical and graphical techniques} <!-- LOL -->
+    -   \bluebf{Easily extensible through functions and packages} <!-- LOL -->
+    -   \bluebf{Read/write from/to various data sources} <!-- LOL -->
 
 ## What about Excel?
 
@@ -288,7 +279,7 @@ knitr::include_graphics("../assets/logo_chat_gpt.jpg")
 include_graphics("../assets/R-vs-Excel.jpg")
 ```
 
-\redcbf{\href{https://fantasyfootballanalytics.net/2014/01/why-r-is-better-than-excel.html}{source: fantasyfootballanalytics.net}}
+\bluecbf{\href{https://fantasyfootballanalytics.net/2014/01/why-r-is-better-than-excel.html}{source: fantasyfootballanalytics.net}}
 
 ## Excel is great for certain things...
 
@@ -296,21 +287,21 @@ include_graphics("../assets/R-vs-Excel.jpg")
 include_graphics("../assets//excel_good.png")
 ```
 
-\redcbf{\href{https://github.com/jdwilson4/Intro-Data-Science}{source: github.com/jdwilson4}}
+\bluecbf{\href{https://github.com/jdwilson4/Intro-Data-Science}{source: github.com/jdwilson4}}
 
 ## ...but not everything
 
-\redcbf{R's advantages:}
+\bluecbf{R's advantages:}
 
 ::: columns
 ::: {.column width="48%"}
--   \redbf{Easier automation} <!-- LOL -->
--   \redbf{Better reproducibility} <!-- LOL -->
+-   \bluebf{Easier automation} <!-- LOL -->
+-   \bluebf{Better reproducibility} <!-- LOL -->
 -   Faster computation
 -   Supports larger data sets
 -   Reads any type of data
 -   More powerful data manipulation capabilities
--   Easier project organization
+-   Easier project organisation
 :::
 
 ::: {.column width="48%"}
@@ -326,18 +317,18 @@ include_graphics("../assets//excel_good.png")
 ## Automation and reproducibility
 
 ```{r echo = FALSE}
-include_graphics("../assets//geeks-vs-nongeeks.png")
+include_graphics("../assets/geeks-vs-nongeeks.png")
 ```
 
-\redcbf{\href{https://trendct.org/2015/06/12/r-for-beginners-how-to-transition-from-excel-to-r/}{source: trendct.org}}
+\bluecbf{\href{https://trendct.org/2015/06/12/r-for-beginners-how-to-transition-from-excel-to-r/}{source: trendct.org}}
 
 ## CRAN
 
 ```{r echo = FALSE}
-include_graphics("../assets//cran.png") #TODO: update image
+include_graphics("../assets/cran.png")
 ```
 
-\redcbf{\href{https://cran.r-project.org/}{source: cran.r-project.org}}
+\bluecbf{\href{https://cran.r-project.org/}{source: cran.r-project.org}}
 
 ## RStudio
 
@@ -345,10 +336,10 @@ include_graphics("../assets//cran.png") #TODO: update image
 -   RStudio Desktop available for Windows, macOS, and Linux
 
 ```{r echo = FALSE}
-include_graphics("../assets/rstudio.png")
+include_graphics("../assets/posit.png")
 ```
 
-\redcbf{\href{https://posit.co/products/open-source/rstudio/}{source: rstudio.com}}
+\bluecbf{\href{https://posit.co/products/open-source/}{source: posit.co}}
 
 ## Base R
 
@@ -356,7 +347,7 @@ include_graphics("../assets/rstudio.png")
 
 \vspace{0.2cm}
 
-> "The package named base is in a way the core of R and contains the basic functions of the language, particularly, for reading and manipulating data."
+> "The package named 'base' is in a way the core of R and contains the basic functions of the language, particularly, for reading and manipulating data."
 >
 > `r tufte::quote_footer('--- R for Beginners, Emmanuel Paradis')`
 
@@ -375,10 +366,10 @@ include_graphics("../assets/rstudio.png")
     -   `Base R` functions sometimes don't return type-stable objects.
     -   `Base R` functions are not refined to run as fast as possible.
     -   Other complaints exist...
--   So what is the tidyverse? A collection of R packages
+-   So what is the [\bluebf{tidyverse}](https://www.tidyverse.org/)? A collection of R packages
     -   designed for data science,
     -   sharing an underlying design philosophy, grammar, and data structures.
--   Often perform the same tasks as `Base R`, but:
+-   Often, it performs the same tasks as `Base R`, but:
     -   Relies on a **pipe** operator to help with the flow of the code.
     -   More descriptive function names and consistent inputs.
     -   Type-stable.
@@ -393,11 +384,11 @@ include_graphics("../assets/rstudio.png")
 -   `purrr`: enhancing R's functional programming (FP).
 -   `tibble`: a modern `data.frame`.
 -   `stringr`: makes working with strings as easy as possible.
--   `forcats`: useful tools for common problems with factors.
+-   `forcats`: useful tools for working with factors.
 
-More on the [tidyverse website](https://www.tidyverse.org/packages/)!
+See more on the [tidyverse website](https://www.tidyverse.org/packages/).
 
-## Base R versus tidyverse
+## `Base R` vs `tidyverse`
 
 -   Why ever use `Base R`?
     -   Gets the job done!
@@ -414,5 +405,5 @@ More on the [tidyverse website](https://www.tidyverse.org/packages/)!
         -   Be mindful of the difference between Apple silicon (M1/M2) Macs and older Intel Macs
     -   [Windows](https://cran.r-project.org/bin/windows/)
 -   RStudio Desktop:
-    -   [MacOS 11+](https://download1.rstudio.org/electron/macos/RStudio-2023.06.2-561.dmg)
-    -   [Windows 10/11](https://download1.rstudio.org/electron/windows/RStudio-2023.06.2-561.exe)
+    -   [MacOS 12+](https://posit.co/download/rstudio-desktop/)
+    -   [Windows 10/11](https://posit.co/download/rstudio-desktop/)

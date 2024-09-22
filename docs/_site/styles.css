@@ -1,0 +1,13 @@
+/* Custom styles for the sidebar and general layout */
+.navbar { 
+    background-color: #003366; /* Similar to UNIL branding */
+  }
+  
+  .sidebar {
+    background-color: #f8f9fa;
+  }
+  
+  h1, h2, h3 {
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+  

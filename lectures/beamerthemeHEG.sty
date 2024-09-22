@@ -6,53 +6,59 @@
 % tikz settings for table of contents
 \usetikzlibrary{shapes,arrows}
 \tikzset{section number/.style={
-		draw=none,
-		rectangle,    
-		left color=HEGred,
-		right color=HEGred,
-		minimum size=1.5em,
-		text=white,
-	},
-	section/.style={
-		draw=none,
-		rectangle,    
-		minimum height=1.5em,
-		minimum width=0.9\textwidth,
-		text width=0.9\textwidth,
-		text=HEGred,
-		align=left
-	}
+    draw=none,
+    rectangle,
+    left color=HECblue,  % Change from HEGred
+    right color=HECblue, % Change from HEGred
+    minimum size=1.5em,
+    text=white,
+},
+section/.style={
+    draw=none,
+    rectangle,
+    minimum height=1.5em,
+    minimum width=0.9\textwidth,
+    text width=0.9\textwidth,
+    text=HECblue,       % Change from HEGred
+    align=left
 }
+}
+
+
 
 
 
 % Date format
 \ddmmyyyydate \renewcommand{\dateseparator}{.}
 
-% Define colors
-\definecolor{HEGred}{RGB}{246,80,88}
-\definecolor{HEGblack}{RGB}{104,104,105}
-\definecolor{bggray}{RGB}{250, 250, 250}
-\definecolor{HEGgray}{rgb}{0.2,0.2,0.2}% dark grey
+% Define colors inspired by HEC Lausanne branding
+\definecolor{HECblue}{RGB}{0, 61, 104}       % Deep blue, matches HEC Lausanne
+\definecolor{HECskyblue}{RGB}{3, 130, 191}   % Sky blue, for highlighting
+\definecolor{HECgray}{RGB}{104, 104, 105}    % Neutral gray for text
+\definecolor{HECwhite}{RGB}{255, 255, 255}   % White, for contrast in blocks
+\definecolor{HEClightgray}{RGB}{230, 230, 230} % Light gray for backgrounds
+\definecolor{HECdarkgray}{RGB}{50, 50, 50}   % Dark gray for accents
 
-% set colors
-\setbeamercolor*{item}{fg=HEGred}
-\setbeamercolor*{subitem}{fg=HEGblack}
-\setbeamercolor*{subsubitem}{fg=HEGgray}
-\setbeamercolor*{title}{fg=HEGred}
-\setbeamercolor*{enumerate item}{fg=HEGred}
-\setbeamercolor*{enumerate subitem}{fg=HEGred}
-\setbeamercolor*{enumerate subsubitem}{fg=HEGgray}
-\setbeamercolor*{block title}{fg=white, bg=HEGgray}
-\setbeamercolor*{block body}{fg=HEGgray, bg=bggray}
-\setbeamercolor*{block title example}{fg=white, bg=HEGlightblue}
-\setbeamercolor*{block body example}{fg=HEGgray, bg=bggray}
-\setbeamercolor*{section in head/foot}{bg=white, fg=white}
-\setbeamercolor*{subsection in head/foot}{bg=wwhite, fg=white}
-\setbeamercolor*{title in head/foot}{bg=white, fg=white}
-\setbeamercolor*{date in head/foot}{bg=HEGgray, fg=white}
-\setbeamercolor*{frametitle continuation}{fg=HEGred}
-\setbeamercolor{normal text}{fg=HEGgray}
+
+% Set Beamer color schemes
+\setbeamercolor*{item}{fg=HECblue}                     % Bullet points in blue
+\setbeamercolor*{subitem}{fg=HECdarkgray}              % Sub-items in dark gray
+\setbeamercolor*{subsubitem}{fg=HECgray}               % Sub-sub-items in neutral gray
+\setbeamercolor*{title}{fg=HECblue}                    % Slide titles in blue
+\setbeamercolor*{enumerate item}{fg=HECblue}           % Enumerated lists in blue
+\setbeamercolor*{enumerate subitem}{fg=HECblue}        % Sub-enumerated lists in blue
+\setbeamercolor*{enumerate subsubitem}{fg=HECgray}     % Sub-sub enumerated in gray
+\setbeamercolor*{block title}{fg=HECwhite, bg=HECblue} % Block titles in white on blue
+\setbeamercolor*{block body}{fg=HECdarkgray, bg=HEClightgray} % Block bodies in dark gray on light gray
+\setbeamercolor*{block title example}{fg=HECwhite, bg=HECskyblue} % Example blocks in sky blue
+\setbeamercolor*{block body example}{fg=HECgray, bg=HEClightgray} % Example block bodies in gray on light gray
+\setbeamercolor*{section in head/foot}{bg=HECblue, fg=HECwhite} % Footer in blue with white text
+\setbeamercolor*{subsection in head/foot}{bg=HECskyblue, fg=HECwhite} % Subsection footers in sky blue
+\setbeamercolor*{title in head/foot}{bg=HECblue, fg=HECwhite} % Title bar in blue
+\setbeamercolor*{date in head/foot}{bg=HECgray, fg=HECwhite} % Date bar in gray
+\setbeamercolor*{frametitle continuation}{fg=HECblue}  % Frame titles continued in blue
+\setbeamercolor{normal text}{fg=HECdarkgray}           % Normal text in dark gray
+
 
 % set fonts
 \setbeamerfont*{title}{size=\huge}
@@ -66,60 +72,56 @@
 \setbeamertemplate{itemize subsubitem}[triangle]
 \setbeamertemplate{itemize/enumerate subbody begin}{\normalsize}
 \setbeamertemplate{itemize/enumerate subsubbody begin}{\normalsize}
-\setbeamertemplate{theorems}[unnumbered] 
+\setbeamertemplate{theorems}[unnumbered]
 
 
-\defbeamertemplate*{background}{HEG}
+% Background Template
+\defbeamertemplate*{background}{HEC}
 {
 	\begin{tikzpicture}
-	\useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight); 
+	\useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
 	\ifnum\thepage>1\relax% Not the title page
-	\fill[color=HEGred] (0,8.4) rectangle(0.8,8.42);
-	\fill[color=HEGred] (0.9,8.4) rectangle(13.5, 8.42);
+	\fill[color=HECblue] (0,8.4) rectangle(0.8,8.42);
+	\fill[color=HECblue] (0.9,8.4) rectangle(13.5, 8.42);
 	\else% Title page
-	\fill[color=HEGred] (0,-1) rectangle (\the\paperwidth,3.2);
+	\fill[color=HECblue] (0,-1) rectangle (\the\paperwidth,3.2);
 	\fi
 	\end{tikzpicture}
 }
 
 % define headline
-\defbeamertemplate*{headline}{HEG}{}
+\defbeamertemplate*{headline}{HEC}{}
 
-% define footline
-\defbeamertemplate*{footline}{HEG}
+% Define Footline
+\defbeamertemplate*{footline}{HEC}
 {
-	\hfill \textcolor{HEGred}{\insertframenumber{} / \inserttotalframenumber} \hspace{1pt}
+	\hfill \textcolor{HECblue}{\insertframenumber{} / \inserttotalframenumber} \hspace{1pt}
 	\vskip4pt%
-}	
-% positioning of logo
+}
 
 
-% define title page
-\defbeamertemplate*{title page}{HEG}[1][]
-{ 
+% Title Page Template
+\defbeamertemplate*{title page}{HEC}[1][]
+{
 	\begin{tikzpicture}
-
-\node[anchor=north west,yshift=-0.3cm] at (0,0) {\hspace*{-0.5cm} \inserttitlegraphic};
-
-\node[anchor=west,text width=1.1\textwidth,align=left] at (0,-4.2) {
-	\hspace*{-0.4cm}\LARGE\color{HEGblack}{\inserttitle}
-};
-\node[anchor=west,text width=1.1\textwidth,align=left] at (0,-5.2) {
-	\Large\normalfont\slshape\insertsubtitle
-};
-
-\node[anchor=west] at (0,-8.2){\hspace*{-0.4cm}\textcolor{white}\insertinstitute};
-\node[anchor=west] at (0,-8.7){\hspace*{-0.4cm}\textcolor{white}{\insertauthor}};
-\node[anchor=west] at (\textheight,0){~};
-
+	\node[anchor=north west,yshift=-0.3cm] at (0,0) {\hspace*{-0.5cm} \inserttitlegraphic};
+	\node[anchor=west,text width=1.1\textwidth,align=left] at (0,-4.2) {
+		\hspace*{-0.4cm}\LARGE\color{HECdarkgray}{\inserttitle}
+	};
+	\node[anchor=west,text width=1.1\textwidth,align=left] at (0,-5.2) {
+		\Large\normalfont\slshape\insertsubtitle
+	};
+	\node[anchor=west] at (0,-8.2){\hspace*{-0.4cm}\textcolor{HECwhite}\insertinstitute};
+	\node[anchor=west] at (0,-8.7){\hspace*{-0.4cm}\textcolor{HECwhite}{\insertauthor}};
+	\node[anchor=west] at (\textheight,0){~};
 	\end{tikzpicture}
 }
 
 % page at beginning of section
 \AtBeginSection[]{
-	\setbeamercolor{section in toc}{fg=HEGred}
-	\setbeamercolor{subsection in toc}{fg=HEGblack}
-	\setcounter{tocdepth}{2}  
+	\setbeamercolor{section in toc}{fg=HECblue}
+	\setbeamercolor{subsection in toc}{fg=HECgray}
+	\setcounter{tocdepth}{2}
 	\frame{\frametitle{Agenda}
 	\bgroup
 	    \vskip1\baselineskip
@@ -130,91 +132,85 @@
 	}
 }
 
-% define section page
+% Frame Title
+\defbeamertemplate*{frametitle}{HEC}[1][]
+{
+	\vspace{0.2cm}
+	\ifx\insertframesubtitle\empty
+	\begin{beamercolorbox}{frametitle}
+		{\Large\color{HECblue}{\bfseries\insertframetitle}}
+	\end{beamercolorbox}
+	\else \begin{beamercolorbox}{frametitle}
+		{\Large\color{HECblue}{\bfseries\insertframetitle}} \\[-0.2cm]
+		{\small\color{HECgray}{\insertframesubtitle}}
+	\end{beamercolorbox}
+	\fi
+}
+
+%% Section in Head/Foot
+\setbeamercolor*{section in head/foot}{bg=HECblue, fg=HECwhite}
+\setbeamercolor*{subsection in head/foot}{bg=HECskyblue, fg=HECwhite}
+\setbeamercolor*{title in head/foot}{bg=HECblue, fg=HECwhite}
+\setbeamercolor*{date in head/foot}{bg=HECgray, fg=HECwhite}
+
+% Block Settings
+\setbeamercolor*{block title}{fg=HECwhite, bg=HECblue}
+\setbeamercolor*{block body}{fg=HECdarkgray, bg=HEClightgray}
+\setbeamercolor*{block title example}{fg=HECwhite, bg=HECskyblue}
+\setbeamercolor*{block body example}{fg=HECdarkgray, bg=HEClightgray}
+
+% Define section page
 \setbeamertemplate{section page}
 {
 	\begin{centering}
-		{\usebeamerfont{subsubsection name}\usebeamercolor[fg]{subsubsection name}\subsubsectionname~\insertsubsubsectionnumber}
+		{\usebeamerfont{section name}\usebeamercolor[fg]{section name}\insertsectionnumber~\insertsection}
 		\vskip1em\par
 		\begin{beamercolorbox}[sep=4pt,center]{part title}
-			\usebeamerfont{subsubsection title}\insertsubsubsection\par
+			\usebeamerfont{section title}\insertsection\par
 		\end{beamercolorbox}
 	\end{centering}
 }
 
 
+
 \setbeamertemplate{section in toc}{
-	\tikz[baseline=-0.5ex]\node[section number]{\inserttocsectionnumber};%
-	\tikz[baseline=-0.5ex]\node[section]{\inserttocsection};
+    \tikz[baseline=-0.5ex]\node[section number]{\inserttocsectionnumber};%
+    \tikz[baseline=-0.5ex]\node[section]{\inserttocsection};
 }
 
-%% frame title
-%\defbeamertemplate*{frametitle}{HEG}
-%{
-%	\vspace{0.2cm}
-%	\begin{beamercolorbox}{frametitle} 
-%		{\normalsize\color{HEGred}{\insertsectionnumber~ \insertsection}} \\[-0.2cm]
-%		{\small\color{HEGgray}{\insertsectionnumber.\insertsubsectionnumber~ \insertsubsection}}
-%	\end{beamercolorbox}
-%	
-%}
-
-% frame title
-\defbeamertemplate*{frametitle}{HEG}[1][]
-{
-	\vspace{0.2cm}
-	\ifx\insertframesubtitle\empty
-	\begin{beamercolorbox}{frametitle} 
-		{\Large\color{HEGred}{\bfseries\insertframetitle}}
-	\end{beamercolorbox}
-	\else \begin{beamercolorbox}{frametitle} 
-		{\Large\color{HEGred}{\bfseries\insertframetitle}} \\[-0.2cm]
-		{\small\color{HEGgray}{\insertframesubtitle}}
-	\end{beamercolorbox}
-	\fi
-}
-
-% new theorem environment
+% Theorem and Proof Styles
 \setbeamertemplate{theorem begin}
 {%
-	\setbeamercolor{block title}{use=structure,fg=white,bg=HEGred}
-	\setbeamercolor{block body}{use=structure,fg=HEGgray,bg=bggray}
+	\setbeamercolor{block title}{use=structure,fg=HECwhite,bg=HECblue}
+	\setbeamercolor{block body}{use=structure,fg=HECdarkgray,bg=HEClightgray}
 	\begin{\inserttheoremblockenv}
 		{%
 			\inserttheoremheadfont
-			\inserttheoremname 
+			\inserttheoremname
 			\ifx\inserttheoremaddition\@empty\else\ (\inserttheoremaddition)\fi%
-		}%		
-	}
-	\setbeamertemplate{theorem end}{\end{\inserttheoremblockenv}}
-\newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{assumption}[theorem]{Assumption}
-\newtheorem{beispiel}[theorem]{Beispiel}
-
-
+		}%
+}
 \setbeamertemplate{proof begin}
 {%
-	\setbeamercolor{block title}{use=structure,fg=HEGred,bg=white}
-	\setbeamercolor{block body}{use=structure,fg=HEGgray,bg=white}
-	\begin{block}{{\normalfont\sl Proof.}}		
-	}
-	\setbeamertemplate{proof end}{\end{block}}
-
-\setbeamertemplate{qed symbol}{\textcolor{HEGred}{$\square$}}
+    \setbeamercolor{block title}{use=structure,fg=HECblue,bg=HECwhite} % Ensure fg matches key theme color
+    \setbeamercolor{block body}{use=structure,fg=HECdarkgray,bg=HEClightgray} % bg consistent with block body style
+    \begin{block}{{\normalfont\sl Proof.}}
+}
+\setbeamertemplate{qed symbol}{\textcolor{HECblue}{$\square$}}
 
 % bibliography style
 \setbeamertemplate{bibliography item}{}
 \setbeamercolor*{bibliography entry article}{fg=black}
 \setbeamercolor*{bibliography entry title}{fg=black}
 \setbeamercolor*{bibliography entry note}{fg=black}
-\setbeamercolor*{bibliography entry location}{fg=HEGgray}
-\setbeamercolor*{bibliography entry author}{fg=HEGred}
+\setbeamercolor*{bibliography entry location}{fg=HECgray} % Change from HEGgray
+\setbeamercolor*{bibliography entry author}{fg=HECblue}   % Change from HEGred
 
 % bigger spacing in itemize
-\let\olditemize=\itemize 
-\let\endolditemize=\enditemize 
+\let\olditemize=\itemize
+\let\endolditemize=\enditemize
 \renewenvironment{itemize}{\olditemize \vspace{0.5em} \itemsep1.0em}{\endolditemize}
-\let\oldenumerate=\enumerate 
+\let\oldenumerate=\enumerate
 \let\endoldenumerate=\endenumerate
 \renewenvironment{enumerate}{\oldenumerate \vspace{0.5em} \itemsep0.7em}{\endoldenumerate \vspace{0.5em}}
 
@@ -233,7 +229,8 @@
 \mode<all>
 
 \hypersetup{colorlinks = true,
-            linkcolor = HEGred,
-            urlcolor  = HEGred,
-            citecolor = HEGred,
-            anchorcolor = HEGred}
+            linkcolor = HECblue,    % Change from HEGred
+            urlcolor  = HECblue,    % Change from HEGred
+            citecolor = HECblue,    % Change from HEGred
+            anchorcolor = HECblue}  % Change from HEGred
+
