@@ -13,40 +13,24 @@
 \usepackage{xcolor}
 \usepackage{beamerthemeHEG}
 
-% custom commands
-\newcommand\redbf[1]{\textcolor{HEGred}{\textbf{#1}}}
-% \newcommand\redbf[1]{{\color{HEGred}\textbf{#1}}}
-\newcommand\redcbf[1]{\begin{center}\textcolor{HEGred}{\textbf{#1}}\end{center}}
-\newcommand{\heading}[1]{\vspace*{12pt} \textbf{\textcolor{HEGred}{#1}} \\[2pt] }
+% Custom commands updated with new color scheme
+\newcommand\bluebf[1]{\textcolor{HECblue}{\textbf{#1}}}   % Changed from HEGred to HECblue
+\newcommand\bluecbf[1]{\begin{center}\textcolor{HECblue}{\textbf{#1}}\end{center}} % Changed from HEGred to HECblue
+\newcommand{\heading}[1]{\vspace*{12pt} \textbf{\textcolor{HECblue}{#1}} \\[2pt]} % Changed from HEGred to HECblue
 
 
 
-
-% % For sections' TOC
-% \RequirePackage{ifthen} % package required
-% \newboolean{sectiontoc}
-% \setboolean{sectiontoc}{true} % default to true
-% \AtBeginSection[]
-% {
-% 	\ifthenelse{\boolean{sectiontoc}}{
-% 		\begin{frame}<beamer>{Outline}
-% 			\tableofcontents[currentsection]
-% 		\end{frame}
-% 	}
-% }
-% \newcommand{\toclesssection}[1]{
-% 	\setboolean{sectiontoc}{false}
-% 	\section{#1}
-% 	\setboolean{sectiontoc}{true}
-% }
 
 % Useful itemize environments
 \newenvironment{tightemize}{\vspace{-\topsep}\begin{itemize}\itemsep1pt \parskip0pt \parsep0pt}{\end{itemize}\vspace{-\topsep}}
 \newenvironment{widetemize}{\begin{itemize}\itemsep5pt \parskip2pt \parsep2pt}{\end{itemize}}
 
 
-\institute[HEG]{Haute Ecole de Gestion}
-\def \shorttitle2 {DSFBA}
+% \institute[HEG]{Haute Ecole de Gestion}
+\institute[HEC]{HEC Lausanne}
+\def \shorttitle2 {DSiBA}
+
+
 
 \def\bbeta{\mbox{\boldmath $\beta$}}
 \def\bheta{\mbox{\boldmath $\eta$}}
