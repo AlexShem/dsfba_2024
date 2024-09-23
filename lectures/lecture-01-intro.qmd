@@ -127,7 +127,7 @@ Some of the hiring partners of [*The Data Incubator*](https://www.thedataincubat
 -   **Lectures** (10:15-12:00):
     -   Focus on introducing the concepts.
     -   Details are sometimes left for you to read up on
--   **Exercise sessions** (12:15-14:00):
+-   **Exercise sessions** (12:30-14:00):
     -   Work on assignments and project.
 -   **Instructor**: [Professor Alex (Aleksandr Shemendyuk)](mailto:aleksandr.shemendyuk@unil.ch).
 -   **Captains** (Teaching assistants):
@@ -196,9 +196,11 @@ include_graphics("../assets/dsfba_evaluation.png")
 
 ## Course website
 
+\bluecbf{Data Science in Business Analytics 2024-2025}
+
 -   Course website:
     -   \bluebf{\url{https://moodle.unil.ch/course/view.php?id=32207}}
-    -   Registration key: \bluebf{dsfba2024}
+    -   Registration key: \bluebf{dsiba2024}
     -   **A discussion forum**
     -   PDFs of the lectures
     -   Additional resources
