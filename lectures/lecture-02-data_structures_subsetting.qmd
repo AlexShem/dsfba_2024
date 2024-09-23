@@ -1,7 +1,7 @@
 ---
 title: "Data Science in Business Analytics"
 subtitle: "Data Structures and Subsetting"
-author: "Aleksandr Shemendyuk [aleksandr.shemendyuk@unil.ch]"
+author: "Professor Alex [aleksandr.shemendyuk@unil.ch]"
 date: "30/09/2024"
 format: 
     beamer:
@@ -44,7 +44,7 @@ x
         -   Number `[1]` indicates that `5` is the first element of the
             vector.
 
-## Warm-up cont'd
+## Warm-up (cont'd)
 
 ```{r}
 # Create a vector in R
@@ -85,7 +85,7 @@ str(x)
     -   `attributes()`: additional metadata.
 -   **Main difference**: elements of an atomic vector must be the same type, whereas those of a list can have different types.
 
-## 1d data structures cont'd
+## 1d data structures (cont'd)
 
 ```{r}
 # Example: Atomic vector
@@ -131,8 +131,8 @@ Special syntax to create an individual **scalar** value:
 -   **Integers**:
     -   Integer number followed by `L` (`1234L`, `1e4L`, or `0xcafeL`).
 -   **Strings**:
-    -   Surrounded by `"` or `'`: `"hi"`, `'bye'`.
-    -   Special characters escaped with `\` see `?Quotes` for details.
+    -   Surrounded by `"` or `'` (for example, `"hi"`, `'bye'`).
+    -   Special characters escaped with `\`.^[see `?Quotes` for details.]
 
 <!-- [^L-suffix]: `L` is not intuitive, and you might wonder where it comes from. At the time `L` was added to R, R's integer type was equivalent to a long integer in C, and C code could use a suffix of `l` or `L` to force a number to be a long integer. It was decided that `l` was too visually similar to `i` (used for complex numbers in R), leaving `L`. -->
 
@@ -143,9 +143,9 @@ Special syntax to create an individual **scalar** value:
 To create longer vectors from shorter ones, use `c()`:
 
 ```{r}
-lgl_var <- c(TRUE, FALSE)
-int_var <- c(1L, 6L, 10L)
 dbl_var <- c(1, 2.5, 4.5)
+int_var <- c(1L, 6L, 10L)
+lgl_var <- c(TRUE, FALSE)
 chr_var <- c("these are", "some strings")
 ```
 
@@ -155,7 +155,7 @@ Depicting vectors as connected rectangles:
 knitr::include_graphics("../assets/vectors/atomic.png")
 ```
 
-## Making longer vectors cont'd
+## Making longer vectors (cont'd)
 
 -   With atomic vectors, `c()` returns atomic vectors (i.e., flattens):
 
@@ -163,9 +163,8 @@ knitr::include_graphics("../assets/vectors/atomic.png")
 c(c(1, 2), c(3, 4))
 ```
 
--   Determine the type and length of a vector with `typeof()` and
-    `length()`.
--   Test if a vector is of a given type with `is.*()`:
+-   Determine the `typeof()` and `length()` of a vector.
+-   Use `is.<type>()` to test if a vector is of a given `<type>`:
     -   `is.logical()`, `is.integer()`, `is.double()`, and `is.character()`.
 
 ::: columns
@@ -188,7 +187,7 @@ typeof(chr_var)
 
 ## Coercion
 
--   When combining different types, **coercion** in a fixed order (character → double → integer → logical):
+-   When combining different types, **coercion** is applied in a fixed order: `character` → `double` → `integer` → `logical`.
 
 ```{r}
 str(c("a", 1))
@@ -196,7 +195,7 @@ str(c("a", 1))
 
 \vspace{-0.2cm}
 
--   Deliberately coerce using `as.*()`:
+-   Deliberately coerce values using `as.<type>()`:
     -   `as.logical()`, `as.integer()`, `as.double()`, or `as.character()`.
 -   Failed coercion of strings → warning and missing value.
 
@@ -233,9 +232,9 @@ NA | TRUE
 NA & FALSE
 ```
 
-## Missing or unknown values cont'd
+## Missing or unknown values (cont'd)
 
--   Propagation of missingness leads to a common mistake:
+-   Propagation of missing values leads to a common mistake:
 
 ```{r}
 x <- c(NA, 5, NA, 10)
@@ -250,7 +249,9 @@ x == NA
 is.na(x)
 ```
 
-<!-- NB: Technically there are four missing values, one for each of the atomic types: `NA` (logical), `NA_integer_` (integer), `NA_real_` (double), and `NA_character_` (character). This distinction is usually unimportant because `NA` will be automatically coerced to the correct type when needed. -->
+:::{.callout-caution}
+Technically there are four missing value types, one for each of the atomic types: `NA` (logical), `NA_integer_` (integer), `NA_real_` (double), and `NA_character_` (character). This distinction is usually unimportant because `NA` will be automatically coerced to the correct type when needed.
+:::
 
 <!-- ## `NULL` -->
 
@@ -278,7 +279,7 @@ is.na(x)
 
 <!-- ``` -->
 
-<!-- ## `NULL` cont'd -->
+<!-- ## `NULL` (cont'd) -->
 
 <!-- * `NULL` commonly represents -->
 
@@ -308,7 +309,7 @@ is.na(x)
 
 How about matrices, arrays, factors, or date-times?
 
--   Built on top of atomic vectors by adding attributes.
+-   They are built on top of atomic vectors by adding attributes.
 -   For instance, you can add names to a vector:
 
 ```{r}
@@ -326,7 +327,7 @@ names(x) <- c("a", "b", "c")
 
 ## Dimensions
 
--   The `dim` attribute allow a vector allows it to behave like a
+-   The `dim` attribute allows a vector to behave like a
     2-dimensional **matrix** or a multi-dimensional **array**.
 -   Most important feature: multidimensional subsetting, which we'll see later.
 
@@ -339,6 +340,7 @@ names(x) <- c("a", "b", "c")
 # specify row and column sizes
 a <- matrix(1:6, nrow = 2, ncol = 3)
 a
+attributes(a)
 ```
 :::
 
@@ -391,7 +393,7 @@ str(matrix(1:3, nrow = 1)) # row vector
 
 ::: {.column width="55%"}
 -   The `class` attribute:
-    -   Turns a vector into an **S3 object** which behaves differently, e.g.
+    -   Turns a vector into an **S3 object**, which behaves differently, e.g.
         -   Categorical data, where values come from a fixed set of levels: **factor** vectors.
         -   Dates, i.e. times at a daily resolution: **Date** vectors.
     -   Every S3 object
@@ -414,8 +416,8 @@ knitr::include_graphics("../assets/vectors/summary-tree-s3-1.png")
 -   A vector that can contain only predefined values.
 -   Used to store categorical data.
 -   Built on top of an integer vector with two attributes:
-    -   a `class` (defines a behavior different from integer vectors),
-    -   and `levels` (defines the set of allowed values).
+    -   `class` (defines a different from integer vectors behaviour),
+    -   `levels` (defines the set of allowed values).
 
 ::: columns
 ::: {.column width="48%"}
@@ -435,10 +437,10 @@ knitr::include_graphics("../assets/vectors/factor.png")
 :::
 :::
 
-## Factors cont'd
+## Factors (cont'd)
 
--   Useful when you know the set of possible values but they're not all present in a given dataset.
--   When tabulating a factor you'll get counts of all categories, even unobserved ones:
+-   Useful when you know the set of possible values, but they are not all present in a dataset.
+-   When tabulating a factor, you'll get counts of all categories, even unobserved ones:
 
 ::: columns
 ::: {.column width="30%"}
@@ -456,8 +458,7 @@ table(sex_fct)
 :::
 :::
 
--   Ordered factors:
-    -   Behave like regular factors, but the order of the levels is meaningful (e.g., low, medium, high)
+-   **Ordered factors** behave like regular factors, but the order of the levels is meaningful (e.g., low, medium, high)
 
 ```{r}
 grade <- ordered(c("b", "b", "a", "c"), levels = c("c", "b", "a"))
@@ -470,15 +471,15 @@ grade
 -   A class `Date` and no other attributes.
 
 ```{r}
-today <- Sys.Date()
-
+today <- Sys.Date() # Get the current system date
+today
 typeof(today)
 attributes(today)
 ```
 
--   Value of the double = the number of days since 1970-01-01[^3]:
+-   Value of the `double` is the number of days since `"1970-01-01"`:[^unix_epoch]
 
-[^3]: Known as the Unix Epoch.
+[^unix_epoch]: Known as the Unix Epoch.
 
 ```{r}
 date <- as.Date("1970-02-01")
@@ -515,7 +516,7 @@ unclass(date)
 
 <!-- ``` -->
 
-<!-- ## Dates-times cont'd -->
+<!-- ## Dates-times (cont'd) -->
 
 <!-- * The `tzone` attribute: -->
 
@@ -585,7 +586,7 @@ unclass(date)
 
 ## Lists
 
--   Each element can be any type.
+-   Each element can be any `<type>`.
 
 ::: columns
 ::: {.column width="48%"}
@@ -648,9 +649,9 @@ str(l5)
 
 ## Data frames and tibbles
 
--   The most important S3 vectors built on top of lists:
-    -   If you do data analysis in R, you'll use them!
--   A data frame is a named list of vectors with attributes for (column) `names`, `row.names`, and its class, `data.frame`.
+-   The most important S3 vectors built on top of `list`.
+    -   \bluebf{If you do data analysis in R, you'll use them!}
+-   A `data.frame` is a named list of vectors with `names`, `row.names`, and `class` attributes.
 
 ::: columns
 ::: {.column width="33%"}
@@ -677,18 +678,18 @@ knitr::include_graphics("../assets/vectors/summary-tree-s3-2.png")
 :::
 :::
 
--   Similar to a list, but the length of each component is equal...
+-   Similar to a list, but the lengths of all component are equal.
 -   "Rectangular structure":
     -   Share properties of both matrices and lists.
     -   Has `rownames()`/`colnames()`/`names()`(= column names).
     -   Has `nrow()`/`ncol()`/`length()` (= number of columns).
 
-## Data frames and tibbles cont'd
+## Data frames and tibbles (cont'd)
 
 -   Data frames:
     -   One of the biggest and most important ideas in R, but ...
     -   20 years have passed since their creation,
-    -   which lead to the creation of the `tibble`, a modern version.
+    -   which leads to the creation of the `tibble`, a modern version.
 -   **Main differences**: tibbles are **lazier** (do less) & **safer** (complain more).
 -   Technically:
     -   Similar to `data.frame` but the `class` includes `tbl_df`.
@@ -757,13 +758,11 @@ str(df2)
 ## Non-syntactic names
 
 -   Strict rules about what constitutes a valid name.
-    -   **Syntactic** names consist of letters[^4], digits, `.` and `_` but can't begin with `_` or a digit.
+    -   **Syntactic** names consist of letters[^ascii], digits, `.` and `_` but can't begin with `_` or a digit.
     -   Additionally, can't use any of the **reserved words** like `TRUE`, `NULL`, `if`, and `function` (see the complete list in `?Reserved`).
 -   A name that doesn't follow these rules is **non-syntactic**.
 
-[^4]: what constitutes a letter is determined by your current locale,
-    avoid this by sticking to ASCII characters (i.e. A-Z) as much as
-    possible.
+[^ascii]: What constitutes a letter is determined by your current locale. Avoid this by sticking to ASCII characters (i.e. A-Z).
 
 ```{r, eval = FALSE}
 _abc <- 1
@@ -773,20 +772,20 @@ if <- 10
 #> Error: unexpected assignment in "if <-"
 ```
 
-## Non-syntactic names cont'd
+## Non-syntactic names (cont'd)
 
--   To override these rules and use any name:
+-   Add a back tick to override these rules and use any name:
 
 ```{r}
 `_abc` <- 1
 `_abc`
 
-`if` <- 10
-`if`
+`Asset Price` <- 10e3
+`Asset Price`
 ```
 
--   Don't deliberately create but understand such names:
-    -   You'll come across them, e.g with data created outside of R.
+-   Avoid deliberately creating such names!
+    -   You'll see them data in data created outside of R.
 -   In data frames and tibbles:
     <!-- + data frames automatically transform non-syntactic names, -->
     <!-- + tibbles don't. -->
@@ -879,7 +878,7 @@ tibble(
 iris
 ```
 
-## Printing cont'd
+## Printing (cont'd)
 
 \vspace{0.2cm}
 
@@ -889,10 +888,10 @@ dplyr::starwars
 
 \vspace{-0.1cm}
 
--   Only the first 10 rows + columns that fit on screen.
--   Each column labelled with abbreviated type.
--   Wide columns truncated.
--   In RStudio, color highlights important information.
+-   Only the first 10 rows, and columns that fit on screen.
+-   Each column is labelled with its `<type>`.
+-   Wide columns are truncated.
+-   In RStudio, colour highlights important information.
 
 <!-- ## Testing and coercing -->
 
@@ -928,7 +927,7 @@ dplyr::starwars
 
 <!--     + We'll see applications later in the course. -->
 
-<!-- ## List columns cont'd -->
+<!-- ## List columns (cont'd) -->
 
 <!-- * In data frames, either add the list-column after creation or wrap the list in `I()`[^identity]. -->
 
@@ -1073,21 +1072,21 @@ rownames(mtcars) <- NULL
 x <- c(2.1, 4.2, 3.3, 5.4)
 ```
 
--   Note that the number after the decimal point represents the original position in the vector.
+-   Note that the number *after the decimal point* represents the original position in the vector.
 -   Next few slides, subset an atomic vector with:
     -   Positive integers.
     -   Negative integers.
     -   Logical vectors.
     -   Character vectors.
 
-## `[` for atomic vectors cont'd
+## `[` for atomic vectors (cont'd)
 
 -   **Positive integers** return elements at the specified positions:
 
 ```{r}
 x[c(3, 1)]
 order(x)
-x[order(x)]
+x[order(x)] # Equivalent to sort(x)
 x[c(1, 1)] # Duplicate indices will duplicate values
 x[c(2.1, 2.9)] # Real numbers are silently truncated to integers
 ```
@@ -1104,7 +1103,7 @@ x[-c(3, 1)]
 x[c(-1, 2)]
 ```
 
-## `[` for atomic vectors cont'd
+## `[` for atomic vectors (cont'd)
 
 \vspace{0.2cm}
 
@@ -1118,32 +1117,22 @@ x[x > 3]
 \vspace{-0.1cm}
 
 -   In `x[y]`, what happens if `x` and `y` are different lengths?
-    -   **Recycling rule:** the shorter recycled to the length of the longer.
-    -   Convenient and easy to understand when `x` OR `y` is length one, but avoid for other lengths because of inconsistencies in base R.
+    -   **Recycling rule:** the shorter length is recycled to the longest.
+    -   Convenient and easy to understand when `x` or `y` has length one, but avoid for other lengths because of inconsistencies in base R.
 
 \vspace{-0.2cm}
 
-::: columns
-::: {.column width="48%"}
 ```{r}
 x[c(TRUE, FALSE)]
 ```
-:::
 
-::: {.column width="48%"}
-```{r}
-x[c(TRUE, FALSE)]
-```
-:::
-:::
-
--   A missing value in the index always yields a missing value in the output:
+-   A missing value in the index always yields an `NA` in the output:
 
 ```{r}
 x[c(TRUE, TRUE, NA, FALSE)]
 ```
 
-<!-- ## `[` for atomic vectors cont'd -->
+<!-- ## `[` for atomic vectors (cont'd) -->
 
 <!-- * __Nothing__ returns the original vector (not useful for 1D vectors, but important for matrices, data frames, and arrays: -->
 
@@ -1161,12 +1150,12 @@ x[c(TRUE, TRUE, NA, FALSE)]
 
 <!-- ``` -->
 
-## `[` for atomic vectors cont'd
+## `[` for atomic vectors (cont'd)
 
 -   If the vector is named, you can also use **character vectors** to return elements with matching names:
 
 ```{r}
-(y <- setNames(x, letters[1:4]))
+(y <- setNames(x, letters[1:4])) # letters = c("a", "b", "c", "d", ..., "z")
 y[c("d", "c", "a")]
 
 # Like integer indices, you can repeat indices
@@ -1177,7 +1166,7 @@ z <- c(abc = 1, def = 2)
 z[c("a", "d")]
 ```
 
-<!-- ## `[` for atomic vectors cont'd -->
+<!-- ## `[` for atomic vectors (cont'd) -->
 
 <!-- * Note that a missing value in the index always yields a missing value in the output: -->
 
@@ -1202,7 +1191,8 @@ z[c("a", "d")]
 ## `[` for lists
 
 -   Exactly as for atomic vectors.
--   Using `[` always returns a list; `[[` and `$` (see in a few slides), lets you pull out elements of a list.
+    -   `[` always returns a list;
+    -   `[[` and `$` let you pull out elements of a list.
 
 ## `[` for matrices
 
@@ -1251,7 +1241,7 @@ a[1, 1]
 :::
 :::
 
-## `[` for matrices cont'd
+## `[` for matrices (cont'd)
 
 -   Can subset with a vector as if they were 1D.
 
@@ -1261,9 +1251,9 @@ vals
 vals[c(4, 15)]
 ```
 
--   Can also subset with an integer matrix.
-    -   Each row in the matrix specifies the location of one value.
-    -   Each column corresponds to a dimension.
+-   Can also subset a matrix with a `matrix` of integers.
+    -   Each row in the `matrix` specifies the location of a value.
+    -   Each column in the `matrix` corresponds to a dimension.
     -   The result is a vector of values.
 
 \vspace{-0.2cm}
@@ -1293,7 +1283,7 @@ vals[select]
     -   E.g. `df[1:2]` selects the first two columns.
 -   When subsetting with two indices:
     -   Behave like matrices.
-    -   E.g. `df[1:3, ]` selects the first three rows (and all columns).
+    -   E.g. `df[1:3, ]` selects the first three rows and all columns.
 
 <!-- [^python-dims]: In Python `df[1:3, 1:2]` would select three columns and two rows. -->
 
@@ -1306,7 +1296,7 @@ df[df$x == 2, ]
 df[c(1, 3), ]
 ```
 
-## `[` for data frames and tibbles cont'd
+## `[` for data frames and tibbles (cont'd)
 
 -   Two ways to select columns from a data frame:
 
@@ -1348,7 +1338,7 @@ str(df["x"])
 :::
 :::
 
--   Subsetting a tibble with `[` always returns a tibble:
+-   Subsetting a `tibble` with `[` always returns a `tibble`:
 
 ```{r}
 df <- tibble(x = 1:3, y = 3:1, z = letters[1:3])
@@ -1396,7 +1386,7 @@ str(df["x"])
 
 <!-- ``` -->
 
-<!-- ## Preserving dimensionality cont'd -->
+<!-- ## Preserving dimensionality (cont'd) -->
 
 <!-- * The default `drop = TRUE` is a common source of bugs: -->
 
@@ -1437,11 +1427,9 @@ The other two subsetting operators:
 
 \vspace{0.3cm}
 
-> If list `x` is a train carrying objects, then `x[[5]]` is the object
-> in car 5; `x[4:6]` is a train of cars 4-6.
+> If the #rstats list "x" is a train carrying objects, then x[[5]] is the object in car 5; x[4:6] is a train of cars 4-6.
 >
-> --- \@RLangTip,
-> <https://x.com/RLangTip/status/268375867468681216>
+> --- [\@RLangTip, Twitter, 2012-11-13](https://x.com/RLangTip/status/268375867468681216)
 
 -   Use this metaphor to make a simple list:
 
@@ -1453,7 +1441,7 @@ x <- list(1:3, "a", 4:6)
 knitr::include_graphics("../assets/subsetting/train.png")
 ```
 
-## `[[` cont'd
+## `[[` (cont'd)
 
 ::: columns
 ::: {.column width="52%"}
@@ -1481,7 +1469,7 @@ knitr::include_graphics("../assets/subsetting/train-multiple.png")
 :::
 :::
 
-<!-- ## `[[` cont'd -->
+<!-- ## `[[` (cont'd) -->
 
 <!-- * Because `[[` can return only a single item, yuse it with either a single positive integer or a single string.  -->
 
@@ -1559,7 +1547,7 @@ x[["a"]]
 
 ## Data frames and tibbles again
 
--   Data frames have two undesirable subsetting behaviors.
+-   Data frames have two undesirable subsetting behaviours.
     -   When you subset columns with `df[, vars]`:
         -   Returns a vector if `vars` selects one variable.
         -   Otherwise, returns a data frame.
@@ -1567,10 +1555,10 @@ x[["a"]]
     -   When extracting a single column with `df$x`:
         -   If there is no column `x`, selects any variable that starts with `x`.
         -   If no variable starts with `x`, returns `NULL`.
-        -   Easy to select the wrong variable/a variable that doesn't exist.
--   Tibbles tweak these behaviors:
+        -   Easy to select a wrong variable or a variable that doesn't exist.
+-   Tibbles tweak these behaviours:
     -   `[` always returns a tibble.
-    -   `$` doesn't do partial matching and warns if it can't find a variable (makes tibbles surly).
+    -   `$` doesn't do partial matching and warns if it can't find a variable.
 
 ```{r opts, include = FALSE}
 options(warnPartialMatchDollar = FALSE)
@@ -1612,7 +1600,7 @@ x
     -   and that `i` is unique.
     -   Otherwise, you'll end-up in recycling hell.
 
-## Subsetting and assignment cont'd
+## Subsetting and assignment (cont'd)
 
 -   Subsetting lists with `NULL`
     -   `x[[i]] <- NULL` removes a component.
@@ -1638,7 +1626,7 @@ str(y)
 
 -   Subsetting with nothing can be useful with assignment
     -   Preserves the structure of the original object.
-    -   Compare the following two expressions.
+    -   Coerce all values in `mtcars` into integers:
 
 ::: columns
 ::: {.column width="48%"}
