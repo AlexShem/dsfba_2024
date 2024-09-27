@@ -1,0 +1,1913 @@
+---
+title: "Data Science for Business Analytics"
+subtitle: "Control Flow and Functions"
+author: "Professor Alex [aleksandr.shemendyuk@unil.ch]"
+date: "7/10/2024"
+format: 
+    beamer:
+        include-in-header: ../latex/header.tex
+        fontsize: 10pt
+execute:
+    echo: true
+---
+
+```{r setup, include = FALSE, echo = FALSE}
+source("../R/common.R")
+library(tidyverse)
+library(knitr)
+set.seed(0)
+```
+
+## Today
+
+- **Control flow**:
+  - Allows to execute code depending on conditions
+    - `if` statements
+    - `ifelse` statements
+  - Allows to run code repeatedly
+    - `for` loops
+    - `while` loops
+- **Functions**:
+  - Identify repeated patterns in code
+  - Encapsulate code into reusable functions
+- **Iterations**:
+  - Apply functions to multiple elements
+  - `lapply`, `sapply`, `vapply`, `mapply`, `apply`
+  - `purrr` package with `map`, `reduce`, `walk`, `pmap`
+
+# Control Flow: Choices
+
+## `if()` statements
+
+The basic idea of `if` statements: if a `condition` is
+
+- `TRUE`, then execute `true_action`
+- `FALSE`, then execute an optional `false_action`.
+
+```{r, eval = FALSE}
+if (condition) true_action
+if (condition) true_action else false_action
+```
+
+Typically, actions are compound statements contained within `{`.
+
+```{r}
+#| echo: true
+#| eval: false
+
+grade <- function(x) {
+  if (x > 90) {
+    "A"
+  } else if (x > 80) {
+    "B"
+  } else if (x > 50) {
+    "C"
+  } else {
+    "F"
+  }
+}
+```
+
+## `if()` statements cont'd
+
+- `if` may return a value, so you can assign it to a variable:^[Only do this when it fits on one line; otherwise it's hard to read.]
+
+```{r}
+#| echo: true
+
+x1 <- if (TRUE) 1 else 2
+x2 <- if (FALSE) 1 else 2
+
+c(x1, x2)
+```
+
+- When using `if` without `else`:
+  - Returns `NULL` if the condition is `FALSE`.
+  - Useful with functions like `c()`/`paste()` dropping `NULL` inputs.
+
+```{r}
+#| echo: true
+
+greet <- function(name, birthday = FALSE) {
+  paste0("Hi ", name, if (birthday) " and HAPPY BIRTHDAY") # <2>
+}
+greet("Maria", FALSE)
+greet("Jaime", TRUE)
+```
+2. `paste0()` concatenates strings without spaces.
+
+## Invalid `if` inputs
+
+- `if` expects a single logical value.
+- So, the `condition` should evaluate to a single `TRUE` or `FALSE` value.
+
+```{r}
+#| echo: true
+#| error: true
+#| code-line-numbers: false
+
+if ("x") 1
+
+if (logical()) 1
+
+if (NA) 1
+
+if (c(TRUE, FALSE)) 1
+```
+
+## Vectorised `if()` statements
+
+- `ifelse()` is a vectorised version of `if`.
+  - **Structure**: `ifelse(condition, true_action, false_action)`.^[Use `true_action` and `false_action` of the same `<type>`.]
+  - **Output**: A vector of the same length as the condition.
+
+```{r}
+#| echo: true
+
+x <- 1:9
+ifelse(x %% 5 == 0, "XXX", as.character(x))
+ifelse(x %% 2 == 0, "even", "odd")
+```
+
+- For any number of condition-vector pairs use [`dplyr::case_when()`](https://dplyr.tidyverse.org/reference/case_when.html).
+
+```{r}
+#| echo: true
+
+dplyr::case_when(
+  x %% 6 == 0 ~ "fizz buzz",
+  x %% 3 == 0 ~ "fizz",
+  x %% 2 == 0 ~ "buzz",
+  .default = as.character(x)
+)
+```
+
+<!-- ## `switch()` statements -->
+
+<!-- - Lets you replace code like: -->
+
+<!-- ```{r} -->
+<!-- x_option <- function(x) { -->
+<!--   if (x == "a") { -->
+<!--     "option 1" -->
+<!--   } else if (x == "b") { -->
+<!--     "option 2" -->
+<!--   } else { -->
+<!--     stop("Invalid `x` value") -->
+<!--   } -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- - With: -->
+
+<!-- ```{r} -->
+<!-- x_option <- function(x) { -->
+<!--   switch(x, -->
+<!--     a = "option 1", -->
+<!--     b = "option 2", -->
+<!--     stop("Invalid `x` value") -->
+<!--   ) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- ## `switch()` statements cont'd -->
+
+<!-- :::: {.columns} -->
+<!-- ::: {.column width='48%'} -->
+
+<!-- - Last component should always throw an error. -->
+
+<!-- ::: -->
+<!-- ::: {.column width='48%'} -->
+
+<!-- ```{r} -->
+<!-- (switch("c", a = 1, b = 2)) -->
+<!-- ``` -->
+
+<!-- ::: -->
+<!-- :::: -->
+
+<!-- :::: {.columns} -->
+<!-- ::: {.column width='48%'} -->
+
+<!-- - When multiple inputs share an output: -->
+<!--     + Use empty right hand sides of `=`. -->
+<!--     + Same as C's `switch` statement. -->
+
+<!-- ::: -->
+<!-- ::: {.column width='48%'} -->
+
+<!-- ```{r} -->
+<!-- legs <- function(x) { -->
+<!--   switch(x, -->
+<!--     cow = , -->
+<!--     horse = , -->
+<!--     dog = 4, -->
+<!--     human = , -->
+<!--     chicken = 2, -->
+<!--     plant = 0, -->
+<!--     stop("Unknown input") -->
+<!--   ) -->
+<!-- } -->
+<!-- legs("cow") -->
+<!-- legs("dog") -->
+<!-- ``` -->
+
+<!-- ::: -->
+<!-- :::: -->
+
+<!-- - `switch()` with a numeric `x` is not recommended. -->
+
+<!-- is harder to read, and has undesirable failure modes if `x` is a not a whole number. I recommend using `switch()` only with character inputs. -->
+
+# Control Flow: Loops
+
+## `for` loops
+
+- `for` loops are used to iterate over a sequence of elements.
+- **Structure**: `for (element in sequence) { code }`.
+- Allows to repeat the same operation for each `element` in the `sequence`.
+
+```{r}
+#| echo: true
+#| eval: false
+
+for (i in 1:3) {
+  print(i)
+}
+```
+
+## `for` loops (cont'd)
+
+::::{.columns}
+
+:::{.column width=50%}
+
+*Bad coding style:*
+
+```{r}
+#| echo: true
+
+set.seed(123)
+tbl <- tibble::tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+output <- c(
+  median(tbl$a), median(tbl$b),
+  median(tbl$c), median(tbl$d)
+)
+print(output)
+```
+
+:::
+
+:::{.column width=50%}
+
+\bluebf{Better coding style:}
+
+```{r}
+#| echo: true
+
+set.seed(123)
+tbl <- tibble::tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+
+output <- numeric(length(tbl))
+for (i in seq_along(tbl)) {
+  output[i] <- median(tbl[[i]])
+}
+print(output)
+```
+
+:::
+
+::::
+
+1. `rnorm()`: random numbers from a standard normal distribution.
+1. `seq_along(tbl)`: returns a sequence of integers from 1 to the number of columns in `tbl`.
+
+## `for` Early Exit
+
+- There are situations where you want to **exit a loop early**.
+  - `next`: skip the current iteration and continue with the next one.
+  - `break`: exit a loop prematurely.
+
+```{r}
+#| echo: true
+
+for (i in 1:10) {
+  if (i < 3)
+    next
+
+  print(i)
+
+  if (i >= 5)
+    break
+}
+```
+
+## `for` Common Pitfalls
+
+::::{.columns}
+
+:::{.column width=50%}
+
+- **Pitfall 1**: Modifying the loop variable inside the loop.
+
+```{r}
+#| echo: true
+
+x <- 1:5
+for (i in x) {
+  x <- x[1 : length(x)-1]
+  print(i)
+}
+```
+
+- At the end of the first iteration, `x` is `1:4`. The code compiler preallocates the loop variable `i` to `1:5`, so it will iterate over `1:5` even though `x` is now `1:4`.
+
+:::
+
+:::{.column width=50%}
+
+- **Pitfall 2**: Using `for` loops to grow objects.
+
+```{r}
+#| echo: true
+
+output <- numeric(0)
+for (i in 1:5) {
+  output <- c(output, i)
+}
+```
+
+- This is inefficient because the object `output` is internally copied at each iteration.
+
+:::
+
+::::
+
+- **Pitfall 3**: Using `for` loops when vectorised operations are possible.
+
+<!-- ## Common pitfalls cont'd -->
+
+<!-- - Finally, problems arise when iterating over S3 vectors, as loops typically strip the attributes. -->
+
+<!-- ```{r} -->
+<!-- xs <- as.Date(c("2020-01-01", "2010-01-01")) -->
+<!-- for (x in xs) { -->
+<!--   print(x) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- - Work around this by using `[[`. -->
+
+<!-- ```{r} -->
+<!-- for (i in seq_along(xs)) { -->
+<!--   print(xs[[i]]) -->
+<!-- } -->
+<!-- ``` -->
+
+## Related tools
+
+- `for` loops:
+    - Useful when known in advance the set of values to iterate over.
+    - Otherwise, use `while` loops:
+        - **Structure**: `while (condition) { code }`.
+        - Performs `code` while `condition` is `TRUE`.
+        - Possible to write any `for` using `while`.
+        - Good practice is to prefer `for` loops over `while`.
+- Generally speaking you \bluebf{shouldn't need} to use loops for \bluebf{data analysis tasks}. We'll see better solutions.
+
+# Functions
+
+## Function fundamentals
+
+- Two **important ideas**:
+    - Functions can be broken down into three components: *arguments*, *body*, and *environment*.
+    - Functions are **objects**, just as vectors are objects.
+
+:::: {.columns}
+
+::: {.column width='40%'}
+
+- **The basics:** 
+    - How to create functions.
+    - The three main components of a function.
+    - How can a function exit.
+    - Anonymous functions.
+    - The special `...` argument.
+
+:::
+
+::: {.column width='60%'}
+
+- **Lexical scoping:** how R finds the value associated with a given name.
+    - Name masking.
+    - Functions versus variables.
+    - A fresh start.
+    - Dynamic lookup.
+- **The special `...` argument:** how to pass on extra arguments to another function.
+- **Exiting a function:** and exit handlers.
+- **Function forms:** the prefix form and more.
+
+:::
+
+::::
+
+## Function components
+
+- A function has three parts: 
+    - `formals()`: function arguments.
+    - `body()`: the code inside the function.
+    - `environment()`: the data structure determining how the function finds the values associated with the names.
+    
+:::: {.columns}
+
+::: {.column width='48%'}
+    
+```{r}
+f02 <- function(x, y) {
+  x + y
+}
+formals(f02)
+body(f02)
+environment(f02)
+```
+
+:::
+
+::: {.column width='48%'}
+
+```{r, echo = FALSE}
+knitr::include_graphics("../assets/functions/components.png")
+```
+
+:::
+
+::::
+
+## Primitive functions
+
+- One exception to the three components rule.
+- Call C code directly. 
+
+```{r}
+sum
+`[`
+```
+
+- The `<type>` is either `builtin` or `special`.
+
+```{r}
+typeof(sum)
+typeof(`[`)
+```
+
+* `formals()`, `body()`, and `environment()` are all `NULL`. 
+
+```{r}
+formals(sum)
+body(sum)
+environment(sum)
+```
+
+
+## Exiting a function
+
+- Most functions exit in one of two ways: 
+    - `return` a value, indicating success.
+    - Throw an `error`, indicating failure. 
+- In the next few slides:
+    - **Return values**.
+        - Implicit versus explicit.
+        - Visible versus invisible.
+    - **Errors**.
+
+## Implicit versus explicit returns
+
+- **Implicit**: the last evaluated expression is the return value.
+
+```{r}
+j01 <- function(x) {
+  if (x < 10) {
+    0
+  } else {
+    10
+  }
+}
+j01(5)
+j01(15)
+```
+
+* **Explicit**: uses `return()` to return a value.
+
+```{r}
+j02 <- function(x) {
+  if (x < 10) {
+    return(0)
+  } else {
+    return(10)
+  }
+}
+```
+    
+<!-- ## Invisible values -->
+
+<!-- * Most functions return visibly: calling the function in an interactive context prints the result. -->
+
+<!-- ```{r} -->
+<!-- j03 <- function() 1 -->
+<!-- j03() -->
+<!-- ``` -->
+
+<!-- * Applying `invisible()` to the last value prevents this. -->
+
+<!-- ```{r} -->
+<!-- j04 <- function() invisible(1) -->
+<!-- j04() -->
+<!-- ``` -->
+
+<!-- * Verify that the value exists with `print` or `()`. -->
+
+<!-- ```{r} -->
+<!-- print(j04()) -->
+
+<!-- (j04()) -->
+<!-- ``` -->
+
+<!-- ## Invisible values cont'd -->
+
+<!-- * The most common function that returns invisibly is `<-`. -->
+
+<!-- ```{r} -->
+<!-- a <- 2 -->
+<!-- (a <- 2) -->
+<!-- ``` -->
+
+<!-- * This is what makes it possible to chain assignments. -->
+
+<!-- ```{r} -->
+<!-- a <- b <- c <- d <- 2 -->
+<!-- ``` -->
+
+<!-- * Functions called primarily for a side effect (like `<-`, `print()`, or `plot()`) should return an invisible value (often the value of the first argument). -->
+
+## Errors
+
+- If a function cannot complete its assigned task, it should throw an error using `stop()`:
+    - Immediately terminates the execution of the function.
+    - Indicates that something has gone wrong, and forces the user to deal with the problem.
+
+```{r, error = TRUE}
+j05 <- function() {
+  stop("I'm an error")
+  return(10)
+}
+j05()
+```
+
+- Some languages rely on special return values to indicate problems, but in `R` you should always throw an error.
+
+
+## Anonymous function
+
+- Use of standard functions:
+    - Create a function object using `function`.
+    - Bind it to a name with using `<-`.
+
+```{r}
+f01 <- function(x) {
+  sin(x)
+}
+```
+
+
+- ... but the binding step is not compulsory!
+- A function without a name is called an **anonymous function**:
+
+```{r}
+integrate(function(x) sin(x), 0, pi)
+
+sapply(1:10, function(x) x + 1)
+```
+
+<!-- ## Lazy evaluation -->
+
+<!-- * In R, function arguments are **lazily evaluated**: -->
+<!--     * Only evaluated if accessed.  -->
+<!--     * What will this code return? -->
+
+<!-- ```{r, results="hide"} -->
+<!-- h01 <- function(x) { -->
+<!--   10 -->
+<!-- } -->
+<!-- h01(stop("This is an error!")) -->
+<!-- ``` -->
+
+<!-- * Allows to include expensive computations in function arguments that are only evaluated if needed. -->
+
+## `...`  (dot-dot-dot)
+
+- The special argument `...`
+    - Makes a function take any number of **additional arguments**.
+    - In other programming languages they are often called *varargs* (short for variable arguments).
+- Additional arguments can be passed to another function.
+
+```{r}
+i01 <- function(y, z) {
+  list(y = y, z = z)
+}
+
+i02 <- function(x, ...) {
+  i01(...)
+}
+
+str(i02(x = 1, y = 2, z = 3))
+```
+
+<!-- ## Invoking a function -->
+
+<!-- * The standard way: -->
+
+<!-- ```{r} -->
+<!-- mean(1:10, na.rm = TRUE) -->
+<!-- ``` -->
+
+<!-- * The alternative way: -->
+
+<!-- ```{r} -->
+<!-- args <- list(1:10, na.rm = TRUE) -->
+<!-- do.call(mean, args) -->
+<!-- ``` -->
+
+<!-- ## Function composition -->
+
+<!-- * Imagine you want to compute the population standard deviation using `sqrt()` and `mean()`. -->
+
+<!-- ```{r} -->
+<!-- square <- function(x) x^2 -->
+<!-- deviation <- function(x) x - mean(x) -->
+<!-- ``` -->
+
+<!-- * Either nest the function calls. -->
+
+<!-- ```{r} -->
+<!-- x <- runif(100) -->
+
+<!-- sqrt(mean(square(deviation(x)))) -->
+<!-- ``` -->
+
+<!-- * Or save the intermediate results as variables. -->
+
+<!-- ```{r} -->
+<!-- out <- deviation(x) -->
+<!-- out <- square(out) -->
+<!-- out <- mean(out) -->
+<!-- out <- sqrt(out) -->
+<!-- out -->
+<!-- ``` -->
+
+<!-- ## Function composition cont'd -->
+
+<!-- :::: {.columns} -->
+<!-- ::: {.column width='68%'} -->
+
+<!-- * The third option using the `magrittr` package:  -->
+<!--     * The operator `%>%`, called **pipe** and pronounced as "and then". -->
+
+<!-- ::: -->
+<!-- ::: {.column width='28%'} -->
+
+<!-- ```{r, message=FALSE} -->
+<!-- library(magrittr) -->
+
+<!-- x %>% -->
+<!--   deviation() %>% -->
+<!--   square() %>% -->
+<!--   mean() %>% -->
+<!--   sqrt() -->
+<!-- ``` -->
+
+<!-- ::: -->
+<!-- :::: -->
+
+<!-- * Advantages: -->
+<!--     * Focus on the high-level composition of functions, not the low-level flow of data.  -->
+<!--     * Focus on what's being done (the verbs), not on what's being modified (the nouns).  -->
+<!--     * Makes your code more readable by: -->
+<!--         * Structuring sequences of data operations left-to-right. -->
+<!--         * Minimizing the need for local variables and function definitions. -->
+<!--         * Making it easy to add steps anywhere in the sequence. -->
+
+<!-- ## Basic piping -->
+
+<!-- * `x %>% f` is equivalent to `f(x)` -->
+<!-- * `x %>% f(y)` is equivalent to `f(x, y)` -->
+<!-- * `x %>% f(y) %>% g(z)` is equivalent to `g(f(x, y), z)` -->
+
+<!-- ```{r} -->
+<!-- x <- 1:10 -->
+<!-- y <- x + 1 -->
+<!-- z <- y + 1 -->
+<!-- f <- function(x, y) x + y -->
+
+<!-- x %>% sum -->
+<!-- x %>% f(y) -->
+<!-- x %>% f(y) %>% f(z) -->
+<!-- ``` -->
+
+<!-- ## The argument ("dot") placeholder -->
+
+<!-- * `x %>% f(y, .)` is equivalent to `f(y, x)` -->
+<!-- * `x %>% f(y, z = .)` is equivalent to `f(y, z = x)` -->
+
+<!-- ```{r} -->
+<!-- x <- 1:10 -->
+<!-- y <- 2 * x -->
+<!-- f <- function(z, y) y / z -->
+
+<!-- x %>% f(y, .) -->
+<!-- x %>% f(y, z = .) -->
+<!-- ``` -->
+
+<!-- ## Function composition cont'd -->
+
+<!-- * Each of the three options has its own strengths and weaknesses: -->
+<!--     * Nesting, `f(g(x))`: -->
+<!--         * Concise, and well suited for short sequences.  -->
+<!--         * Longer sequences harder to read (inside out \& right to left).  -->
+<!--         * Arguments can get spread out over long distances creating the [Dagwood sandwich](https://en.wikipedia.org/wiki/Dagwood_sandwich) problem. -->
+<!--     * Intermediate objects, `y <- f(x); g(y)`: -->
+<!--         * Requires you to name intermediate objects. -->
+<!--         * A strength when objects are important, but a weakness when values are truly intermediate. -->
+<!--     * Piping, `x %>% f() %>% g()`: -->
+<!--         * Allows to read code in straightforward left-to-right fashion. -->
+<!--         * Doesn't require to name intermediate objects. -->
+<!--         * Only for linear sequences of transformations of a single object. -->
+<!-- * Most code use a combination of all three styles, but... -->
+<!-- * \bluebf{Piping is more common in data analysis code!} -->
+
+# Lexical scoping
+
+## Lexical scoping
+
+- **Lexical scoping:** the most common scoping rule in programming languages.
+    - Determines where to look up the values of names.
+    - Based on how a function is defined, not how it is called.
+
+```{r}
+x <- 10
+g01 <- function() {
+  x <- 20
+  return(x)
+}
+
+g01()
+```
+
+- R uses follows four primary rules:
+    - Name masking
+    - Functions versus variables
+    - A fresh start
+    - Dynamic lookup
+
+## Name masking
+
+- Names **defined inside** a function **mask names** defined outside.
+
+```{r}
+x <- 10
+y <- 20
+g02 <- function() {
+  x <- 1
+  y <- 2
+  c(x, y)
+}
+g02()
+```
+
+- If a name isn't defined inside a function, R looks one level up.
+
+```{r}
+x <- 2
+y <- 20
+g03 <- function() {
+  y <- 1
+  c(x, y)
+}
+g03()
+y
+```
+
+## Name masking cont'd
+
+- Same applies if a function is defined inside another function:
+    1. First, R looks inside the current function.
+    1. Then, where that function was defined,
+    1. and so on, all the way up to the global environment.
+    1. Finally, in other loaded packages.
+
+```{r}
+x <- 1
+g04 <- function() {
+  y <- 2
+  i <- function() {
+    z <- 3
+    c(x, y, z)
+  }
+  i()
+}
+g04()
+```
+
+## Functions versus variables
+
+- Functions are objects, so the same scoping rules apply.
+
+```{r}
+g07 <- function(x) x + 1
+g08 <- function() {
+  g07 <- function(x) x + 100
+  g07(10)
+}
+g08()
+```
+
+- When a **function** and a **non-function** share the **same name**, the rules get a little more complicated.^[Using the *same name* for different things **should be avoided!** For example, create your list as `my_list <- list(...)` and don't do `list <- list(...)`.] For function calls, R ignores non-functions when scoping.
+
+```{r}
+g09 <- function(x) x + 100
+g10 <- function() {
+  g09 <- 10
+  g09(g09)
+}
+g10()
+```
+
+## A fresh start
+
+- What happens to values between invocations of a function? 
+- What happens the first time you run `g11()` function?
+- What happens the second time?
+
+```{r}
+g11 <- function() {
+  if (!exists("a")) {
+    a <- 1
+  } else {
+    a <- a + 1
+  }
+  return(a)
+}
+
+g11()
+
+g11()
+```
+
+## Dynamic lookup
+
+- The output of a function can depend on objects outside of its environment, because:
+    - Lexical scoping determines where, not when, to look for values.
+    - R looks for values when the function is ran, not when the function is created. 
+
+```{r}
+g12 <- function() x + 1
+x <- 15
+g12()
+
+x <- 20
+g12()
+```
+
+- Can be quite annoying. 
+    - With spelling mistakes, no error when creating a function.
+    - Depending on the global environment, maybe not even an error when running the function.
+
+# Functional programming
+
+## For loops vs. functionals
+
+:::: {.columns}
+
+::: {.column width='35%'}
+
+- Generate a `tibble`:
+
+```{r}
+set.seed(123)
+tbl <- tibble::tibble(
+  a = rnorm(10),
+  b = rnorm(10),
+  c = rnorm(10),
+  d = rnorm(10)
+)
+```
+
+:::
+
+::: {.column width='65%'}
+
+- Mean of every column using `for` loop:
+
+```{r}
+output <- vector("double", length(tbl))
+for (i in seq_along(tbl)) {
+  output[[i]] <- mean(tbl[[i]])
+}
+
+output
+```
+
+:::
+
+::::
+
+- Mean of every column using a custom function `col_mean`:
+
+```{r}
+col_mean <- function(tb) {
+  output <- vector("double", length(tb))
+  for (i in seq_along(tb)) {
+    output[i] <- mean(tb[[i]])
+  }
+  return(output)
+}
+
+col_mean(tbl)
+```
+
+## How about other quantities?
+
+```{r}
+col_median <- function(tb) {
+  output <- vector("double", length(tb))
+  for (i in seq_along(tb)) {
+    output[i] <- median(tb[[i]])
+  }
+  return(output)
+}
+
+col_sd <- function(tb) {
+  output <- vector("double", length(tb))
+  for (i in seq_along(tb)) {
+    output[i] <- sd(tb[[i]])
+  }
+  return(output)
+}
+
+col_median(tbl)
+col_sd(tbl)
+```
+
+- What's "wrong" here? Too much code duplication!
+
+## A simple "functional"
+
+```{r}
+col_summary <- function(tb, fun) {
+  output <- vector("double", length(tb))
+  for (i in seq_along(tb)) {
+    output[i] <- fun(tb[[i]])
+  }
+  return(output)
+}
+
+col_summary(tbl, median)
+col_summary(tbl, mean)
+```
+
+## The two programming paradigms
+
+- **Imperative:**
+    - The programmer instructs the machine how to change its state.
+    - Examples:
+        - **Procedural:** groups instructions into procedures.
+        - **Object-oriented:** groups instructions together with the part of the state they operate on.
+- **Declarative:**
+    - The programmer declares properties of the desired result, but not how to compute it.
+    - Examples:
+        - **Functional:** the output results of a series of function applications.
+        - **Mathematical:** the output is the solution of an optimization problem.
+
+## What about R?
+
+- A bit of everything:
+    - Powerful but complex.
+- **Imperative**:
+    - Procedural: functions loaded with `source()`.
+    - Object-oriented: the `S3` class system (and others).
+- **Declarative**:
+    - Mathematical: optimization with `optim` and specialized packages.
+    - Functional: **the hearth** of R.
+
+## Functional programming languages
+
+* Functional programming (FP):
+  * Uses **functions that return functions** as output.
+  * Passes functions as arguments to others function.
+  * Much more in the [Advanced-R book chapter on FP](https://adv-r.hadley.nz/fp.html)
+* What makes a programming language functional?
+    * Many definitions but two common threads:
+        * *First-class* functions.
+        * *Pure* functions.
+* **Functional style**:
+    * Hard to describe exactly, but essentially:
+        * Decompose a problem into small pieces, then solve each piece with a (combination of) function(s).
+        * Each function is simple and straightforward to understand.
+        * Complexity is handled by composing functions.
+
+
+## First-class functions
+
+- Functions behave like any other data structure.
+- In R, it means that you can:
+    - **Assign** them to variables.
+    - **Store** them in lists.
+    - **Pass** them as arguments to other functions.
+    - **Create** them inside functions.
+    - **Return** them as the result of a function.
+
+```{r}
+function_list <- list(
+  avg = mean,
+  std = sd,
+  med = median,
+  max = function(x) max(x)
+)
+
+y <- rnorm(1e2) # 1*10^2
+sapply(function_list, function(f) f(y))
+```
+
+## Pure functions
+
+- Two main properties:
+    - **The output only depends on the inputs:**
+        - Call it again with the same inputs, get the same outputs.
+        - Excludes functions like `runif()` or `read.csv()` (why?).
+    - **No side-effects:**
+        - E.g., no changing the value of a global  variable, writing to disk, or displaying to the screen.
+        - Excludes functions like `print()`, `write.csv()` and `<-`.
+- Some downsides:
+    - How to do data analysis without generating random numbers or reading files from a disk?
+    - While you don't *have* to write pure functions, you often *should*.
+
+## Functional style
+
+:::: {.columns}
+
+::: {.column width='58%'}
+
+- Three techniques:
+    - **Functionals**:
+        - Replace many loops.
+        - E.g., `lapply()`, `sapply()`.
+        - **Used all the time** in data analysis.
+    - **Function factories**:
+        - Functions that create functions.
+        - Separate work between different parts of your code.
+    -  **Function operators**:
+        - Functions that take/return functions as inputs/output.
+        - Typically modify the operation of a function.
+
+:::
+
+::: {.column width='38%'}
+
+\vspace{2cm}
+![](../assets/fp.png){fig-alighn="center"}
+
+:::
+
+::::
+
+# Functionals
+
+## Functionals
+
+> To become significantly more reliable, code must become more transparent.
+> In particular, nested conditions and loops must be viewed with great
+> suspicion. Complicated control flows confuse programmers. Messy code often
+> hides bugs.
+>
+> --- Bjarne Stroustrup
+
+- **Functional**:
+    - Takes/returns a function/vector as an input/output.
+    - `lapply()`, `apply()`, `tapply()`, `purrr::map()`, `integrate()` or `optim()`.
+
+```{r}
+randomise <- function(f) f(runif(1e3))
+randomise(mean)
+randomise(mean)
+randomise(sum)
+```
+
+<!-- A common use of functionals is as an alternative to for loops. For loops have a bad rap in R because many people believe they are slow[^not-slow], but the real downside of for loops is that they're very flexible: a loop conveys that you're iterating, but not what should be done with the results. Just as it's better to use `while` than `repeat`, and it's better to use `for` than `while`, it's better to use a functional than `for`. Each functional is tailored for a specific task, so when you recognise the functional you immediately know why it's being used. -->
+
+## Outline
+
+- `purrr::map()`:
+    - The basic map functions
+        1. Take a vector as input.
+        1. Apply a function to each element.
+        1. Return a new vector that's the same length as the input.
+    - The return type is determined by the *suffix*:
+        - `map()`     returns a list.
+        - `map_lgl()` returns a logical vector.
+        - `map_int()` returns an integer vector.
+        - `map_dbl()` returns a double vector.
+        - `map_chr()` returns a character vector.
+- `purrr::reduce()`.
+- Predicates and the functionals using them.
+- Mathematical functionals.
+<!-- (functions returning a single `TRUE` or `FALSE`) -->
+<!-- - Some functionals in base R not members of those families. -->
+- Focus on the [`purrr` package](https://purrr.tidyverse.org):
+
+```{r}
+library(purrr)
+```
+
+## Warm-up: `purrr::map()`
+
+- The most fundamental functional:
+    1. Takes a vector and a function as inputs.
+    1. Calls the function once for each element of the vector.
+    1. Returns the results in a list.
+- `map(1:3, f)` is equivalent to `list(f(1), f(2), f(3))`.
+- The R base equivalent: `lapply()`.
+
+:::: {.columns}
+
+::: {.column width='48%'}
+
+```{r}
+triple <- function(x) x*3
+map(1:3, triple)
+```
+
+:::
+
+::: {.column width='48%'}
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("../assets/functionals/map.png")
+```
+
+:::
+
+::::
+
+<!-- ::: sidebar -->
+<!-- You might wonder why this function is called `map()`. What does it have to do with depicting physical features of land or sea ? In fact, the meaning comes from mathematics where _map_ refers to "an operation that associates each element of a given set with one or more elements of a second set". This makes sense here because `map()` defines a mapping from one vector to another. (_"Map"_ also has the nice property of being short, which is useful for such a fundamental building block.) -->
+<!-- ::: -->
+
+<!-- [^Map]: Not to be confused with `base::Map()`, which is considerably more complex. I'll discuss `Map()` in Section \@ref(pmap). -->
+
+## How does this work?
+
+- *Simple implementation*:
+    - Allocate a list with the same length as the input.
+    - Fill in the list using a `for` loop.
+
+```{r}
+simple_map <- function(x, f, ...) {
+  output <- vector("list", length(x))
+  for (i in seq_along(x)) {
+    out[[i]] <- f(x[[i]], ...)
+  }
+  return(output)
+}
+```
+
+- A few differences for the *real implementation*:
+    - Written in C for **performance**.
+    - Preserves original names.
+    - Supports a few shortcuts.
+
+
+## Producing atomic vectors
+
+- `map()` returns a list.
+- 4 more specific variants are available:
+    - `map_dbl()`, `map_chr()`, `map_int()` and `map_lgl()`.
+
+- `map_dbl()` always returns a `double` vector.
+
+```{r}
+map_dbl(mtcars, mean)
+```
+
+- `map_chr()` always returns a `character` vector
+
+```{r}
+map_chr(mtcars, typeof)
+```
+
+## Producing atomic vectors (cont'd)
+
+- `map_int()` always returns an integer vector.
+
+```{r}
+map_int(mtcars, ~ length(unique(.x)))
+```
+
+- `map_lgl()` always returns a logical vector.
+
+```{r}
+map_lgl(mtcars, is.double)
+```
+
+:::: {.columns}
+
+::: {.column width='53%'}
+
+- Remarks:
+    - Suffixes refer to the output.
+    - But `map_*()` can take any `<type>` of vector as input.
+- Examples rely on two facts:
+    - `mtcars` is a `data.frame`.
+    - data frames are lists containing vectors of the same length.
+
+:::
+
+::: {.column width='43%'}
+
+```{r, echo = FALSE, out.width="100%"}
+knitr::include_graphics("../assets/functionals/map-list.png")
+```
+
+:::
+
+::::
+
+## Producing atomic vectors (cont'd)
+
+- Each call to the function must return a **single value**.
+
+```{r, error = TRUE}
+map_dbl(1:2, function(x) c(x, x))
+```
+
+- And return the **correct type**.
+
+```{r, error = TRUE}
+map_dbl(1:2, as.character)
+```
+
+- In either case, use `map()` to see the problematic output!
+<!-- - In base R: -->
+<!--     - `sapply()`. -->
+<!--         - Tries to simplify the result,. -->
+<!--         - Can return a list, a vector, or a matrix. -->
+<!--         - Difficult to program with, avoid in non-interactive settings. -->
+<!--     - `vapply()`. -->
+<!--         - `FUN.VALUE` to describe the output shape. -->
+<!--         - Verbosity: `vapply(x, mean, na.rm = TRUE, FUN.VALUE = double(1))` for `map_dbl(x, mean, na.rm = TRUE)`. -->
+
+## Anonymous functions and shortcuts
+
+- `map` can use anonymous functions.
+
+```{r}
+map_dbl(mtcars, function(x) length(unique(x)))
+```
+
+- Less verbose shortcut.
+
+```{r}
+map_dbl(mtcars, ~ length(unique(.x)))
+```
+
+- Useful for generating random data.
+
+```{r}
+x <- map(1:3, ~ runif(2))
+str(x)
+```
+
+- If a function spans lines or uses `{body}`, give it a name.
+
+## Passing arguments with `...`
+
+:::: {.columns}
+
+::: {.column width='50%'}
+
+- To pass additional arguments, use an *anonymous function*:
+
+```{r}
+x <- list(1:5, c(1:10, NA))
+map_dbl(x, ~ mean(.x, na.rm = TRUE))
+```
+
+
+- Or in a simpler form:
+
+```{r}
+map_dbl(x, mean, na.rm = TRUE)
+```
+
+:::
+
+::: {.column width='48%'}
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("../assets/functionals/map-arg.png")
+```
+
+:::
+
+::::
+
+- A subtle difference in the two approaches:
+
+```{r}
+plus <- function(x, y) x + y
+x <- c(0, 0, 0, 0)
+
+map_dbl(x, plus, runif(1))
+
+map_dbl(x, ~ plus(.x, runif(1)))
+```
+
+## Map variants
+
+- 23 primary variants of `map()`:
+    - `map()`, `map_dbl()`, `map_chr()`, `map_int()`, `map_lgl()`
+    - 18 (!!) more to learn.
+    - Five new ideas:
+        - `modify()`: Output same type as input
+        - `map2()`: Iterate over two inputs
+        - `imap()`: Iterate with an index
+        - `walk()`: Return nothing
+        - `pmap()`: Iterate over any number of inputs
+
+<!-- The map family of functions has orthogonal input and outputs, meaning that we can organise all the family into a matrix, with inputs in the rows and outputs in the columns. Once you've mastered the idea in a row, you can combine it with any column; once you've mastered the idea in a column, you can combine it with any row. That relationship is summarized in the following table: -->
+
+\scriptsize
+
+|                       | List     | Atomic            | Same type   | Nothing   |
+|-----------------------|----------|-------------------|-------------|-----------|
+| One argument          | `map()`  | `map_lgl()`, ...  | `modify()`  | `walk()`  |
+| Two arguments         | `map2()` | `map2_lgl()`, ... | `modify2()` | `walk2()` |
+| One argument + index  | `imap()` | `imap_lgl()`, ... | `imodify()` | `iwalk()` |
+| N arguments           | `pmap()` | `pmap_lgl()`, ... | ---         | `pwalk()` |
+
+<!-- ## Same type of output/input: `modify()` -->
+
+<!-- ```{r} -->
+<!-- tbl <- data.frame(x = 1:3, y = 6:4) -->
+
+<!-- map(tbl, ~ .x*2) -->
+
+<!-- modify(tbl, ~ .x*2) -->
+<!-- ``` -->
+
+<!-- - A simple implementation. -->
+
+<!-- ```{r} -->
+<!-- simple_modify <- function(x, f, ...) { -->
+<!--   for (i in seq_along(x)) { -->
+<!--     x[[i]] <- f(x[[i]], ...) -->
+<!--   } -->
+<!--   x -->
+<!-- } -->
+<!-- ``` -->
+
+## Two inputs: `map2()` and friends
+
+- How do we find the vector of weighted means?
+
+```{r}
+xs <- map(1:4, ~ runif(10))
+xs <- xs %>% purrr::assign_in(c(1, 2), NA) # xs[[1]][[2]] <- NA
+ws <- map(1:4, ~ rpois(10, 5) + 1)
+```
+
+- Use `map_dbl()` to compute the unweighted means.
+
+```{r}
+map_dbl(xs, mean)
+```
+
+:::: {.columns}
+
+::: {.column width='65%'}
+
+- Passing `ws` as an additional argument doesn't work because it's a `list`.
+
+```{r, error = TRUE}
+map_dbl(xs, weighted.mean, w = ws)
+```
+
+:::
+
+::: {.column width='35%'}
+
+\vspace{0.5cm}
+![Here, in our example each square block is a numeric `vector`.](../assets/functionals/map-arg-recycle.png){fig-alighn="center"}
+
+:::
+
+::::
+
+## Two inputs: `map2()` and friends (cont'd)
+
+- Both arguments are varied in each call.
+
+```{r}
+map2_dbl(xs, ws, weighted.mean)
+```
+
+- Additional arguments still go afterwards.
+
+```{r}
+map2_dbl(xs, ws, weighted.mean, na.rm = TRUE)
+```
+
+:::: {.columns}
+
+::: {.column width='48%'}
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("../assets/functionals/map2.png")
+```
+
+:::
+
+::: {.column width='48%'}
+
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("../assets/functionals/map2-arg.png")
+```
+
+:::
+
+::::
+
+## Any number of inputs: `pmap()`
+
+- `map()` and `map2()`, maybe also `map3()`, `map4()`, `map5()`?
+- Instead, there is `pmap()`:
+    - Supply it a single list, which contains any number of arguments.
+    - In most cases, a list of equal-length vectors (e.g., a data frame).
+
+:::: {.columns}
+
+::: {.column width='40%'}
+
+```{r}
+params <- tibble::tribble(
+  ~ n, ~ min, ~ max,
+   1L,     0,     1,
+   2L,    10,   100,
+   3L,   100,  1000
+)
+
+pmap(params, runif)
+```
+
+:::
+
+::: {.column width='60%'}
+
+![](../assets/functionals/pmap-3.png){fig-alighn="center"}
+
+- Note that you can also specify the `<type>` of the output using `pmap_dbl()`, `pmap_chr()`, `pmap_int()`, and `pmap_lgl()`.
+
+:::
+
+::::
+
+## `purrr::reduce()` family
+
+- The next most important family of functionals.
+    - Much smaller (two main variants).
+    - Powers the map-reduce framework.
+
+:::: {.columns}
+
+::: {.column width='60%'}
+
+- `purrr::reduce()`:
+    1. Takes a vector of length `n`.
+    1. Produces a vector of length 1 by calling a function with a pair of values at a time.
+    - `reduce(1:4, f)` is equivalent to `f(f(f(1, 2), 3), 4)`.
+
+:::
+
+::: {.column width='40%'}
+
+\vspace{0.2cm}
+![](../assets/functionals/reduce.png){fig-alighn="center"}
+
+:::
+
+::::
+
+## `purrr::reduce()` family (cont'd)
+
+- Useful to generalise a function with two arguments to work with any number of inputs.
+- **Task**: Find the values that occur in every `element` of a `list`.
+
+```{r}
+value_list <- map(1:4, ~ sample(1:10, 15, replace = TRUE) %>% sort())
+str(value_list)
+```
+
+- Two solutions:
+
+:::: {.columns}
+
+::: {.column width='60%'}
+
+```{r}
+out <- value_list[[1]]
+out <- intersect(out, value_list[[2]])
+out <- intersect(out, value_list[[3]])
+out <- intersect(out, value_list[[4]])
+out
+```
+
+:::
+
+::: {.column width='40%'}
+
+```{r}
+reduce(value_list, intersect)
+```
+
+:::
+
+::::
+
+## `purrr::accumulate()`
+
+```{r}
+purrr::accumulate(value_list, intersect)
+
+x <- c(4, 3, 10)
+reduce(x, `+`)
+reduce(x, `+`) == sum(x)
+accumulate(x, `+`)
+accumulate(x, `+`) == cumsum(x)
+```
+
+## Predicate functionals
+
+- A **predicate**:
+    - Function that returns a single `TRUE` or `FALSE`.
+    - E.g., `is.character()`, `is.null()`, or `all()`.
+- A **predicate functional** `f(.x, .p)` applies a predicate `.p` to each element of a vector `.x`.
+- **Typical predicates** from `purrr` package:
+    - `some(.x, .p)`: returns `TRUE` if *any* element matches.
+    - `every(.x, .p)`: returns `TRUE` if *all* elements match.
+    - `none(.x, .p)`: returns `TRUE` if *no* element matches.
+    - `detect(.x, .p)`: returns the *value* of the first match.
+    - `detect_index(.x, .p)`: returns the *location* of the first match.
+    - `keep(.x, .p)`: *keeps* all matching elements.
+    - `discard(.x, .p)`: *drops* all matching elements.
+
+## Predicate functionals (cont'd)
+
+```{r}
+tbl <- tibble(
+  x = 1:3,
+  y = c("a", "b", "c")
+)
+```
+
+:::: {.columns}
+
+::: {.column width='50%'}
+
+```{r}
+detect(tbl, is.character)
+```
+
+:::
+
+::: {.column width='50%'}
+
+```{r}
+detect_index(tbl, is.character)
+```
+
+:::
+
+::::
+
+\vspace{0.2cm}
+
+:::: {.columns}
+::: {.column width='50%'}
+
+```{r}
+keep(tbl, is.character)
+```
+
+:::
+::: {.column width='50%'}
+
+```{r}
+discard(tbl, is.character)
+```
+
+:::
+
+::::
+
+## Mathematical functionals
+
+Base R provides a useful set:
+
+- `integrate()` finds the area under the curve defined by `f()`
+- `uniroot()` finds where `f()` hits zero
+- `optimise()` finds the location of the lowest (or highest) value of `f()`
+
+:::: {.columns}
+
+::: {.column width='50%'}
+
+```{r}
+integrate(sin, 0, pi)
+
+str(uniroot(sin, pi*c(1/2, 3/2)))
+```
+
+:::
+
+::: {.column width='50%'}
+
+```{r}
+str(optimise(sin, c(0, 2*pi)))
+
+str(optimise(
+  sin, c(0, pi), maximum = TRUE
+))
+```
+
+:::
+
+::::
+
+# Function operators
+
+## Function operators
+
+- Functions that take one (or more) functions as input and returns a function as an output.
+
+```{r, eval = TRUE}
+chatty <- function(f) {
+  function(x, ...) {
+    cat("Processing ", x, "\n", sep = "")
+    f(x, ...)
+  }
+}
+
+f <- function(x) x ^ 2
+map_dbl(c(3, 2, 1), chatty(f))
+```
+
+- For `{python}` users: decorators is just another name!
+
+## `purrr::safely()`: Dealing with failures
+
+- A function modified by `purrr::safely()` always returns a list with two elements:
+    1. `result`: the original result.
+    1. `error`: an error object.
+
+```{r}
+safe_log <- safely(log)
+
+str(safe_log(10))
+
+str(safe_log("a"))
+```
+
+
+## `purrr:safely()` with `purrr::map()`
+
+```{r}
+values <- list(1, 10, "a")
+x <- map(values, safely(log))
+
+str(x)
+```
+
+## `purrr::list_transpose()`
+
+```{r}
+x <- purrr::list_transpose(x)
+str(x)
+```
+
+```{r, echo = FALSE, out.width = "50%"}
+knitr::include_graphics("../assets/lists-transpose.png")
+```
+
+## Typical use
+
+```{r}
+is_ok <- map_lgl(x$error, rlang::is_null)
+values[!is_ok]
+purrr::list_c(x$result[is_ok])
+```
+
+## Two other useful adverbs
+
+- `purrr::possibly()`: "simpler" than `safely()`, because you provide a default value to return when there is an error.
+
+```{r}
+map_dbl(values, possibly(log, otherwise = NA_real_))
+```
+
+- `purrr::quietly()`: instead of capturing errors, it captures printed output, messages, and warnings.
+
+```{r}
+map(list(1, -1), quietly(log)) %>% str()
+```
+
+## `memoise::memoise()`: Caching computations
+
+- `memoise::memoise()`: **caches** a function's results.
+    - The function remembers previous inputs/returns.
+    - Classic CS trade-off of memory versus speed:
+    - A `memoise`'d function is faster, but uses more memory.
+
+:::: {.columns}
+
+::: {.column width='48%'}
+
+```{r, cache = TRUE}
+slow_fct <- function(x) {
+  Sys.sleep(1)
+  x*10*runif(1)
+}
+
+system.time(print(slow_fct(1)))
+system.time(print(slow_fct(1)))
+```
+
+:::
+
+::: {.column width='48%'}
+
+```{r, cache = TRUE}
+library(memoise)
+fast_fct <- memoise(slow_fct)
+
+
+
+system.time(print(fast_fct(1)))
+system.time(print(fast_fct(1)))
+```
+
+:::
+
+::::
+
+## `memoise::memoise()`: Fibonacci series
+
+- Defined recursively:
+    - **Initial values**: $f(0) = 0$, $f(1) = 1$,
+    - **Definition**: $f(n) = f(n - 1) + f(n - 2)$.
+
+:::: {.columns}
+
+::: {.column width='48%'}
+
+```{r, cache = TRUE}
+fib <- function(n) {
+  if (n < 2) return(1)
+  fib(n - 2) + fib(n - 1)
+}
+
+system.time(fib(23))
+system.time(fib(24))
+```
+
+:::
+
+::: {.column width='48%'}
+
+```{r, cache = TRUE}
+fib2 <- memoise(function(n) {
+  if (n < 2) return(1)
+  fib2(n - 2) + fib2(n - 1)
+})
+
+system.time(fib2(23))
+system.time(fib2(24))
+```
+
+:::
+
+::::
+
+- An example of **dynamic programming**:
+    - Complex problem broken down into overlapping subproblems.
+    - Remembering the results of a subproblem considerably improves performance.
+
+<!-- ## Exit handlers -->
+
+<!-- - The context: -->
+<!--     - Sometimes a function needs to make temporary changes to the global state. -->
+<!--     - But having to cleanup those changes can be painful (what happens if there's an error?).  -->
+<!--     - To ensure that these changes are undone and that the global state is restored no matter how a function exits,  -->
+<!-- - Use `on.exit()` to set up an **exit handler**.  -->
+
+<!-- ```{r, error = TRUE} -->
+<!-- j06 <- function(x) { -->
+<!--   cat("Hello\n") -->
+<!--   on.exit(cat("Goodbye!\n"), add = TRUE) -->
+
+<!--   if (x) { -->
+<!--     return(10) -->
+<!--   } else { -->
+<!--     stop("Error") -->
+<!--   } -->
+<!-- } -->
+
+<!-- j06(TRUE) -->
+
+<!-- j06(FALSE) -->
+<!-- ``` -->
+
+<!-- ## Exit handlers with `on.exit()` -->
+
+<!-- - Always set `add = TRUE`: -->
+<!--     - If you don't, each call to `on.exit()` overwrites previous ones. -->
+<!--     - Even when only registering a single handler, it's good practice to set `add = TRUE`. -->
+<!-- - `on.exit()` is useful because it allows to place clean-up code directly next to the code that requires clean-up. -->
+
+<!-- ```{r} -->
+<!-- cleanup <- function(dir, code) { -->
+<!--   old_dir <- setwd(dir) -->
+<!--   on.exit(setwd(old_dir), add = TRUE) -->
+
+<!--   old_opt <- options(stringsAsFactors = FALSE) -->
+<!--   on.exit(options(old_opt), add = TRUE) -->
+<!-- } -->
+<!-- ``` -->
+
+<!-- ## Exit handlers with `on.exit()` cont'd -->
+
+<!-- - Coupled with lazy evaluation, a useful pattern for running a block of code in an altered environment. -->
+
+<!-- ```{r} -->
+<!-- with_dir <- function(dir, code) { -->
+<!--   old <- setwd(dir) -->
+<!--   on.exit(setwd(old), add = TRUE) -->
+
+<!--   force(code) -->
+<!-- } -->
+
+<!-- getwd() -->
+<!-- with_dir("~", getwd()) -->
+<!-- getwd() -->
+<!-- ``` -->
+
+<!-- - `force()` isn't strictly necessary here as simply referring to `code` will force its evaluation. -->
+<!-- - But makes it clear that we are deliberately forcing the execution. -->
+
+<!-- The withr package [@withr] provides a collection of other functions for setting up a temporary state. -->
+
+<!-- In R 3.4 and earlier, `on.exit()` expressions are always run in order of creation: -->
+
+<!-- ```{r} -->
+<!-- j08 <- function() { -->
+<!--   on.exit(message("a"), add = TRUE) -->
+<!--   on.exit(message("b"), add = TRUE) -->
+<!-- } -->
+<!-- j08() -->
+<!-- ``` -->
+
+<!-- This can make cleanup a little tricky if some actions need to happen in a specific order; typically you want the most recent added expression to be run first. In R 3.5 and later, you can control this by setting `after = FALSE`: -->
+
+<!-- ```{r, eval = getRversion() >= "3.5"} -->
+<!-- j09 <- function() { -->
+<!--   on.exit(message("a"), add = TRUE, after = FALSE) -->
+<!--   on.exit(message("b"), add = TRUE, after = FALSE) -->
+<!-- } -->
+<!-- j09() -->
+<!-- ``` -->
+
+## 69
+
+> \bluecbf{This slide is Nice! :)}
+>
+> --- Professor Alex
