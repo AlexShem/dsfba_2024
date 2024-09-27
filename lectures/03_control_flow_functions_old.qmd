@@ -1,18 +1,18 @@
 ---
 title: "Data Science for Business Analytics"
 subtitle: "Control Flow and Functions"
-author: "Thibault Vatter [thibault.vatter@hesge.ch]"
-date: "09/10/2023"
+author: "Professor Alex [aleksandr.shemendyuk@unil.ch]"
+date: "7/10/2024"
 format: 
     beamer:
-        include-in-header: latex/header.tex
+        include-in-header: ../latex/header.tex
         fontsize: 10pt
 execute:
     echo: true
 ---
 
 ```{r setup, include = FALSE, echo = FALSE}
-source("common.R")
+source("../R/common.R")
 library(tidyverse)
 library(knitr)
 set.seed(0)
@@ -20,29 +20,27 @@ set.seed(0)
 
 ## Today
 
-* Control flow:
-  * __Choices__:
-      * E.g. `if()`, `ifelse()`.
-      * Allows to run different code depending on the input.
-  * __Loops__:
-      * E.g. `for`, `while`, `repeat`.
-      * Allows to repeatedly run code, typically with changing options.
+- Control flow:
+  - **Choices**:
+    - E.g. `if()`, `ifelse()`.
+    - Allows to run different code depending on the input.
+  - **Loops**:
+    - E.g. `for`, `while`.
+    - Allows to repeatedly run code, typically with changing options.
   <!-- * You might want to have a look at chapter 8 for condition system (messages, warnings, and errors)... -->
-* Reducing code duplication:
-  * Three main benefits:
-    *  Easier to see the intent of your code.
-    *  Easier to respond to changes in requirements.
-    *  Likely to have fewer bugs.
-  * __Functions__: identify repeated patterns of code and extract them out into independent pieces.
-  * __Iteration__: helps you when you need to do the same thing to multiple inputs.
+- Reducing code duplication:
+    -  Easier to see the intent of your code.
+    -  Likely to have fewer bugs.
+- **Functions**: identify repeated patterns of code and extract them out into independent pieces.
+- **Iteration**: helps you when you need to do the same thing to multiple inputs.
 
 # Choices
 
 ## `if()` statements
 
-* The basic idea for `if` statements:
-    * If `condition` is `TRUE`, `true_action` is evaluated.
-    * If `condition` is `FALSE`, the optional `false_action` is evaluated.
+- The basic idea for `if` statements:
+    - If `condition` is `TRUE`, `true_action` is evaluated.
+    - If `condition` is `FALSE`, the optional `false_action` is evaluated.
 
 ```{r, eval = FALSE}
 if (condition) true_action
@@ -357,7 +355,7 @@ for (i in seq_along(means)) {
         * Possible to write any `for` using `while`, and any `while` using `repeat`, but not the converse.
         * Good practice to use the least-flexible (i.e., simplest) solution to a problem.
 <!-- * R does not have a `do {action} while (condition)` syntax found in other languages. -->
-* Generally speaking you shouldn't need to use `for` loops for \redbf{data analysis tasks}, we'll see better solutions.
+* Generally speaking you shouldn't need to use `for` loops for \bluebf{data analysis tasks}, we'll see better solutions.
 
 # Functions
 
@@ -409,7 +407,7 @@ environment(f02)
 ::: {.column width='48%'}
 
 ```{r, echo = FALSE}
-knitr::include_graphics("figures/functions/components.png")
+knitr::include_graphics("../assets/functions/components.png")
 ```
 
 :::
@@ -715,7 +713,7 @@ str(i02(x = 1, y = 2, z = 3))
 <!--         * Doesn't require to name intermediate objects. -->
 <!--         * Only for linear sequences of transformations of a single object. -->
 <!-- * Most code use a combination of all three styles, but... -->
-<!-- * \redbf{Piping is more common in data analysis code!} -->
+<!-- * \bluebf{Piping is more common in data analysis code!} -->
 
 # Lexical scoping
 
@@ -1030,7 +1028,7 @@ sapply(l1, function(f) f(y))
 
 \vspace{2cm}
 ```{r, echo = FALSE, out.width="100%"}
-knitr::include_graphics("figures/fp.png")
+knitr::include_graphics("../assets/fp.png")
 ```
 
 :::
@@ -1105,7 +1103,7 @@ map(1:3, triple)
 ::: {.column width='48%'}
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/functionals/map.png")
+knitr::include_graphics("../assets/functionals/map.png")
 ```
 
 :::
@@ -1185,7 +1183,7 @@ map_lgl(mtcars, is.double)
 ::: {.column width='43%'}
 
 ```{r, echo = FALSE, out.width="100%"}
-knitr::include_graphics("figures/functionals/map-list.png")
+knitr::include_graphics("../assets/functionals/map-list.png")
 ```
 
 :::
@@ -1261,7 +1259,7 @@ map_dbl(x, mean, na.rm = TRUE)
 ::: {.column width='48%'}
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/functionals/map-arg.png")
+knitr::include_graphics("../assets/functionals/map-arg.png")
 ```
 
 :::
@@ -1346,7 +1344,7 @@ map_dbl(xs, weighted.mean, w = ws)
 ```
 
 ```{r, echo = FALSE, out.width = "40%"}
-knitr::include_graphics("figures/functionals/map-arg-recycle.png")
+knitr::include_graphics("../assets/functionals/map-arg-recycle.png")
 ```
 
 ## `map2()` and friends cont'd
@@ -1368,7 +1366,7 @@ map2_dbl(xs, ws, weighted.mean, na.rm = TRUE)
 ::: {.column width='48%'}
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/functionals/map2.png")
+knitr::include_graphics("../assets/functionals/map2.png")
 ```
 
 :::
@@ -1376,7 +1374,7 @@ knitr::include_graphics("figures/functionals/map2.png")
 
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/functionals/map2-arg.png")
+knitr::include_graphics("../assets/functionals/map2-arg.png")
 ```
 
 :::
@@ -1407,7 +1405,7 @@ pmap(params, runif)
 ::: {.column width='48%'}
 
 ```{r, echo = FALSE, out.width="100%"}
-knitr::include_graphics("figures/functionals/pmap-3.png")
+knitr::include_graphics("../assets/functionals/pmap-3.png")
 ```
 
 :::
@@ -1424,7 +1422,7 @@ knitr::include_graphics("figures/functionals/pmap-3.png")
     * `reduce(1:4, f)` is equivalent to `f(f(f(1, 2), 3), 4)`.
 
 ```{r, echo = FALSE, out.width="40%"}
-knitr::include_graphics("figures/functionals/reduce.png")
+knitr::include_graphics("../assets/functionals/reduce.png")
 ```
 
 ## Reduce family cont'd
@@ -1584,7 +1582,7 @@ str(y)
 ```
 
 ```{r, echo = FALSE, out.width = "50%"}
-knitr::include_graphics("figures/lists-transpose.png")
+knitr::include_graphics("../assets/lists-transpose.png")
 ```
 
 ## Typical use
