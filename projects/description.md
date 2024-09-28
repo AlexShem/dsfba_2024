@@ -104,10 +104,12 @@ Below are the key milestones for your final project. Make sure to adhere to the 
 
 #### 📄 **Submission Details**
 
-- **Submission Type:** Link submission via Moodle.
-- **Submission Format:** Upload your video to Google Drive and submit the **publicly accessible link** as text in the Moodle assignment submission module.
+- **Submission Type:** File and link submission via Moodle.
+- **Files to Upload:**
+  - Upload your presentation slides (PDF, HTML, or PowerPoint) to Moodle.
+  - In the text submission box, provide the **publicly accessible Google Drive link** to your video presentation.
 - **Video Requirements:**
-  - Ensure the video is set to be accessible to **anyone with the link**.
+  - The video must be uploaded to Google Drive, set to be accessible to **anyone with the link**.
   - The link should remain active and accessible until **January 31st**.
   - Only one submission per group is required.
 
@@ -120,7 +122,7 @@ Below are the key milestones for your final project. Make sure to adhere to the 
   - Discuss key insights and findings.
   - Emphasise the most important takeaway for your audience, and present it early in the video.
 
-#### 🎯 **Evaluation Criteria:**
+#### 🎯 **Evaluation Criteria**
 
 Your video presentation will be evaluated based on the [criteria to evaluate oral presentations](https://dept.writing.wisc.edu/wac/the-challenge-of-evaluating-oral-presentations/):
 
@@ -132,14 +134,15 @@ Your video presentation will be evaluated based on the [criteria to evaluate ora
 
 #### ⚠️ **Important Notes**
 
-- The link to the video must be publicly accessible and should not expire before January 31st.
+- The Google Drive link to the video must be publicly accessible and should not expire before January 31st.
 - Ensure your video follows the principles of good storytelling and presentations. Keep the focus on key contributions and insights.
+- Only submit a single set of slides and video link per group.
 
 #### 🔗 **Submission Link**
 
-- Provide the link to your video on Moodle using [this link](#).
+- Upload your presentation slides and submit your video link on Moodle using [this link](#).
 
-> Tell your story well, and make sure your key insights shine! 🚀
+> Present your work with confidence, and let your key insights take the spotlight! 🚀
 
 ### 4. 📋 **Final Report**
 
