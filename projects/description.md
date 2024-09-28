@@ -31,18 +31,40 @@ Below are the key milestones for your final project. Make sure to adhere to the 
 
 ### 1. 📝 **Project Proposal**
 
-- The title can be changed at a later date.
-- Each team (or individual if working alone) only needs to submit one proposal.
-- At this stage, we reserve the right to reject a project proposal if it is not judged satisfactory. But the goal is mostly to set you on a path to succeed!
-- Please use [this link](https://docs.google.com/forms/d/e/1FAIpQLSeoKl1AOl_5gO5DLSspoTUfIv-AgU_qdXqfIsiyl5XkR5WJYA/viewform?usp=sharing) to submit your proposal.
-- You can use this template and then just copy-paste sections in the form
-  when you are ready:
-  - Background and motivation
-  - Project objectives
-  - Research questions
-  - Data source
-  - Data description
-  - Schedule & timeline
+#### 📅 **Due Date:** October 14
+
+#### 📄 **Submission Details**
+
+- **Submission Type:** File upload via Moodle.
+- **File Format:** Quarto file (`.qmd`).
+- **File Naming Convention:** Name your file as `proposal_<group_name>.qmd` where `<group_name>` corresponds to your assigned group (e.g., `proposal_A.qmd`, `proposal_B.qmd`, ..., `proposal_AQ.qmd`).
+
+#### 📋 **Requirements**
+
+- The **title** of your project can be changed at a later date, so don't worry if you're not set on a final title yet.
+- Each team (or individual if working alone) only needs to submit **one proposal**.
+- We reserve the right to reject a project proposal if it is not judged satisfactory, but our main goal is to set you on a path to success!
+
+#### 📂 **Template for Submission**
+
+- A template will be provided to guide you in preparing your proposal. Please use the [provided template](#) and follow the structure below when preparing your submission:
+  - **Background and Motivation:** Explain why you chose this topic and why it is important.
+  - **Project Objectives:** Clearly state what you aim to achieve.
+  - **Research Questions:** Outline the key questions your project will address.
+  - **Data Source:** Identify the data you plan to use and how you will acquire it.
+  - **Data Description:** Describe the key features of your data.
+  - **Schedule & Timeline:** Provide a brief timeline for your project, highlighting key milestones.
+
+#### 🔗 **Submission Link**
+
+- Upload your Quarto file on Moodle using [this link](#).
+
+#### ⚠️ **Important Notes**
+
+- Ensure your file is well-organized and follows the provided template.
+- Submissions must be in the correct format and filename to be accepted.
+
+Good luck with your project proposal! 🚀
 
 ### 2. 📈 **Project Update**
 
