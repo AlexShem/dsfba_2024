@@ -61,17 +61,42 @@ Below are the key milestones for your final project. Make sure to adhere to the 
 
 #### ⚠️ **Important Notes**
 
-- Ensure your file is well-organized and follows the provided template.
+- Ensure your file is well-organised and follows the provided template.
 - Submissions must be in the correct format and filename to be accepted.
 
-Good luck with your project proposal! 🚀
+> Good luck with your project proposal! 🚀
 
 ### 2. 📈 **Project Update**
 
-- Make sure that the title is final at this point.
-- Use [the suggested template](https://moodle.unil.ch/mod/resource/view.php?id=1804840).
-- Each team (or individual if working alone) only needs to submit one update (HTML file only).
-- The update should cover more or less half of the final report's content, but we don't expect the figures/summary tables to be finalized/polished.
+#### 📅 **Due Date:** November 11
+
+#### 📄 **Submission Details**
+
+- **Submission Type:** File upload via Moodle.
+- **File Format:** HTML file generated from Quarto (`.qmd`).
+- **File Naming Convention:** Name your file as `update_<group_name>.html` where `<group_name>` corresponds to your assigned group (e.g., `update_A.html`, `update_B.html`, ..., `update_AQ.html`).
+
+#### 📋 **Requirements**
+
+- **Title Finalization:** Ensure that your project title is finalised by this stage.
+- **Content Structure:** Your project update should cover approximately half of the final report's content. This does not require finalised or polished figures and summary tables but should reflect significant progress.
+- **Submission Template:** Use the [provided template](#). The structure should be as follows:
+  - **Introduction:** Briefly restate your project goals and research questions.
+  - **Data:** Describe your data sources, any preprocessing steps, and current data status.
+  - **Exploratory Data Analysis (EDA):** Showcase initial visualisations and key findings.
+  - **Analysis:** Outline the preliminary statistical methods or models you are exploring.
+  - **Conclusion:** Highlight what has been achieved so far and the next steps.
+
+#### 🔗 **Submission Link**
+
+- Upload your HTML file on Moodle using [this link](#).
+
+#### ⚠️ **Important Notes**
+
+- Each team (or individual) needs to submit only one update.
+- Ensure that your file structure is organised as per the provided template to facilitate feedback.
+
+> Keep progressing, and don't hesitate to refine your analysis as you move forward! 🚀
 
 ### 3. 🎥 **Video Presentation**
 
