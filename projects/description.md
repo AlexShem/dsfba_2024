@@ -22,11 +22,16 @@ Below are the key milestones for your final project. Make sure to adhere to the 
 
 ### ⚠️ Important Notes
 
-### Project Proposal
 - **No extensions** will be granted for any project due dates except in cases of medical reasons.
 - Projects submitted **after** the final due date will **not be graded**.
 
-- The title can be changed at a later date. 
+---
+
+## 📑 Detailed Milestone Descriptions
+
+### 1. 📝 **Project Proposal**
+
+- The title can be changed at a later date.
 - Each team (or individual if working alone) only needs to submit one proposal.
 - At this stage, we reserve the right to reject a project proposal if it is not judged satisfactory. But the goal is mostly to set you on a path to succeed!
 - Please use [this link](https://docs.google.com/forms/d/e/1FAIpQLSeoKl1AOl_5gO5DLSspoTUfIv-AgU_qdXqfIsiyl5XkR5WJYA/viewform?usp=sharing) to submit your proposal.
@@ -39,20 +44,20 @@ Below are the key milestones for your final project. Make sure to adhere to the 
   - Data description
   - Schedule & timeline
 
-### Project Update
+### 2. 📈 **Project Update**
 
 - Make sure that the title is final at this point.
 - Use [the suggested template](https://moodle.unil.ch/mod/resource/view.php?id=1804840).
 - Each team (or individual if working alone) only needs to submit one update (HTML file only).
 - The update should cover more or less half of the final report's content, but we don't expect the figures/summary tables to be finalized/polished.
 
-### Video Presentation
+### 3. 🎥 **Video Presentation**
 
 Please use [this link](https://moodle.unil.ch/mod/assign/view.php?id=1804836) to upload a **seven minutes video presentation** showing a demo of your project and/or some slides:
 
 - Only one per group is needed.
 - If you choose to upload the video file itself, there's a **50MB size limit**.
-- If you choose to upload a link  (e.g., Youtube, Dailymotion or equivalent), make sure it is **publicly accessible**.
+- If you choose to upload a link  (e.g., Youtube, Google Drive, Dailymotion or equivalent), make sure it is **publicly accessible**.
 
 We will **strictly enforce the time limit**, so please make sure you are not running longer. 
 Use principles of good storytelling and presentations to get your key points across.
@@ -72,7 +77,7 @@ We use the following [criteria to evaluate oral presentations](https://dept.writ
 
 A **50MB or less** file or a  (e.g., Youtube, Dailymotion or equivalent) link to a **publicly accessible** video should be submitted on **15/12**, and slides should be submitted by the same day.
 
-### Final Report
+### 4. 📋 **Final Report**
 
 The final report is composed of two parts:
 
@@ -118,6 +123,8 @@ We expect you to write high-quality and readable R code in your Quarto file.
 You should strive for doing things the right way and think about aspects such as reproducibility, efficiency, cleaning data, etc. 
 We also expect you to document your code.
 
+---
+
 ## Grading
 
 - The project proposal is worth 5% of the overall course grade.
@@ -125,6 +132,8 @@ We also expect you to document your code.
 - The report and the presentation represent 70% of the overall course grade:
   - 50% for your Quarto files and the knitted report. This includes the quality of your data analysis and R code, the complexity and level of difficulty of your project, completeness and overall functionality of your analysis.
   - 20% for your presentation and the quality of its storytelling aspects.
+
+---
 
 ## Data Sources and Project Ideas
 
