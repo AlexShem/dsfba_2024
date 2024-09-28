@@ -1,29 +1,30 @@
-# Group Project Description
+# 🎓 Group Project Description
 
-For this assignment, you will work on a real data science project. The goal of the project is to go through the complete data science process to answer questions you have about some topic of your own choosing. You will:
+For this assignment, you will work on a **real data science project**. The goal of the project is to go through the complete data science process to answer questions about a topic of your own choosing. You will:
 
-- acquire the data,
-- design your visualisations,
-- run statistical analysis,
-- communicate the results.
+- 📊 **Acquire the data**
+- 📈 **Design your visualizations**
+- 📉 **Run statistical analysis**
+- 📝 **Communicate the results**
 
-## Milestones
+---
 
-There are a few milestones for your final project.
+## 📅 Project Milestones
 
-| 📅 Date | 📝 Assignment | 🔗 Link to submit |
-| :---  | :---  | :---  |
-| October 14 | Project proposal | - |
-| November 11 | Project update | - |
-| December 16 | Video presentation | - |
-| December 23 | Final report  | - |
+Below are the key milestones for your final project. Make sure to adhere to the deadlines!
 
-⚠️ **Attention:**
+| 📅 **Date**          | 📝 **Assignment**         | 🔗 **Link to Submit**  |
+| :------------------- | :------------------------ | :--------------------- |
+| **October 14**       | Project Proposal          | [Submit here](#)       |
+| **November 11**      | Project Update            | [Submit here](#)       |
+| **December 16**      | Video Presentation        | [Submit here](#)       |
+| **December 23**      | Final Report              | [Submit here](#)       |
 
-- **No extensions** will be given for any of the project due dates except for medical reasons.
-- Projects submitted **after** the final due date will not be graded.
+### ⚠️ Important Notes
 
 ### Project Proposal
+- **No extensions** will be granted for any project due dates except in cases of medical reasons.
+- Projects submitted **after** the final due date will **not be graded**.
 
 - The title can be changed at a later date. 
 - Each team (or individual if working alone) only needs to submit one proposal.
