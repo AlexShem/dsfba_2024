@@ -146,49 +146,58 @@ Your video presentation will be evaluated based on the [criteria to evaluate ora
 
 ### 4. 📋 **Final Report**
 
-The final report is composed of two parts:
+#### 📅 **Due Date:** December 23
 
-- Quarto and compiled HTML files describe the project in details.
-- The slides from your presentation.
+#### 📄 **Submission Details**
 
-#### Quarto and Compiled HTML
+- **Submission Type:** File upload via Moodle.
+- **Files to Submit:** 
+  - Quarto file (`.qmd`) and the compiled HTML file generated from it.
+- **File Naming Convention:** Name your files as `final_<group_name>.qmd` and `final_<group_name>.html`, where `<group_name>` corresponds to your assigned group (e.g., `final_A.qmd`, `final_A.html`).
 
-Please use this [link](https://moodle.unil.ch/mod/assign/view.php?id=1804837) to submit your final report!
+#### 📋 **Report Requirements**
 
-The most important deliverable of your project is the set of Quarto and compiled HTML files by **12/22**. 
-They should detail your steps in developing your solution, including how you collected the data, alternative solutions you tried, describing statistical methods you used, and the insights you got. 
-Equally important to your final results is how you got there! 
-Your Quarto and HTML files are the place you describe and document the space of possibilities you explored at each step of your project. 
-We strongly advise you to include many visualizations.
+- The **compiled HTML file** should be a standalone document containing all the code, which by default should be **hidden**. This ensures the document is clean and readable, focusing on your analysis and findings while still providing access to the underlying code for reproducibility.
+- The Quarto and HTML files should detail your entire project workflow, including data collection, analysis, statistical methods used, and insights gained. Document your process, including any alternative solutions you explored.
 
-Your Quarto should include the following topics. 
-Depending on your project type, the amount of discussion you devote to each of them will vary:
+#### 📑 **Report Structure**
 
-- **Overview and Motivation**: Provide an overview of the project goals and the motivation for it. Consider that this will be read by people who did not see your project proposal.
-- **Related Work**: Anything that inspired you, such as a paper, a website, or something we discussed in class.
-- **Research Questions**: What questions are you trying to answer? How did these questions evolve over the course of the project? What new questions did you consider in the course of your analysis?
-- **Data**: Source, scraping method, cleanup, etc.
-- **Exploratory Analysis**: What visualizations did you use to look at your data in different ways? Justify the decisions you made, and show any major changes to your ideas. How did you reach these conclusions?
-- **Modeling (optional)**: What are the different statistical methods you considered? Why did you choose a given model?  How about competing approaches?
-- **Answering the Research Questions and Final Analysis**: What did you learn about the data? How did you answer the questions? How can you justify your answers?
+Your report should cover the following key sections. The depth of discussion in each section may vary depending on your project:
 
-As this will be your only chance to describe your project in detail, make sure that your Quarto file and compiled HTML file are standalone documents that fully describe your process and results. 
-For instructions on how to submit, please see **Submission Instructions** below.
+- **Overview and Motivation:** Provide an overview of the project goals and the motivation behind your study. Write this section assuming the reader did not see your proposal.
+- **Related Work:** Mention any relevant papers, websites, or discussions that inspired or guided your work.
+- **Research Questions:** Outline the questions you aimed to answer and how they evolved during the project. Highlight any new questions that arose during your analysis.
+- **Data:** Describe your data sources, methods of data collection, data cleaning, and preprocessing steps.
+- **Exploratory Analysis:** Present visualisations and justify your decisions. Discuss any major changes to your ideas based on this analysis.
+- **Modelling (Optional):** Explain the statistical methods or models considered, reasons for your choices, and any competing approaches evaluated.
+- **Answering the Research Questions and Final Analysis:** Summarise what you learned from the data, how you answered your research questions, and provide justification for your conclusions.
 
-As a side note, the following scale will be used to grade projects:
+#### 📂 **Optional Data Submission**
 
-- Overview, motivation, related work, research questions: 10/100
-- Data sources and description: 10/100
-- Exploratory data analysis: 35/100
-- Answering the research questions and final analysis: 35/100
-- Aesthetics, English writing, project organization, code quality: 10/100
-- Additionally, you have the opportunity to earn bonuses of up to 20/100 (e.g., by using interactive visualization or presenting your work in especially interesting ways, for instance by complementing your report with a website generated with markdown).
+- While it is not mandatory, you are encouraged to provide your data if it is accessible and non-sensitive. Sharing your data can help the Professor and Captains better understand your work and provide more targeted feedback.
+- If submitting data is not feasible, ensure your report includes clear documentation of your data access and preparation steps, including sources and any preprocessing conducted.
 
-#### Code
+#### 📊 **Grading Criteria**
 
-We expect you to write high-quality and readable R code in your Quarto file. 
-You should strive for doing things the right way and think about aspects such as reproducibility, efficiency, cleaning data, etc. 
-We also expect you to document your code.
+Your final report will be evaluated based on the following scale:
+
+- **Overview, Motivation, Related Work, Research Questions:** 10/100
+- **Data Sources and Description:** 10/100
+- **Exploratory Data Analysis:** 35/100
+- **Answering Research Questions and Final Analysis:** 35/100
+- **Aesthetics, English Writing, Project Organization, Code Quality:** 10/100
+- **Bonus Points (up to 20/100):** Awarded for innovative use of interactive visualisations or presenting your work in an exceptional format, such as a complementary website.
+
+#### 📂 **Code Expectations**
+
+- Your Quarto file should contain high-quality and readable R code that emphasises reproducibility, efficiency, and clear data cleaning processes.
+- Document your code thoroughly to enhance readability and facilitate understanding of your workflow.
+
+#### 🔗 **Submission Link**
+
+- Upload your Quarto and HTML files on Moodle using [this link](#).
+
+> Put your best work forward, and make sure your final report tells a complete story of your data science journey! 🚀
 
 ---
 
