@@ -100,29 +100,46 @@ Below are the key milestones for your final project. Make sure to adhere to the 
 
 ### 3. 🎥 **Video Presentation**
 
-Please use [this link](https://moodle.unil.ch/mod/assign/view.php?id=1804836) to upload a **seven minutes video presentation** showing a demo of your project and/or some slides:
+#### 📅 **Due Date:** December 16
 
-- Only one per group is needed.
-- If you choose to upload the video file itself, there's a **50MB size limit**.
-- If you choose to upload a link  (e.g., Youtube, Google Drive, Dailymotion or equivalent), make sure it is **publicly accessible**.
+#### 📄 **Submission Details**
 
-We will **strictly enforce the time limit**, so please make sure you are not running longer. 
-Use principles of good storytelling and presentations to get your key points across.
-Focus the majority of your presentation on your main contributions rather than on technical details. 
-What do you feel is the best part of your project? 
-What insights did you gain? 
-What is the single most important thing you would like your audience to take away? 
-Make sure it is upfront and center rather than at the end.
+- **Submission Type:** Link submission via Moodle.
+- **Submission Format:** Upload your video to Google Drive and submit the **publicly accessible link** as text in the Moodle assignment submission module.
+- **Video Requirements:**
+  - Ensure the video is set to be accessible to **anyone with the link**.
+  - The link should remain active and accessible until **January 31st**.
+  - Only one submission per group is required.
 
-We use the following [criteria to evaluate oral presentations](https://dept.writing.wisc.edu/wac/the-challenge-of-evaluating-oral-presentations/):
+#### 📹 **Presentation Guidelines**
 
-- Content (4/20)
-- Organization (4/20)
-- Teamwork (4/20, project done individually automatically earn the 4 points)
-- Visuals (4/20)
-- Presentation mechanics (4/20)
+- **Length:** The presentation should be a maximum of **seven minutes**. The time limit will be strictly enforced.
+- **Content:** Your video should showcase a demo of your project and/or slides focusing on your main contributions rather than technical details.
+- **Focus Areas:**
+  - Highlight the best parts of your project.
+  - Discuss key insights and findings.
+  - Emphasise the most important takeaway for your audience, and present it early in the video.
 
-A **50MB or less** file or a  (e.g., Youtube, Dailymotion or equivalent) link to a **publicly accessible** video should be submitted on **15/12**, and slides should be submitted by the same day.
+#### 🎯 **Evaluation Criteria:**
+
+Your video presentation will be evaluated based on the [criteria to evaluate oral presentations](https://dept.writing.wisc.edu/wac/the-challenge-of-evaluating-oral-presentations/):
+
+- **Content (4/20):** Clarity and completeness of the information presented.
+- **Organization (4/20):** Logical flow and structure of the presentation.
+- **Teamwork (4/20):** Collaboration and presentation dynamics (individual projects automatically earn these points).
+- **Visuals (4/20):** Quality and effectiveness of the slides or demo visuals.
+- **Presentation Mechanics (4/20):** Speaking clarity, engagement, and overall delivery.
+
+#### ⚠️ **Important Notes**
+
+- The link to the video must be publicly accessible and should not expire before January 31st.
+- Ensure your video follows the principles of good storytelling and presentations. Keep the focus on key contributions and insights.
+
+#### 🔗 **Submission Link**
+
+- Provide the link to your video on Moodle using [this link](#).
+
+> Tell your story well, and make sure your key insights shine! 🚀
 
 ### 4. 📋 **Final Report**
 
