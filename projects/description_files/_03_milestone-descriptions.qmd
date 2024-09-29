@@ -1,0 +1,9 @@
+## 📑 Detailed Milestone Descriptions
+
+{{< include _031_project-proposal.qmd >}}
+
+{{< include _032_project-update.qmd >}}
+
+{{< include _033_video-presentation.qmd >}}
+
+{{< include _034_final-report.qmd >}}

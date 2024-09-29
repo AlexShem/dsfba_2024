@@ -1,0 +1,10 @@
+## 📊 Grading Breakdown
+
+The project is worth **50%** of your total course grade. The breakdown of the project components is as follows:
+
+- 📝 **Project Proposal**: 5% of the overall course grade.
+- 📈 **Project Update**: 5% of the overall course grade.
+- 🎥 **Video Presentation**: 15% of the overall course grade. This includes the clarity, quality, and storytelling aspects of your presentation.
+- 📋 **Final Report**: 25% of the overall course grade. This includes the quality of your data analysis, R code, complexity and level of difficulty, completeness, and functionality of your analysis.
+
+Make sure to prioritize these components as you progress through your project.

@@ -1,0 +1,15 @@
+## 📅 Project Milestones
+
+Below are the key milestones for your final project. Make sure to adhere to the deadlines!
+
+| 📅 **Date**          | 📝 **Assignment**         | 🔗 **Link to Submit**  |
+| :------------------- | :------------------------ | :--------------------- |
+| **October 14**       | Project Proposal          | [Submit here](#)       |
+| **November 11**      | Project Update            | [Submit here](#)       |
+| **December 16**      | Video Presentation        | [Submit here](#)       |
+| **December 23**      | Final Report              | [Submit here](#)       |
+
+### ⚠️ Important Notes
+
+- **No extensions** will be granted for any project due dates except in cases of medical reasons.
+- Projects submitted **after** the final due date will **not be graded**.
