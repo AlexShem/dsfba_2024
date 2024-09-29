@@ -1,0 +1,95 @@
+---
+title: "🎓 Group Project Description"
+format: gfm
+---
+
+For this assignment, you will work on a **real data science project**. The goal of the project is to go through the complete data science process to answer questions about a topic of your own choosing. You will:
+
+- 📊 **Acquire the data**
+- 📈 **Design your visualizations**
+- 📉 **Run statistical analysis**
+- 📝 **Communicate the results**
+
+---
+
+## 📅 Project Milestones
+
+Below are the key milestones for your final project. Make sure to adhere to the deadlines!
+
+| 📅 **Date**          | 📝 **Assignment**         | 🔗 **Link to Submit** |
+|:-------------------- |:-------------------------|:----------------------|
+| **October 14**       | Project Proposal          | [Submit here](#)      |
+| **November 11**      | Project Update            | [Submit here](#)      |
+| **December 16**      | Video Presentation        | [Submit here](#)      |
+| **December 23**      | Final Report              | [Submit here](#)      |
+
+### ⚠️ Important Notes
+
+- **No extensions** will be granted for any project due dates except in cases of medical reasons.
+- Projects submitted **after** the final due date will **not be graded**.
+
+---
+
+## 📊 Grading Overview
+
+The project is worth **50%** of your total course grade. Each submission milestone contributes to this grade as follows:
+
+- 📝 **Project Proposal**: 5% of the total course grade
+- 📈 **Project Update**: 5% of the total course grade
+- 🎥 **Video Presentation**: 15% of the total course grade
+- 📋 **Final Report**: 25% of the total course grade
+
+**Detailed grading criteria for each submission** (Proposal, Update, Presentation, Report) can be found in the corresponding **Project Submissions** section on Moodle.
+
+---
+
+## 📑 Milestone Descriptions
+
+### 1. 📝 **Project Proposal**
+
+#### 📅 **Due Date:** October 14
+
+- **Submission Type:** File upload via Moodle.
+- **File Format:** Quarto file (`.qmd`).
+- **File Naming Convention:** Name your file as `proposal_<group_name>.qmd`.
+  - **Requirements:** Outline your project, including background, objectives, research questions, data source, and timeline. A template will be provided for you to follow.
+- 🔗 **Submission Link:** [Submit here](#)
+
+---
+
+### 2. 📈 **Project Update**
+
+#### 📅 **Due Date:** November 11
+
+- **Submission Type:** File upload via Moodle.
+- **File Format:** HTML file generated from Quarto.
+- **File Naming Convention:** Name your file as `update_<group_name>.html`.
+  - **Requirements:** Provide progress on your project, covering data description, initial analysis, and preliminary findings. Follow the provided template.
+- 🔗 **Submission Link:** [Submit here](#)
+
+---
+
+### 3. 🎥 **Video Presentation**
+
+#### 📅 **Due Date:** December 16
+
+- **Submission Type:** File upload (slides) and link submission (video) via Moodle.
+- **Files to Upload:** Presentation slides (PDF, HTML, or PowerPoint) and a Google Drive link to your video.
+  - **Requirements:** The video should be a maximum of 7 minutes, showcasing key project insights and contributions. Ensure the video link is publicly accessible.
+- 🔗 **Submission Link:** [Submit here](#)
+
+---
+
+### 4. 📋 **Final Report**
+
+#### 📅 **Due Date:** December 23
+
+- **Submission Type:** File upload via Moodle.
+- **Files to Submit:** Quarto file (`.qmd`) and the compiled HTML file.
+- **File Naming Convention:** Name your files as `final_<group_name>.qmd` and `final_<group_name>.html`.
+  - **Requirements:** Your report should comprehensively cover your data science process, including data collection, analysis, and conclusions. Code should be hidden but available for reproducibility.
+- 🔗 **Submission Link:** [Submit here](#)
+
+---
+
+{{< include _05_data-sources.qmd >}}

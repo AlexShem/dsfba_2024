@@ -1,0 +1,35 @@
+## 📊 Final Report Grading Criteria
+
+Your final report is worth **25%** of the total course grade and will be evaluated based on the following areas. Each section will be graded using a fixed set of points based on **100%, 75%, 50%, 25%, or 0%**, as described in the detailed evaluation grid (attached on Moodle).
+
+| **Criteria**                                             | **Max Points** | **Description**                                                                                             |
+| :------------------------------------------------------- | :------------: | :----------------------------------------------------------------------------------------------------------- |
+| **Overview, Motivation, Related Work, Research Questions** |      10        | Clear and comprehensive introduction, well-defined research questions, and strong motivation with relevant related work. |
+| **Data Sources and Description**                         |      10        | Detailed explanation of data sources, collection, cleaning, and preprocessing. Consideration of data quality issues.      |
+| **Exploratory Data Analysis (EDA)**                      |      35        | Well-justified visualizations, insightful exploration of data, and solid methodology for uncovering patterns and trends.   |
+| **Answering Research Questions and Final Analysis**       |      35        | Strong and well-supported conclusions, accurate interpretation of results, and correct use of statistical models (if applicable). |
+| **Aesthetics, Writing, Project Organization, Code Quality** |      10        | Professional report structure, readable code, high-quality visualizations, and clear, error-free writing.                 |
+
+---
+
+### 🔎 **Grading Scale**
+
+For each section, the following fixed point values will be applied based on the quality of your work. The specific criteria for each point level are described in the detailed evaluation table (attached on Moodle).
+
+| **Score**                 | **10-Point Sections** (Intro, Data, Aesthetics) | **35-Point Sections** (EDA, Final Analysis) |
+| :------------------------ | :---------------------------------------------: | :-----------------------------------------: |
+| **🔵 100%**               | 10 points                                       | 35 points                                   |
+| **🟢 75%**                | 7.5 points                                      | 26.25 points                                |
+| **🟡 50%**                | 5 points                                        | 17.5 points                                 |
+| **🟠 25%**                | 2.5 points                                      | 8.75 points                                 |
+| **🔴 0%**                 | 0 points                                        | 0 points                                    |
+
+---
+
+### 📝 **Detailed Grading Rubric**
+
+A **detailed grading rubric** with specific criteria for each score will be provided on Moodle. This rubric outlines exactly what is required to achieve each score for every section, ensuring transparency in grading.
+
+🔗 **[See the detailed evaluation table on Moodle](#)**
+
+> *Be sure to review the rubric on Moodle to understand how your report will be evaluated and maximize your score!*
