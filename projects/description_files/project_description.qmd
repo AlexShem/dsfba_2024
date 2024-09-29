@@ -49,15 +49,11 @@ The project is worth **50%** of your total course grade. Each submission milesto
 
 #### 📅 **Due Date:** October 14
 
-**Submission Type:** File upload via Moodle.
-
-**File Format:** Quarto file (`.qmd`).
-
-**File Naming Convention:** Name your file as `proposal_<group_name>.qmd`.
-
-- **Requirements:** Outline your project, including background, objectives, research questions, data source, and timeline. A template will be provided for you to follow.
-
-#### 🔗 **Submission Link:** [Submit here](#)
+- **Submission Type:** File upload via Moodle.
+- **File Format:** Quarto file (`.qmd`).
+- **File Naming Convention:** Name your file as `proposal_<group_name>.qmd`.
+  - **Requirements:** Outline your project, including background, objectives, research questions, data source, and timeline. A template will be provided for you to follow.
+- 🔗 **Submission Link:** [Submit here](#)
 
 ---
 
@@ -65,15 +61,11 @@ The project is worth **50%** of your total course grade. Each submission milesto
 
 #### 📅 **Due Date:** November 11
 
-**Submission Type:** File upload via Moodle.
-
-**File Format:** HTML file generated from Quarto.
-
-**File Naming Convention:** Name your file as `update_<group_name>.html`.
-
-- **Requirements:** Provide progress on your project, covering data description, initial analysis, and preliminary findings. Follow the provided template.
-
-#### 🔗 **Submission Link:** [Submit here](#)
+- **Submission Type:** File upload via Moodle.
+- **File Format:** HTML file generated from Quarto.
+- **File Naming Convention:** Name your file as `update_<group_name>.html`.
+  - **Requirements:** Provide progress on your project, covering data description, initial analysis, and preliminary findings. Follow the provided template.
+- 🔗 **Submission Link:** [Submit here](#)
 
 ---
 
@@ -81,13 +73,10 @@ The project is worth **50%** of your total course grade. Each submission milesto
 
 #### 📅 **Due Date:** December 16
 
-**Submission Type:** File upload (slides) and link submission (video) via Moodle.
-
-**Files to Upload:** Presentation slides (PDF, HTML, or PowerPoint) and a Google Drive link to your video.
-
-- **Requirements:** The video should be a maximum of 7 minutes, showcasing key project insights and contributions. Ensure the video link is publicly accessible.
-
-#### 🔗 **Submission Link:** [Submit here](#)
+- **Submission Type:** File upload (slides) and link submission (video) via Moodle.
+- **Files to Upload:** Presentation slides (PDF, HTML, or PowerPoint) and a Google Drive link to your video.
+  - **Requirements:** The video should be a maximum of 7 minutes, showcasing key project insights and contributions. Ensure the video link is publicly accessible.
+- 🔗 **Submission Link:** [Submit here](#)
 
 ---
 
@@ -95,15 +84,11 @@ The project is worth **50%** of your total course grade. Each submission milesto
 
 #### 📅 **Due Date:** December 23
 
-**Submission Type:** File upload via Moodle.
-
-**Files to Submit:** Quarto file (`.qmd`) and the compiled HTML file.
-
-**File Naming Convention:** Name your files as `final_<group_name>.qmd` and `final_<group_name>.html`.
-
-- **Requirements:** Your report should comprehensively cover your data science process, including data collection, analysis, and conclusions. Code should be hidden but available for reproducibility.
-
-#### 🔗 **Submission Link:** [Submit here](#)
+- **Submission Type:** File upload via Moodle.
+- **Files to Submit:** Quarto file (`.qmd`) and the compiled HTML file.
+- **File Naming Convention:** Name your files as `final_<group_name>.qmd` and `final_<group_name>.html`.
+  - **Requirements:** Your report should comprehensively cover your data science process, including data collection, analysis, and conclusions. Code should be hidden but available for reproducibility.
+- 🔗 **Submission Link:** [Submit here](#)
 
 ---
 
