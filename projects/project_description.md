@@ -34,6 +34,25 @@ to the deadlines!
 
 ------------------------------------------------------------------------
 
+## 📊 Grading Breakdown
+
+The project is worth **50%** of your total course grade. The breakdown
+of the project components is as follows:
+
+- 📝 **Project Proposal**: 5% of the overall course grade.
+- 📈 **Project Update**: 5% of the overall course grade.
+- 🎥 **Video Presentation**: 15% of the overall course grade. This
+  includes the clarity, quality, and storytelling aspects of your
+  presentation.
+- 📋 **Final Report**: 25% of the overall course grade. This includes
+  the quality of your data analysis, R code, complexity and level of
+  difficulty, completeness, and functionality of your analysis.
+
+Make sure to prioritize these components as you progress through your
+project.
+
+------------------------------------------------------------------------
+
 ## 📑 Detailed Milestone Descriptions
 
 ### 1. 📝 **Project Proposal**
@@ -285,21 +304,6 @@ Your final report will be evaluated based on the following scale:
 
 > Put your best work forward, and make sure your final report tells a
 > complete story of your data science journey! 🚀
-
-------------------------------------------------------------------------
-
-## Grading
-
-- The project proposal is worth 5% of the overall course grade.
-- The project update is worth 5% of the overall course grade.
-- The report and the presentation represent 70% of the overall course
-  grade:
-  - 50% for your Quarto files and the knitted report. This includes the
-    quality of your data analysis and R code, the complexity and level
-    of difficulty of your project, completeness and overall
-    functionality of your analysis.
-  - 20% for your presentation and the quality of its storytelling
-    aspects.
 
 ------------------------------------------------------------------------
 

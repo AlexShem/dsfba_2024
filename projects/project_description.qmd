@@ -16,11 +16,11 @@ For this assignment, you will work on a **real data science project**. The goal 
 
 ---
 
-{{< include _03_milestone-descriptions.qmd >}}
+{{< include _04_grading.qmd >}}
 
 ---
 
-{{< include _04_grading.qmd >}}
+{{< include _03_milestone-descriptions.qmd >}}
 
 ---
 
