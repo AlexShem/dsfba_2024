@@ -1,0 +1,7 @@
+## Grading
+
+- The project proposal is worth 5% of the overall course grade.
+- The project update is worth 5% of the overall course grade.
+- The report and the presentation represent 70% of the overall course grade:
+  - 50% for your Quarto files and the knitted report. This includes the quality of your data analysis and R code, the complexity and level of difficulty of your project, completeness and overall functionality of your analysis.
+  - 20% for your presentation and the quality of its storytelling aspects.

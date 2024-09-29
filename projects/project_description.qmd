@@ -1,0 +1,27 @@
+---
+title: "🎓 Group Project Description"
+format: gfm
+---
+
+For this assignment, you will work on a **real data science project**. The goal of the project is to go through the complete data science process to answer questions about a topic of your own choosing. You will:
+
+- 📊 **Acquire the data**
+- 📈 **Design your visualizations**
+- 📉 **Run statistical analysis**
+- 📝 **Communicate the results**
+
+---
+
+{{< include _02_milestones.qmd >}}
+
+---
+
+{{< include _03_milestone-descriptions.qmd >}}
+
+---
+
+{{< include _04_grading.qmd >}}
+
+---
+
+{{< include _05_data-sources.qmd >}}
