@@ -1,4 +1,7 @@
-# 🎓 Group Project Description
+---
+title: "🎓 Group Project Description"
+format: gfm
+---
 
 For this assignment, you will work on a **real data science project**. The goal of the project is to go through the complete data science process to answer questions about a topic of your own choosing. You will:
 
@@ -102,52 +105,6 @@ The project is worth **50%** of your total course grade. Each submission milesto
 
 #### 🔗 **Submission Link:** [Submit here](#)
 
-------------------------------------------------------------------------
+---
 
-## Data Sources and Project Ideas
-
-- [Google Dataset Search](https://datasetsearch.research.google.com/)
-- [Data is Plural: Google Sheet with 1000+
-  datasets](https://docs.google.com/spreadsheets/d/1wZhPLMCHKJvwOkP4juclhjFgqIY8fQFMemwKL2c64vk/edit#gid=0)
-- [Github Awesome Public
-  Datasets](https://github.com/awesomedata/awesome-public-datasets)
-- [Open Data Inception - 2600+ Open Data Portals Around the
-  World](https://opendatainception.io/)
-- [data.world](https://data.world/)
-- [Subreddit r/datasets](https://www.reddit.com/r/datasets/)
-- [CORGIS Datasets Project](https://corgis-edu.github.io/corgis/)
-- Governments / NGOs websites like
-  - Switzerland resources
-    - [Office Fédéral de la
-      Statistique](https://www.bfs.admin.ch/bfs/fr/home.html)
-    - [Swiss Open Data](https://opendata.swiss/fr)
-  - [European Data Portal](https://www.europeandataportal.eu/en)
-  - US resources
-    - [NYC Open Data](https://opendata.cityofnewyork.us/)
-    - [The General Social Survey](https://gss.norc.org/)
-    - [US Bureau of Labor Statistics](https://www.bls.gov/)
-    - [US Department of
-      Education](https://www2.ed.gov/rschstat/landing.jhtml)
-    - [Federal Reserve Economic Data](https://fred.stlouisfed.org/)
-    - [US Department of
-      Agriculture](https://www.nass.usda.gov/Quick_Stats/)
-  - [World Bank Open Data](https://data.worldbank.org/)
-  - [UN Data](http://data.un.org/) and other UNSD databases
-    - [Monthly Bulletin of Statistics
-      Online](https://unstats.un.org/unsd/mbs/app/DataSearchTable.aspx)
-    - [SDG Indicators](https://unstats.un.org/sdgs/indicators/database)
-    - [UN Comtrade Database](https://comtrade.un.org/)
-- Other
-  - [News API](https://newsapi.org/)
-  - [Kaggle](https://www.kaggle.com/)
-  - [10 great sites with free
-    datasets](https://towardsdatascience.com/top-10-great-sites-with-free-data-sets-581ac8f6334)
-- Some project ideas
-  - [Blog of the Data
-    Incubator](https://blog.thedataincubator.com/2016/10/data-science-project-ideas/)
-  - [FiveThirtyEight 2016 jalous
-    list](https://fivethirtyeight.com/features/damn-we-wish-wed-written-these-11-stories/),
-    [FiveThirtyEight 2019 jalousy
-    list](https://fivethirtyeight.com/features/damn-we-wish-wed-written-these-17-stories/)
-  - [First answer to this quora
-    question](https://www.quora.com/What-are-some-good-data-science-projects?share=1)
+{{< include _05_data-sources.qmd >}}
