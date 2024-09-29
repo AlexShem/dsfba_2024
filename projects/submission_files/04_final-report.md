@@ -71,6 +71,7 @@ Your final report is worth **25%** of the total course grade and will be evaluat
 | **Aesthetics, Writing, Project Organization, Code Quality** |      10        | Professional report structure, readable code, high-quality visualizations, and clear, error-free writing.                 |
 
 - **Total Points**: 100 points, corresponding to **25%** of your total course grade.
+- 🔗 **Grading Details**: For a detailed breakdown of the grading criteria, please refer to the **Final Report Grading Rubric** attached on Moodle: [Link to PDF](#).
 
 ---
 
