@@ -1,0 +1,119 @@
+---
+title: "Project Proposal: [Your Project Title Here]"
+author:
+  - Surname I, Name I
+  - Surname II, Name II
+  - Surname III, Name III
+institute: "[Name of the University]"
+date: "today"
+date-format: "MMMM D, YYYY"
+title-block-banner: "#0095C8"  # Chosen for the University of Lausanne
+toc: true
+toc-location: right
+format:
+  html:
+    number-sections: true
+    html-math-method: katex
+    self-contained: true
+    theme: default
+# pdf: default  # Uncomment if you want to render PDFs instead
+abstract: |
+  *Write a brief abstract summarizing your project.*
+
+  > **Example**: This project aims to analyze **[your topic]** by exploring **[key aspects]**. We intend to answer questions related to **[main research questions]** using data from **[data source]**.
+---
+
+# Background and Motivation
+
+*Introduce your topic and explain why it is important.*
+
+- **Why did you choose this topic?**
+  - *We chose this topic because...*
+- **Why is it important or interesting?**
+  - *This topic is significant due to...*
+- **Broader context:**
+  - *In the field of data science/business analytics, this project relates to...*
+
+# Project Objectives
+
+*Clearly state the goals of your project.*
+
+- **Main objective:**
+  - *The primary goal of this project is to...*
+- **Specific aims:**
+  - *We aim to achieve...*
+- **Scope of the project:**
+  - *Our analysis will focus on...*
+
+# Research Questions
+
+*Outline the key questions your project will address.*
+
+- **Research Question 1:**
+  - *What is the relationship between...?*
+- **Research Question 2:**
+  - *How does... affect...?*
+- **Relevance to data:**
+  - *These questions are pertinent because...*
+
+# Data Source
+
+*Describe where and how you will obtain your data.*
+
+- **Data source(s):**
+  - *We will use data from...*
+- **Data acquisition method:**
+  - *The data will be collected via...*
+- **Limitations or challenges:**
+  - *Potential challenges include...*
+
+# Data Description
+
+*Provide an overview of the data you plan to use.*
+
+- **Key features:**
+  - *The dataset includes variables such as...*
+- **Format and size:**
+  - *The data is in [format] and contains approximately [number] observations and [number] variables.*
+- **Variable types:**
+  - *The variables include numeric (integer/double), categorical, date/time, and text data.*
+- **Data cleaning steps:**
+  - *We anticipate needing to clean the data by...*
+
+# Schedule & Timeline
+
+*Outline a realistic timeline for your project.*
+
+- **Week 1-2: Data collection and cleaning**
+  - *We will acquire the data and perform initial cleaning...*
+- **Week 3-4: Exploratory Data Analysis (EDA)**
+  - *Conduct EDA to understand data distributions and relationships...*
+- **Week 5-6: Modeling (if applicable)**
+  - *Apply modeling techniques such as...*
+- **Week 7: Interpretation and Conclusions**
+  - *Interpret the results and draw conclusions...*
+- **Week 8: Final Report Preparation**
+  - *Compile findings and prepare the final report...*
+
+---
+
+::: {.alert .alert-info}
+
+**Note to Students:** Replace the placeholder text and sample sentences with your actual project details. Ensure that each section is fully developed to meet the grading criteria outlined in the guidelines.
+
+:::
+
+---
+
+# References
+
+*List any references or datasets you plan to use.*
+
+- **Datasets:**
+  - *[Dataset Name], available at [URL or source].*
+- **Literature:**
+  - *Author(s), "Title of the Article," Journal/Conference, Year.*
+
+# Appendix (Optional)
+
+*Include any additional materials or preliminary results if available.*
