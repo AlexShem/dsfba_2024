@@ -427,7 +427,7 @@ table2 |>
 include_graphics("../assets/r4ds/tidy-8.png")
 ```
 
-## Separate a column with `tidyr::separate` family
+## Separate a column with `tidyr::separate`
 
 :::: {.columns}
 ::: {.column width='48%'}
@@ -553,14 +553,6 @@ stocks |> drop_na()
 <!-- treatment |> -->
 <!--     fill(person) -->
 <!-- ``` -->
-
-## Exercise
-
-Load the `tidyverse` library and data set `CanadaPanelSim.csv` (using `read_csv()`).
-
-1. Some vehicles (`Falsevine`) have multiple entries, probably for multiple insurance years. Make the table wider by adding one column per insurance year.
-2. Is this table more or less tidy? What are benefits/drawbacks of the new format? 
-3. Starting from the new table, make the table long again and make sure it matches the initial data set.
 
 # Filter, arrange select
 
@@ -978,11 +970,3 @@ popular_dests |>
   mutate(prop_delay = arr_delay / sum(arr_delay)) |> 
   select(year:day, dest, arr_delay, prop_delay)
 ```
-
-## Exercises
-
-1. Add a new column showing the average distance per trip and remove the column `Falsevin`. Rename all columns, so you don't have to type `RA` all the time. Convert the columns for gender, marital status, and vehicle use to `factor` type.
-2. Exclude drivers that drove less than 500km or were insured for less than 1/3 year.
-3. Compute a table containing the mean and variance for the distance, and number of trips, and average distance per trip for each combination of gender, marital status, and vehicle use.
-4. Count how often drivers had 0, 1, 2, ... accidents, but split them into categories you think could be interesting (long-distance drivers, married, etc.). Arrange the data in a way that makes it easy to parse the information.
-<!-- 6. Divide the drivers into 200km-sized bins according to distance traveled. For each bin, compute the average number of incidents. Now make a scatter plot for distance driven vs incidence frequency. Add facets/aesthetics for other variables that might be interesting. -->
