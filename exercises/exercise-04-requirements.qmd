@@ -1,0 +1,376 @@
+---
+title: "DSIBA: Series 3"
+subtitle: "Data Wrangling -- 1"
+toc: true
+toc-depth: 1
+format: 
+  html:
+    number-sections: true
+    html-math-method: katex
+    self-contained: true
+    code-overflow: wrap
+    code-tools: true
+    code-link: true
+  pdf:
+    number-sections: true
+    include-in-header: 
+      text: |
+        \usepackage[headsepline]{scrlayer-scrpage}
+        \usepackage{fontspec}
+        \ihead{DSIBA: Series 3}
+        \chead{}
+        \ohead{\headmark}
+        \automark{section}
+    papersize: a4
+format-links: false
+---
+
+# Introduction
+
+In this series, we focus on data wrangling in R, covering key concepts from data manipulation. These exercises are designed to help you practice tasks such as widening and longening data, handling missing values, selecting and mutating columns, filtering data, and summarising information using the `tidyverse` package.
+
+For this exercise, we will use the `flights` dataset from `nycflights13` package, which contains information about flights departing from New York City in 2013. The dataset includes details such as flight times, delays, distances, and carrier information. We will explore various data wrangling techniques to manipulate and summarise this dataset effectively.
+
+```{r}
+#| echo: true
+#| message: false
+
+library(tidyverse)
+library(nycflights13)
+```
+
+# Counting the Data
+
+## Counting Flights per Tail Number, Carrier, and Month
+
+***Questions***
+
+1. Count the number of flights per `tailnum`, `carrier`, and `month`. This will help you understand how often each aircraft is used by different carriers across different months. Name this dataset `flights_count`.
+    - Use `count()` to calculate the number of flights per `tailnum`, `carrier`, and `month`.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+flights_count <- flights %>%
+  count(tailnum, carrier, month)
+```
+
+:::
+
+```{r}
+#| echo: true
+#| eval: true
+
+flights_count
+```
+
+# Widening and Longening the Data
+
+## Widening the Data
+
+***Questions***
+
+2. Create a wide version of the `flights_count` dataset with a name `wide_flights`, where each `carrier` has a separate column for the number of flights per month. Use `tailnum` as the identifier for each aircraft.
+    - Use `pivot_wider()` to create a wide table with separate columns for each `carrier`.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+wide_flights <- flights_count %>%
+  pivot_wider(
+    names_from = carrier,
+    values_from = n, values_fill = 0
+  )
+```
+
+:::
+
+```{r}
+#| echo: true
+#| eval: true
+
+wide_flights
+```
+
+## Longening the Data
+
+***Questions***
+
+3. Create a long version of the `wide_flights` dataset, where each observation represents a `carrier` and its corresponding number of flights per month for each aircraft (`tailnum`).
+    - Use `pivot_longer()` to convert the wide table back to a long format.
+    - Ensure that the final dataset has columns for `tailnum`, `month`, `carrier`, and `n_flights`. This structure will make it easier to perform analysis based on carrier-specific information.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+long_flights <- wide_flights %>%
+  pivot_longer(
+    cols = -c(tailnum, month),
+    names_to = "carrier", values_to = "n_flights"
+  )
+```
+
+:::
+
+```{r}
+#| echo: true
+#| eval: true
+
+long_flights
+```
+
+# Handling Missing Values
+
+## Identifying Missing Values
+
+***Questions***
+
+1. Identify which columns in the `flights` dataset have missing values and determine how many missing values are present in each column.
+    - Use `purrr::keep()` to keep only columns with missing values. As a predicate function, use `\(x) any(is.na(x))` to check for missing values.
+    - Use `summarise()` to calculate the number of missing values in each column. To calculate the number of missing values, use `~ sum(is.na(.))`.
+
+::: {.callout .callout-hint}
+Use `dplyr::across()` inside of `summarize()` to apply the same function to multiple columns.
+:::
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+missing_values <- flights %>% 
+  keep(\(x) any(is.na(x))) %>% 
+  summarise(across(
+    everything(), 
+    ~ sum(is.na(.))
+  ))
+```
+
+:::
+
+```{r}
+missing_values
+```
+
+# Filtering Missing Data
+
+```{r}
+#| echo: false
+#| eval: true
+
+flights_no_na <- flights %>%
+  filter(!is.na(arr_delay))
+nrow(flights_no_na)
+```
+
+## Removing Rows with Missing Arrival Delay
+
+***Questions***
+
+2. Remove rows where the `arr_delay` (arrival delay) is missing, as these might indicate cancelled flights. After removing the rows, calculate how many rows were removed from the dataset and explain why removing these rows is a reasonable approach.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+flights_no_na <- flights %>%
+  filter(!is.na(arr_delay))
+num_removed <- nrow(flights) - nrow(flights_no_na)
+num_removed
+```
+
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+num_removed
+```
+
+# Selecting Columns
+
+## Selecting Columns Starting with "arr"
+
+***Questions***
+
+1. Use `select()` to create a new table containing only columns that start with "arr" (e.g., `arr_delay`, `arr_time`). These columns provide information related to the arrival of flights, such as arrival delays and times. Summarise what type of information these columns represent and how they could be useful for analysis.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+arr_columns <- flights %>%
+  select(starts_with("arr"))
+arr_columns
+```
+
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+arr_columns
+```
+
+## Renaming `tailnum` to `aircraft_id`
+
+***Questions***
+
+2. Rename the `tailnum` column to `aircraft_id` to make it more descriptive. Explain why using descriptive column names is important for data readability and interpretation.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+flights <- flights %>%
+  rename(aircraft_id = tailnum)
+flights
+```
+
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+flights
+```
+
+# Mutating Columns
+
+## Adding Average Speed Column
+
+***Questions***
+
+1. Add a new column called `avg_speed` that calculates the average speed (in miles per hour) for each flight using the `distance` and `air_time` columns. Note that `air_time` is in minutes, so you will need to convert it to hours for the calculation. This will give you an idea of how fast each flight travelled.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+flights <- flights %>%
+  mutate(avg_speed = distance / (air_time / 60))
+head(flights)
+```
+
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+flights_avg_speed <- flights %>%
+  mutate(avg_speed = distance / (air_time / 60))
+head(flights_avg_speed)
+```
+
+## Converting Columns to Factors
+
+***Questions***
+
+2. Convert the `carrier`, `origin`, and `dest` columns to factors. Explain why converting these columns to factors might be useful for analysis, such as improving memory usage or facilitating group-based operations.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+flights <- flights %>%
+  mutate(across(c(carrier, origin, dest), as.factor))
+flights
+```
+
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+flights
+```
+
+# Filtering and Excluding Records
+
+## Excluding Flights
+
+***Questions***
+
+1. Exclude flights with a `distance` of less than 500 miles or an `air_time` of less than 60 minutes. This will filter out shorter flights that might not be relevant for certain types of analysis. Calculate how many flights remain in the dataset after applying this filter and discuss how excluding these flights might affect your analysis results.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+filtered_flights <- flights %>%
+  filter(distance >= 500, air_time >= 60)
+nrow(filtered_flights)
+```
+
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+filtered_flights <- flights %>%
+  filter(distance >= 500, air_time >= 60)
+nrow(filtered_flights)
+```
+
+# Summarising Data
+
+## Summary Table
+
+***Questions***
+
+1. Create a summary table that shows the mean and variance of `distance`, `arr_delay`, and `dep_delay` for each combination of `origin` and `carrier`. This will help you understand the variability in flight distances and delays for different carriers at different origins. Describe any trends or patterns you observe in the summary statistics.
+
+::: {.content-visible when-format="html"}
+
+***Answers***
+
+```{r}
+summary_table <- flights %>%
+  group_by(origin, carrier) %>%
+  summarise(
+    mean_distance = mean(distance, na.rm = TRUE),
+    var_distance = var(distance, na.rm = TRUE),
+    mean_arr_delay = mean(arr_delay, na.rm = TRUE),
+    var_arr_delay = var(arr_delay, na.rm = TRUE),
+    mean_dep_delay = mean(dep_delay, na.rm = TRUE),
+    var_dep_delay = var(dep_delay, na.rm = TRUE)
+  )
+summary_table
+```
+
+:::
+
+```{r}
+#| echo: false
+#| eval: true
+
+summary_table <- flights %>%
+  group_by(origin, carrier) %>%
+  summarise(
+    mean_distance = mean(distance, na.rm = TRUE),
+    var_distance = var(distance, na.rm = TRUE),
+    mean_arr_delay = mean(arr_delay, na.rm = TRUE),
+    var_arr_delay = var(arr_delay, na.rm = TRUE),
+    mean_dep_delay = mean(dep_delay, na.rm = TRUE),
+    var_dep_delay = var(dep_delay, na.rm = TRUE)
+  )
+summary_table
+```
