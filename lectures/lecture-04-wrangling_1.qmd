@@ -1,0 +1,972 @@
+---
+title: "Data Science for Business Analytics"
+subtitle: "Data Wrangling -- 1"
+author: "Professor Alex [aleksandr.shemendyuk@unil.ch]"
+date: "14/10/2024"
+format: 
+    beamer:
+        include-in-header: ../latex/header.tex
+        fontsize: 10pt
+execute:
+    echo: true
+---
+
+```{r setup}
+#| echo: false
+#| include: FALSE
+
+source("../R/common.R")
+library(nycflights13)
+```
+
+
+## Outline
+
+\tableofcontents
+
+## Today
+
+![](../assets/r4ds/data-science-wrangle.png)
+
+\vspace{1cm}
+\centering
+
+Most of the material (e.g., the picture above) is borrowed from
+
+**[R for data science](https://r4ds.hadley.nz/)**
+
+<!-- ## Data manipulation with `dplyr` -->
+
+<!-- * When working with data you must: -->
+<!--     * Figure out what you want to do. -->
+<!--     * Describe those tasks in the form of a computer program. -->
+<!--     * Execute the program. -->
+<!-- * The `dplyr` package makes these steps fast and easy: -->
+<!--     * By constraining your options, it helps you think about your data manipulation  -->
+<!-- challenges. -->
+<!--     * It provides simple "verbs", functions that correspond to the most common data  -->
+<!-- manipulation tasks, to help you translate your thoughts into code. -->
+<!--     * It uses efficient backends, so you spend less time waiting for the computer. -->
+
+
+## A grammar of data manipulation
+
+* When working with data you must:
+  * Figure out what you want to do.
+  * Describe those tasks as a computer program.
+  * Execute the program.
+* The `dplyr` package makes it fast and easy with 5 verbs!
+  * `filter()`: select observations based on their values.
+  * `arrange()`: reorder the observations.
+  * `select()`: select variables based on their names.
+  * `mutate()`: add variables as functions of existing variables.
+  * `summarize()`: collapse many values down to a single summary.
+* Two important features:
+  * Verbs can be used with `group_by()` to operate group-wise. 
+  * Verbs work similarly...
+    1.  First argument: a `tibble` or a `data.frame`.
+    2.  Other arguments: what to do with it using variable names.
+    3.  Result: a new `tibble` or a `data.frame`.
+
+## The `dplyr` package examples
+
+Some examples using `dplyr` package on `mtcars` data set.
+
+:::: {.columns}
+
+::: {.column width='42%'}
+
+- Select rows with `filter()` where `cyl` is equal to 8.
+
+```{r}
+#| echo: true
+#| eval: false
+
+filter(mtcars, cyl == 8)
+```
+
+- Arrange rows with `arrange()` by `mpg`.
+
+```{r}
+#| echo: true
+#| eval: false
+
+arrange(mtcars, mpg)
+```
+
+- Select columns with `select()` where `mpg` and `cyl` are present.
+
+```{r}
+#| echo: true
+#| eval: false
+
+select(mtcars, mpg, cyl)
+```
+
+:::
+
+::: {.column width='55%'}
+
+- Add a new column with `mutate()` that is the ratio of `hp` to `wt`.
+
+```{r}
+#| echo: true
+#| eval: false
+
+mutate(mtcars, hp_per_wt = hp / wt)
+```
+
+- Summarize the data with `summarize()` by calculating the mean of `mpg`.
+
+```{r}
+#| echo: true
+#| eval: false
+
+summarize(mtcars, mean_mpg = mean(mpg))
+```
+
+:::
+
+::::
+
+## `nycflights13` package
+
+All `r format(nrow(nycflights13::flights), big.mark = "'")` flights that departed from NYC in 2013 
+([US BTS](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0)):
+
+```{r}
+nycflights13::flights
+```
+
+## What is this code doing?
+
+:::: {.columns}
+
+::: {.column width='60%'}
+
+```{r, results = "hold", message = FALSE}
+a1 <- group_by(flights, year, month, day)
+a2 <- select(a1, arr_delay, dep_delay)
+a3 <- summarize(a2,
+  arr = mean(arr_delay, na.rm = TRUE),
+  dep = mean(dep_delay, na.rm = TRUE)
+)
+filter(a3, arr > 30 | dep > 30)
+```
+:::
+
+::: {.column width='40%'}
+
+1. **Group** flights by year, month, and day.
+2. **Select** arrival and departure delays.
+3. **Calculate** the mean arrival and departure delays.
+4. **Filter** for days with average arrival or departure delays greater than 30 minutes.
+
+:::
+
+::::
+
+## Same code (no unnecessary objects)
+
+```{r}
+filter(
+  summarize(
+    select(
+      group_by(flights, year, month, day),
+      arr_delay, dep_delay
+    ),
+    arr = mean(arr_delay, na.rm = TRUE),
+    dep = mean(dep_delay, na.rm = TRUE)
+  ),
+  arr > 30 | dep > 30
+)
+```
+
+## Use the pipe operator `|>` or `%>%`
+
+:::: {.columns}
+
+::: {.column width='54%'}
+
+```{r, results = "hold", message = FALSE}
+flights |>
+  group_by(year, month, day) |>
+  select(arr_delay, dep_delay) |>
+  summarize(
+    arr = mean(arr_delay, na.rm = TRUE),
+    dep = mean(dep_delay, na.rm = TRUE)
+  ) |>
+  filter(arr > 30 | dep > 30)
+```
+
+:::
+
+::: {.column width='45%'}
+
+**Advantages:**
+
+- Focus on the **high-level composition** of functions.
+- Focus on **what's being done**, not on what's being modified.
+- Makes your code **more readable** by:
+  - **Structuring** sequences of data operations left-to-right.
+  - **Minimizing** the need for local variables and function definitions.
+  - Making it easy to **add steps** anywhere in the sequence.
+
+:::
+
+::::
+
+## Basic piping
+
+* `x |> f()` is equivalent to `f(x)`
+* `x |> f(y)` is equivalent to `f(x, y)`
+* `x |> f(y) |> g(z)` is equivalent to `g(f(x, y), z)`
+
+```{r}
+x <- 1:10
+y <- x + 1
+z <- y + 1
+f <- function(x, y) x + y
+
+x |> sum()
+x |> f(y)
+x |> f(y) |> f(z)
+```
+
+## The placeholder
+
+* When `f` doesn't take the LHS as the first argument, use the `_` placeholder.
+  * In general, **try to avoid this usage**.
+* `x |> f(y, z = _)` is equivalent to `f(y, z = x)`
+* The placeholder can only be used with *named* arguments
+
+```{r}
+x <- 1:10
+y <- 2 * 1:10
+f <- function(a, b) a / b
+
+x |> f(y, b = _)
+x |> f(y, a = _)
+```
+
+## Function composition
+
+* Each of the three options has its own strengths and weaknesses:  
+  * Nesting, `f(g(x))`:
+    * Concise, and well suited for short sequences. 
+    * Longer sequences harder to read (inside out). 
+    * Arguments can get spread out over long distances.  
+  * Intermediate objects, `y <- f(x); g(y)`:
+    * Requires you to name intermediate objects.
+    * A strength when objects are important, but a weakness when values are truly intermediate.  
+  * Piping, `x |> f() |> g()`:
+    * Allows to read code in straightforward left-to-right fashion.
+    * Only for linear sequences transforming a single object.
+* Most code use a combination of all three styles, but
+  * \bluebf{piping `|>` is more common in data analysis code.}
+
+
+# Tidy data
+
+## Tidy data
+
+> "Happy families are all alike; every unhappy family is unhappy in its
+> own way." --– Leo Tolstoy
+
+\vspace{1cm}
+
+> "Tidy datasets are all alike, but every messy dataset is messy in its
+> own way." --– Hadley Wickham
+
+To learn more about the underlying theory, see the [Tidy Data paper](http://www.jstatsoft.org/v59/i10/paper).
+
+## Which representation is "best"?
+
+\vspace{-0.3cm}
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* First representation?
+
+```{r, size = "tiny"}
+tidyr::table1
+```
+
+:::
+::: {.column width='48%'}
+
+* Third representation?
+
+```{r, size = "tiny"}
+tidyr::table3
+```
+
+:::
+::::
+
+\vspace{0.3cm}
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* Second representation?
+
+```{r, size = "tiny"}
+tidyr::table2
+```
+
+:::
+::: {.column width='48%'}
+
+* Fourth representation?
+
+```{r, size = "tiny"}
+tidyr::table4a  # cases
+tidyr::table4b  # population
+```
+
+:::
+::::
+
+## What makes a dataset tidy?
+
+Three interrelated rules:
+
+* Each **variable** must have its own column.
+* Each **observation** must have its own row.
+* Each **value** must have its own cell.
+
+```{r tidy-structure, echo = FALSE, out.width = "90%"}
+include_graphics("../assets/r4ds/tidy-1.png")
+```
+
+Because it's impossible to only satisfy two of the three:
+
+* Put each dataset in a tibble.
+* Put each variable in a column.
+
+## Why ensure that your data is tidy?
+
+* Why?
+  * With consistent data structure, it's easier to learn the tools that work with it because they have an underlying uniformity.
+  * Placing variables in columns allows R's vectorized nature to shine.
+
+* Tidy data principles seem obvious, BUT:
+  * Most people aren't familiar with them.
+  * Data often organized to facilitate something different than analysis.
+  * Hence, you'll most likely need to do some tidying.
+
+## The two steps of tidying
+
+* Figure out what the variables and observations are.
+* Resolve one of two common problems:
+  * One variable might be spread across multiple columns.
+  * One observation might be scattered across multiple rows.
+
+To fix these problems, you'll need to use:
+
+- `tidyr::pivot_longer()`: "lengthens" data by increasing the number of rows and decreasing the number of columns.
+- `tidyr::pivot_wider()`: "widens" data by increasing the number of columns and decreasing the number of rows.
+
+## Longer with `pivot_longer()`
+
+:::: {.columns}
+::: {.column width='43%'}
+
+```{r}
+table4a
+```
+
+:::
+::: {.column width='53%'}
+
+```{r}
+table4a |>
+  pivot_longer(c(`1999`, `2000`),
+    names_to = "year",
+    values_to = "cases"
+  )
+```
+
+:::
+::::
+
+```{r tidy-gather, echo = FALSE, out.width = "100%"}
+include_graphics("../assets/r4ds/tidy-9.png")
+```
+
+## Wider with `pivot_wider()`
+
+\vspace{-0.2cm}
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r, size = "tiny"}
+table2
+```
+
+:::
+::: {.column width='48%'}
+
+```{r, size = "tiny"}
+table2 |>
+  pivot_wider(
+    names_from = type,
+    values_from = count
+  )
+```
+
+:::
+::::
+
+\vspace{-0.2cm}
+
+```{r, echo = FALSE, out.width = "80%"}
+include_graphics("../assets/r4ds/tidy-8.png")
+```
+
+## Separate a column with `tidyr::separate`
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r, size = "tiny"}
+table3
+```
+
+:::
+::: {.column width='48%'}
+
+```{r, size = "tiny"}
+table3 |>
+  separate_wider_delim(
+    rate,
+    delim = "/", names = c("cases", "population")
+  )
+```
+
+:::
+::::
+
+```{r, echo = FALSE, out.width = "75%"}
+include_graphics("../assets/r4ds/tidy-17.png")
+```
+
+<!-- ## `separate()` using `convert = TRUE` -->
+
+<!-- ```{r} -->
+<!-- table3 |> -->
+<!--     separate(rate, into = c("cases", "population"), convert = TRUE) -->
+<!-- ``` -->
+
+<!-- ## Unite two columns with `unite()` -->
+
+<!-- :::: {.columns} -->
+<!-- ::: {.column width='48%'} -->
+
+<!-- ```{r, size = "tiny"} -->
+<!-- table5 -->
+<!-- ``` -->
+
+<!-- ::: -->
+<!-- ::: {.column width='48%'} -->
+
+<!-- ```{r, size = "tiny"} -->
+<!-- table5 |> -->
+<!--   unite(new, century, year, sep = "") -->
+<!-- ``` -->
+
+<!-- ::: -->
+<!-- :::: -->
+
+<!-- ```{r, echo = FALSE, out.width = "90%"} -->
+<!-- include_graphics("../assets/r4ds/tidy-18.png") -->
+<!-- ``` -->
+
+## Missing values and tidy data
+
+* A value can be missing in one of two possible ways:
+  * __Explicitly__, i.e. flagged with `NA`.
+  * __Implicitly__, i.e. simply not present in the data.
+
+\vspace{0.3cm}
+
+> "An explicit missing value is the presence of an absence; an implicit missing
+> value is the absence of a presence."  
+>                     --- Hadley Wickham
+
+* Are there missing values in this dataset?
+
+```{r}
+stocks <- tibble(
+    year   = c(2015, 2015, 2015, 2015, 2016, 2016, 2016),
+    qtr    = c(   1,    2,    3,    4,    2,    3,    4),
+    return = c(1.88, 0.59, 0.35,   NA, 0.92, 0.17, 2.66)
+)
+```
+
+## Implicit to explicit and conversly
+
+:::: {.columns}
+::: {.column width='48%'}
+
+<!-- * Implicit to explicit by pivoting: -->
+
+<!-- ```{r} -->
+<!-- stocks |> -->
+<!--     pivot_wider(names_from = year,  -->
+<!--                 values_from = return) -->
+<!-- ``` -->
+
+* Implicit to explicit using `tidyr::complete`:
+
+```{r}
+stocks |> complete(year, qtr)
+```
+
+:::
+::: {.column width='48%'}
+
+* Explicit to implicit via `drop_na()`.
+
+```{r}
+stocks |> drop_na()
+```
+
+:::
+::::
+
+
+
+<!-- ## Fill in missing values with `fill()` -->
+
+<!-- ```{r} -->
+<!-- treatment <- tribble( -->
+<!--     ~ person,           ~ treatment, ~response, -->
+<!--     "Derrick Whitmore", 1,           7, -->
+<!--     NA,                 2,           10, -->
+<!--     NA,                 3,           9, -->
+<!--     "Katherine Burke",  1,           4 -->
+<!-- ) -->
+<!-- treatment |> -->
+<!--     fill(person) -->
+<!-- ``` -->
+
+# Filter, arrange select
+
+## Filter rows with `dplyr::filter()`
+
+```{r}
+filter(flights, month == 1, day == 1)
+```
+
+## Comparisons
+
+* The standard suite: `>`, `>=`, `<`, `<=`, `!=`, and `==`. 
+* Most common mistake:
+
+```{r, eval = FALSE}
+filter(flights, month = 1)
+```
+
+* What happens in the following?
+
+```{r}
+sqrt(2)^2 == 2
+1/49 * 49 == 1
+dplyr::near(sqrt(2)^2,  2)
+dplyr::near(1 / 49 * 49, 1)
+```
+
+## Logical operators
+
+Multiple arguments to `dplyr::filter()` are usually combined with element-wise (vectorised) logical operations:
+
+* `&`: vectorised "and"
+* `|`: vectorised "or"
+* `!`: vectorised "not"
+
+```{r bool-ops, echo = FALSE, out.width = "100%"}
+include_graphics("../assets/r4ds/transform-logical.png")
+```
+
+## What is this code doing? 
+
+```{r, eval = FALSE}
+filter(flights, month == 11 | month == 12)
+```
+
+. . .
+
+* Literally "finds all flights that departed in November or December".
+
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+
+filter(flights, month == 11 | 12)
+```
+
+* Reasoning:
+  * `month == 11` is interpreted as `TRUE` or `FALSE` depending on the `month`.
+  * `12` is interpreted as `TRUE` because it's not `0` or `NA`.
+  * Result: (`TRUE` or `FALSE`) or `TRUE` = `TRUE`.
+  * Therefore, **all flights** are returned.
+
+. . .
+
+* A concise way to write the same code using `%in%`:
+
+```{r, eval = FALSE}
+filter(flights, month %in% c(11, 12))
+```
+
+<!-- ## De Morgan's law -->
+
+<!-- * `!(x & y)` is the same as `!x | !y` -->
+<!-- * `!(x | y)` is the same as `!x & !y` -->
+
+<!-- ```{r} -->
+<!-- all.equal( -->
+<!--   filter(flights, !(arr_delay > 120 | dep_delay > 120)), -->
+<!--   filter(flights, arr_delay <= 120, dep_delay <= 120) -->
+<!--   ) -->
+<!-- ``` -->
+
+## Missing values and `filter()`
+
+```{r}
+df <- tibble(x = c(1, NA, 3))
+filter(df, x > 1)
+filter(df, is.na(x) | x > 1)
+```
+
+## Arrange rows with `arrange()`
+
+```{r}
+arrange(flights, dep_delay)
+```
+
+## `arrange()` and `desc()`
+
+```{r}
+arrange(flights, desc(dep_delay))
+```
+
+## `arrange()` and missing values
+
+```{r}
+df <- tibble(x = c(5, NA, 2))
+arrange(df, x)
+arrange(df, desc(x))
+```
+
+## Select columns with `select()`
+
+```{r}
+select(flights, year, month, day)
+```
+
+## All columns between `year` and `day`
+
+```{r}
+select(flights, year:day)
+```
+
+## All columns except from `year` to `day`
+
+```{r}
+select(flights, -(year:day))
+```
+
+## `select()` and `tidyselect::everything()`
+
+```{r}
+select(flights, time_hour, air_time, everything())
+```
+
+- This is similar to rearranging columns. Alternatively, you can use `dplyr::rellocate()`.
+
+## `select()` and `tidyselect` helpers
+
+* Helper functions you can use within `dplyr::select()` are available in the `tidyselect` package:
+  * `starts_with()`: starts with an exact prefix.
+  * `ends_with()`: ends with an exact suffix.
+  * `contains()`: contains a literal string.
+  * `matches()`: matches a regular expression.
+  * `num_range()` matches a numerical range like `x01`, `x02`, `x03`.
+<!-- * `select()` can be used to rename variables, but it drops all of the variables not explicitly mentioned. -->
+<!--   * Use `dplyr::rename()` instead. -->
+  
+```{r}
+#| echo: TRUE
+#| eval: FALSE
+
+select(flights, starts_with("arr"))
+select(flights, contains("delay"))
+select(flights, matches("^(dep|arr)"))
+```
+
+# Mutate
+
+## Create a narrower dataset
+
+```{r}
+flights_sml <- flights %>%
+  select(ends_with("delay"), distance, air_time)
+```
+
+```{r}
+#| echo: false
+flights_sml
+```
+
+
+## Add new variables with `mutate()`
+
+```{r}
+flights_sml %>%
+  mutate(
+    net_delay = arr_delay - dep_delay,
+    avg_speed = distance / air_time * 60
+  )
+```
+
+## Refer to columns just created
+
+```{r}
+flights_sml %>%
+  mutate(
+    net_delay = arr_delay - dep_delay,
+    air_time = air_time / 60,
+    loss_per_hour = net_delay / air_time
+  )
+```
+
+## Useful creation functions I
+
+Any vectorized function would work, but frequently useful are:
+
+* Arithmetic operators: `+`, `-`, `*`, `/`, `^`. 
+    * Vectorized with "recycling rules" (e.g., `air_time / 60`).
+    * Useful in conjunction with aggregate functions (e.g., `x / sum(x)` or `y - mean(y)`).
+* Modular arithmetic: `%/%` (integer division) and `%%` (remainder), where 
+`x == y * (x %/% y) + (x %% y)`. 
+    * Allows you to break integers up into pieces (e.g., `hour = dep_time %/% 100` and `minute = dep_time %% 100`)
+* Logarithms: `log()`, `log2()`, `log10()`. 
+    * Useful for data ranging across multiple orders of magnitude. 
+    * Convert multiplicative relationships to additive.
+
+## Useful creation functions II
+
+* Offsets: `dplyr::lead()` and `dplyr::lag()`: 
+    * Refer to lead-/lagging values (e.g., compute running differences `x - lag(x)` or find values change `x != lag(x)`). 
+
+```{r}
+x <- 1:10
+lag(x)
+lead(x)
+```
+
+* Cumulative aggregates: `cumsum()`, `cumprod()`, `cummin()`, `cummax()`, `cummean()`.
+
+```{r}
+cumsum(x)
+cummean(x)
+```
+
+## Useful creation functions III
+
+* Logical comparisons, `<`, `<=`, `>`, `>=`, `!=`
+* Ranking functions from `dplyr`: `min_rank()`, `row_number()`, `dense_rank()`, `percent_rank()`, `cume_dist()`, `ntile()`
+
+```{r}
+y <- c(1, 2, 2, NA, 3, 4)
+min_rank(y)
+min_rank(desc(y))
+row_number(y)
+dense_rank(y)
+percent_rank(y)
+cume_dist(y)
+```
+
+# Summarize
+
+## Collapse values with `summarize()`
+
+```{r}
+flights %>%
+  summarize(delay = mean(dep_delay, na.rm = TRUE))
+```
+
+## `summarize()` paired with `group_by()`
+
+:::: {.columns}
+
+::: {.column width='48%'}
+
+`group_by()` returns a **grouped tibble**, where the result is sorted by the grouping variables.
+
+```{r, size = "tiny"}
+flights |>
+    group_by(year, month, day) |>
+    summarize(
+      delay = mean(dep_delay, na.rm = TRUE)
+    )
+```
+
+:::
+
+::: {.column width='48%'}
+
+`.by` returns an **ungroupped tibble**, where the order of the original data is preserved.
+
+```{r, size = "tiny"}
+flights %>% 
+  summarise(
+    delay = mean(dep_delay, na.rm = TRUE),
+    .by = c(year, month, day)
+  )
+```
+
+:::
+
+::::
+
+- See more about groupping in [*Per-operation grouping with .by/by*](https://dplyr.tidyverse.org/reference/dplyr_by.html).
+
+<!-- * To suppress the summarize info -->
+
+<!-- ```{r} -->
+<!-- options(dplyr.summarise.inform = FALSE) -->
+<!-- ``` -->
+
+## An alternative to `na.rm`: pre-filter
+
+```{r}
+not_cancelled <- flights |> 
+    filter(!is.na(dep_delay))
+
+not_cancelled |> 
+    group_by(year, month, day) |> 
+    summarize(mean = mean(dep_delay))
+```
+
+## Useful summary functions I
+
+*   Measures of **location**: `mean()`, `median()`.
+*   Measures of **spread**: `sd()`, `IQR()`, `mad()`.
+*   Measures of **rank**: `min()`, `quantile()`, `max()`. 
+
+```{r}
+not_cancelled |> 
+  group_by(year, month, day) |> 
+  summarize(first_dep = min(dep_time), last_dep = max(dep_time))
+```
+
+## Useful summary functions II
+
+*   Measures of position: `first()`, `nth()`, `last()`.
+
+```{r}
+not_cancelled |>
+  group_by(year, month, day) |>
+  summarize(first_dep = first(dep_time), last_dep = last(dep_time))
+```
+
+## Useful summary functions III
+
+*   Counts: `n()`, `sum(!is.na(x))`, `n_distinct()`.
+
+```{r}
+not_cancelled |> 
+  group_by(dest) |> 
+  summarize(carriers = n_distinct(carrier)) |> 
+  arrange(desc(carriers))
+```
+
+## Useful summary functions IV
+
+* `count()`: A simple helper function for counts.
+
+```{r}
+not_cancelled |> count(dest)
+```
+
+## Useful summary functions V
+
+* `count(data, ..., wt = NULL)`: Counts with an optional weight variable: 
+
+```{r}
+not_cancelled |> count(tailnum, wt = distance)
+```
+
+## Useful summary functions VI
+
+* Counts of logical values: e.g., `sum(x > 10)`.
+
+```{r}
+not_cancelled |> 
+  group_by(year, month, day) |> 
+  summarize(n_early = sum(dep_time < 500))
+```
+
+## Useful summary functions VII
+
+* Proportions of logical values: e.g., `mean(y == 0)`.
+
+```{r}
+not_cancelled |>
+  group_by(year, month, day) |>
+  summarize(late_flights_ratio = mean(arr_delay > 60, na.rm = TRUE))
+```
+
+# Grouping
+
+## Grouping by multiple variables I
+
+```{r}
+daily <- group_by(flights, year, month, day)
+(flights_per_day <- summarize(daily, flights = n()))
+```
+
+## Grouping by multiple variables II
+
+```{r}
+(flights_per_month <- summarize(flights_per_day, flights = sum(flights)))
+(flights_per_year  <- summarize(flights_per_month, flights = sum(flights)))
+```
+
+## Ungrouping
+
+```{r}
+daily |> 
+  ungroup() |>              # no longer grouped by date
+  summarize(flights = n())  # all flights
+```
+
+## Grouped filters
+
+```{r}
+popular_dests <- flights |> 
+  group_by(dest) |> 
+  filter(n() > 365)
+```
+
+```{r}
+#| echo: false
+#| eval: true
+
+popular_dests
+```
+
+## Grouped mutates
+
+```{r}
+popular_dests |> 
+  filter(arr_delay > 0) |> 
+  mutate(prop_delay = arr_delay / sum(arr_delay)) |> 
+  select(year:day, dest, arr_delay, prop_delay)
+```
