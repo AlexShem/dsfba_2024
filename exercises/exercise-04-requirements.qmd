@@ -1,5 +1,5 @@
 ---
-title: "DSIBA: Series 3"
+title: "DSiBA: Series 3"
 subtitle: "Data Wrangling -- 1"
 toc: true
 toc-depth: 1
@@ -17,7 +17,7 @@ format:
       text: |
         \usepackage[headsepline]{scrlayer-scrpage}
         \usepackage{fontspec}
-        \ihead{DSIBA: Series 3}
+        \ihead{DSiBA: Series 3}
         \chead{}
         \ohead{\headmark}
         \automark{section}
@@ -86,7 +86,7 @@ wide_flights <- flights_count %>%
   pivot_wider(
     names_from = carrier,
     values_from = n,
-    values_fill = list(n = 0)
+    values_fill = 0
   )
 ```
 
@@ -306,6 +306,8 @@ Create a summary table that shows the **average arrival delay** and **average de
 **Answer**
 
 ```{r}
+#| message: false
+
 summary_table <- flights %>%
   group_by(origin, carrier) %>%
   summarise(
