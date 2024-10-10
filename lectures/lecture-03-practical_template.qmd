@@ -1,0 +1,135 @@
+---
+title: "Control Flow and Functions"
+subtitle: "Practical Example with `mtcars`"
+author: "Professor Alex"
+institute: |
+  Department of Operations,
+  HEC Lausanne,
+  University of Lausanne
+date: "10/7/2024"
+format:
+  html:
+    mainfont: "Source Sans Pro"
+    monofont: "DejaVu Sans Mono"
+    code-link: true
+    code-overflow: scroll
+---
+
+# Control Flow and Functions: Practical Example with `mtcars`
+
+In this practical, we'll explore how to use control flow structures and functions in R to analyze the `mtcars` dataset.
+
+```{r}
+#| echo: true
+
+# Preview the mtcars dataset
+head(mtcars)
+```
+
+## 1. Control Flow
+
+### 1.1 If Statements
+
+- **Task:** Identify whether the first car in `mtcars` is fuel-efficient (mpg > 20).
+
+```{r}
+#| echo: true
+
+# Check the first car's mpg and print message accordingly
+```
+
+### 1.2 For Loops
+
+- **Task:** Iterate through all cars, checking and printing whether each is fuel-efficient.
+
+```{r}
+#| echo: true
+
+# Loop through mtcars and print fuel efficiency of each car
+```
+
+## 2. Functions
+
+### 2.1 Defining Functions
+
+- **Task:** Create a function `check_fuel_efficiency()` to determine if a car's mpg makes it fuel-efficient.
+
+```{r}
+#| echo: true
+
+# Define a function to check fuel efficiency based on mpg
+```
+
+### 2.2 Returning Values
+
+- **Task:** Use the function to check the first car's fuel efficiency.
+
+```{r}
+#| echo: true
+
+# Use the function to check the first car's fuel efficiency
+```
+
+### 2.3 Arguments
+
+- **Task:** Extend the function to consider both mpg and weight for a more nuanced check.
+
+```{r}
+#| echo: true
+
+# Define a function that checks both mpg and weight
+```
+
+### 2.4 Default Arguments
+
+- **Task:** Add a default weight to the function for cases when no weight is provided.
+
+```{r}
+#| echo: true
+
+# Define the function with a default argument for weight
+```
+
+## 3. `purrr` Package
+
+### 3.1 Mapping Functions
+
+- **Task:** Use `purrr::map()` to apply the fuel-efficiency function to all cars.
+
+```{r}
+#| echo: true
+
+# Apply the fuel-efficiency function to all cars using purrr::map
+```
+
+### 3.2 Filtering Functions
+
+- **Task:** Filter out fuel-efficient cars using `map_lgl()`.
+
+```{r}
+#| echo: true
+
+# Use map_lgl to filter fuel-efficient cars
+```
+
+### 3.3 Reducing Functions
+
+- **Task:** Calculate the total horsepower of fuel-efficient cars using `purrr::reduce()`.
+
+```{r}
+#| echo: true
+
+# Use reduce to calculate the total horsepower of fuel-efficient cars
+```
+
+Alternative with `dplyr`:
+
+```{r}
+#| echo: true
+
+# Use dplyr to calculate the total horsepower of fuel-efficient cars
+```
+
+---
+
+This practical session shows how control flow, functions, and functional programming (`purrr`) are applied in data analysis tasks.

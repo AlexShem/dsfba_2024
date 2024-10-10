@@ -1,0 +1,233 @@
+---
+title: "Control Flow and Functions"
+subtitle: "Practical Example with `mtcars`"
+author: "Professor Alex"
+institute: |
+  Department of Operations,
+  HEC Lausanne,
+  University of Lausanne
+date: "10/7/2024"
+format:
+  html:
+    mainfont: "Source Sans Pro"
+    monofont: "DejaVu Sans Mono"
+    code-link: true
+    code-overflow: scroll
+---
+
+# Control Flow and Functions: Practical Example with `mtcars`
+
+In this practical, we'll explore how to use control flow structures and functions in R to analyze the famous `mtcars` dataset. We’ll look at conditions, loops, and functions, culminating in an introduction to the `purrr` package for efficient functional programming.
+
+Throughout this session, imagine we're trying to understand different aspects of car performance by analyzing metrics such as miles per gallon (mpg), horsepower (hp), and weight (wt). We want to filter out specific cars based on performance criteria, summarize groups of cars, and apply functions systematically to our data.
+
+```{r}
+#| echo: true
+
+head(mtcars)
+```
+
+## 1. Control Flow
+
+Control flow structures allow us to control the execution of code based on certain conditions. Let's start by exploring `if` statements and loops.
+
+### 1.1 If Statements
+
+**Narrative:**
+We want to identify cars in the `mtcars` dataset that are "fuel-efficient." For the purposes of our analysis, we will consider any car with an mpg of over 20 to be fuel-efficient. Using an `if` statement, we can write a condition to check this for a given car.
+
+```{r}
+#| echo: true
+
+car_mpg <- mtcars$mpg[1]  # Let's check the first car
+print(car_mpg)
+
+if (car_mpg > 20) {
+  message("This car is fuel-efficient")
+} else {
+  message("This car is not fuel-efficient")
+}
+```
+
+*Purpose*: Here, the `if` structure lets us evaluate each car's `mpg` and decide whether it meets our fuel-efficiency criteria.
+
+### 1.2 For Loops
+
+**Narrative:**
+Now, let's imagine we want to evaluate *all* cars in the dataset, not just the first one. We can use a `for` loop to iterate over the cars and print a message about each one's fuel efficiency.
+
+```{r}
+#| echo: true
+
+for (i in 1:nrow(mtcars)) {
+  car_name <- rownames(mtcars)[i]
+  car_mpg <- mtcars$mpg[i]
+  
+  if (car_mpg > 20) {
+    message(car_name, " is fuel-efficient")
+  } else {
+    message(car_name, " is not fuel-efficient")
+  }
+}
+```
+
+*Purpose*: The loop iterates over each car in the dataset and checks if it's fuel-efficient, using the `if` statement from before inside the loop.
+
+## 2. Functions
+
+Once we've written some useful code, it’s a good idea to wrap it into functions to make it reusable and modular. Let’s create a function to encapsulate the logic we’ve just written.
+
+### 2.1 Defining Functions
+
+**Narrative:**
+We can define a function to check the fuel efficiency of any car by simply passing the mpg value as an argument.
+
+```{r}
+#| echo: true
+
+check_fuel_efficiency <- function(mpg) {
+  if (mpg > 20) {
+    return("Fuel-efficient")
+  } else {
+    return("Not fuel-efficient")
+  }
+}
+```
+
+*Purpose*: This function takes the `mpg` value as input and returns whether the car is fuel-efficient. Functions help us avoid rewriting the same code multiple times.
+
+### 2.2 Returning Values
+
+**Narrative:**
+Notice that the function `check_fuel_efficiency` uses `return()` to explicitly specify the output. This is useful when we want to capture the result for further use.
+
+```{r}
+check_fuel_efficiency(mtcars$mpg[1])  # Checking the first car
+```
+
+### 2.3 Arguments
+
+**Narrative:**
+Let’s enhance our function to check whether a car is fuel-efficient based not only on mpg but also on its weight. Heavier cars (above 3.0 in weight) may be less efficient even if their mpg is high.
+
+```{r}
+check_efficiency_weighted <- function(mpg, wt) {
+  if (mpg > 20 & wt < 3.0) {
+    return("Fuel-efficient and light")
+  } else if (mpg > 20 & wt >= 3.0) {
+    return("Fuel-efficient but heavy")
+  } else {
+    return("Not fuel-efficient")
+  }
+}
+```
+
+*Purpose*: This version of the function takes two arguments: mpg and weight. It applies a more nuanced condition, demonstrating how arguments can influence the function’s logic.
+
+### 2.4 Default Arguments
+
+**Narrative:**
+Sometimes we want to provide default values for certain arguments. For example, let’s assume a default weight of 3.0 if none is specified.
+
+```{r}
+check_efficiency_weighted <- function(mpg, wt = 3.0) {
+  if (mpg > 20 & wt < 3.0) {
+    return("Fuel-efficient and light")
+  } else if (mpg > 20 & wt >= 3.0) {
+    return("Fuel-efficient but heavy")
+  } else {
+    return("Not fuel-efficient")
+  }
+}
+```
+
+*Purpose*: Now we can call the function without explicitly passing a weight, and the default value of 3.0 will be used.
+
+## 3. `purrr` Package
+
+The `purrr` package from the `tidyverse` allows us to apply functions across lists or data frames efficiently. Instead of using loops, we can use `purrr::map()` to apply functions to each element of a list.
+
+### 3.1 Mapping Functions
+
+**Narrative:**
+Imagine we want to apply the `check_fuel_efficiency()` function to all cars in `mtcars`. We can do this using `purrr::map()`.
+
+```{r}
+library(purrr)
+
+fuel_efficiency_results <- map(mtcars$mpg, check_fuel_efficiency)
+fuel_efficiency_results
+```
+
+*Purpose*: `map()` applies the function to each element of the `mtcars$mpg` vector and returns a list of results. This is more efficient and expressive than a for loop.
+
+### 3.2 Filtering Functions
+
+**Narrative:**
+We can also filter cars based on the result of the function. For example, we might want to retain only the fuel-efficient cars.
+
+```{r}
+#| echo: true
+
+which_fuel_efficient <- map_lgl(
+  mtcars$mpg,
+  ~ check_fuel_efficiency(.x) == "Fuel-efficient"
+)
+which_fuel_efficient
+
+fuel_efficient_cars <- mtcars[which_fuel_efficient, ]
+fuel_efficient_cars
+```
+
+Alternative way using `dplyr` package utilises `filter()` function to filter the dataset based on the logical vector.
+
+```{r}
+#| echo: true
+#| message: false
+
+library(dplyr)
+
+fuel_efficient_cars <- mtcars %>%
+  dplyr::filter(map_lgl(
+    mpg, ~ check_fuel_efficiency(.x) == "Fuel-efficient"
+  ))
+fuel_efficient_cars
+```
+
+*Purpose*: This example shows how `map_lgl()` applies a function and returns a logical vector (TRUE/FALSE) to filter the dataset.
+
+### 3.3 Reducing Functions
+
+**Narrative:**
+Let’s say we want to summarize the total horsepower of fuel-efficient cars. We can use `purrr::reduce()` to accumulate results.
+
+```{r}
+total_hp <- reduce(mtcars$hp[mtcars$mpg > 20], `+`)
+total_hp
+```
+
+Alternative way using `dplyr` package utilises `summarise()` function to calculate the sum of horsepower.
+
+```{r}
+#| echo: true
+
+library(dplyr)
+
+total_hp <- mtcars %>%
+  dplyr::filter(mpg > 20) %>%
+  dplyr::summarise(total_hp = sum(hp))
+total_hp
+```
+
+**Note:**
+This approach returns a data frame with the total horsepower of fuel-efficient cars.
+
+```{r}
+str(total_hp)
+```
+
+*Purpose*: `reduce()` allows us to perform operations like summing values across elements, which in this case gives the total horsepower of fuel-efficient cars.
+
+---
+
+In this practical session, we’ve seen how control flow, functions, and functional programming with `purrr` can come together to solve data analysis tasks in a clean, reusable, and efficient way.
