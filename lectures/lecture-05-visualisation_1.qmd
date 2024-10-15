@@ -1,0 +1,741 @@
+---
+title: "Data Science for Business Analytics"
+subtitle: "Visualization and Communication I"
+author: "Professor Alex [aleksandr.shemendyuk@unil.ch]"
+date: "21/10/2024"
+format: 
+    beamer:
+        include-in-header: ../latex/header.tex
+        fontsize: 10pt
+execute:
+    echo: true
+---
+
+```{r setup, include = FALSE, echo = FALSE}
+source("../R/common.R")
+library(tidyverse)
+library(knitr)
+library(scales)
+```
+
+## Today
+
+```{r echo = FALSE, out.width = "90%"}
+include_graphics("figures/r4ds/data-science-communicate.png")
+```
+
+\centering
+\vspace{1cm}
+
+Most of the material (e.g., the picture above) is borrowed from
+
+**[R for data science](https://r4ds.hadley.nz/)**
+
+## Outline
+
+\tableofcontents
+
+# From bad graphs to the grammar of graphics
+
+## Data content
+
+* Makes no sense to use graphs for very small amounts of data.
+* The human brain is capable of grasping a few values.
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/visualization/bad_data_content.png")
+```
+
+source: talkwalker.com
+
+## Data relevance
+
+* Graphs are only as good as the data they display.
+* No creativity can produce a good graph from poor data.
+
+```{r, echo = FALSE, out.width = "25%"}
+knitr::include_graphics("figures/visualization/bad_data_relevance.jpg")
+```
+
+* Leinweber (author of *Nerds on Wall Street*):
+    * The S\&P500 could be "predicted"" at 75% by the butter production in Bangladesh.
+    * ... Or 99% when adding cheese production in the USA, and the population of sheep.
+
+## Complexity
+
+* Graphs shouldn't be more complex than the data they portray.
+* Unnecessary complexity can be introduced by irrelevant
+    * decoration
+    * color
+    * 3d effects
+*  ... Collectively known as "chartjunk"!
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/visualization/bad_complexity.jpg")
+```
+
+source: Cawley S, et al. (2004), Cell 116:499-509, Figure 1
+
+## Distorsion
+
+* Graphs shouldn't be distorted pictures of the portrayed values:
+    * Can be either deliberate or accidental.
+    * Useful to know how to produce truth bending graphs.
+    * Misleading often used as a synonym of distorted.
+    * See [https://en.wikipedia.org/wiki/Misleading_graph](https://en.wikipedia.org/wiki/Misleading_graph)
+
+```{r, echo = FALSE, out.width = "45%"}
+knitr::include_graphics("figures/visualization/bad_distorsion.png")
+```
+
+\centering
+
+source: statisticshowto.com/misleading-graphs/
+
+## More on distorsion
+
+* Common sources of distortion:
+    * 3 dimensional "effects".
+    * linear scaling when using area or volume to represent values.
+* The "lie factor":
+    * Measure of the amount of distortion in a graph.
+        * $\mbox{lie factor} = \frac{\mbox{size of effect shown in graphic}}{\mbox{size of effect shown in data}}$ \vspace{0.1cm}
+        * Don’t take this too seriously, defined by Ed Tufte of Yale.
+    * If $> 1$, the graph is exaggerating the effect.
+
+\vspace{-0.3cm}
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/visualization/lie_factor1.jpg")
+#knitr::include_graphics("figures/visualization/lie_factor2")
+```
+
+:::
+::: {.column width='48%'}
+
+\begin{align*}
+\mbox{lie factor} = \frac{\frac{5.3 - 0.6}{0.6}}{\frac{27.5 - 18}{18}} = 14.8!
+\end{align*}
+
+:::
+::::
+
+## ...
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/visualization/fox_covid.jpg")
+```
+
+
+## Drawing good graphs
+
+* The three main rules:
+    * If the "story" is simple, keep it simple.
+    * If the "story" is complex, make it look simple.
+    * Tell the truth -- do not distort the data.
+* Specifically:
+    * There should be a high data to chart ratio.
+    * Use the appropriate graph for the appropriate purpose.
+        * Most graphs presented in Excel are POOR CHOICES!
+        * In particular, never use a pie chart!
+    * Make sure that the graph is complete:
+        * All axes must be labeled.
+        * The units should be indicated.
+        * There should be a title.
+        * A legend can provide needed additional information
+        (e.g., for colors or line types).
+
+## A grammar of graphics
+
+> "A grammar of graphics is a tool that enables us to concisely describe the components of a graphic.
+> Such a grammar allows us to move beyond named graphics (e.g., the "scatterplot")
+> and gain insight into the deep structure that underlies statistical graphics." --- Hadley Wickham
+
+* `ggplot2` is an R implementation of the concept:
+    * A coherent system for describing and creating graphs.
+    * Based on [The Grammar of Graphics](https://www.amazon.com/Grammar-Graphics-Statistics-Computing/dp/0387245448/ref=as_li_ss_tl?ie=UTF8&qid=1477928463&sr=8-1&keywords=the+grammar+of+graphics&linkCode=sl1&tag=ggplot2-20&linkId=f0130e557161b83fbe97ba0e9175c431).
+    * Learn one system and apply it in many places.
+    * The equivalent of `dplyr` for graphs.
+* To learn more, read [The Layered Grammar of Graphics](http://vita.had.co.nz/papers/layered-grammar.html).
+* Implementations exist in other languages (e.g., Python)
+
+## The `mpg` data frame
+
+* Data from the US EPA on 38 models of car:
+
+```{r}
+mpg |> print(n = 5)
+```
+
+* Among the variables in `mpg` are:
+    * `displ`, a car's engine size, in litres.
+    * `hwy`, a car's fuel efficiency on the highway (in miles per gallon).
+* A few questions
+    * Do cars with big engines use more fuel ?
+    * What does the relationship between engine size and fuel efficiency look like?
+    Positive? Negative? Linear? Nonlinear?
+
+
+## Creating a plot
+
+* A simple scatterplot:
+
+```{r, out.width = "50%"}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy))
+```
+
+* A graphing template:
+
+```{r eval = FALSE}
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+
+# Aesthetics and facetting
+
+## Aesthetic mappings
+
+> "The greatest value of a picture is when it forces us to notice what we
+> never expected to see." --- John Tukey
+
+```{r, echo = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_point(data = dplyr::filter(mpg, displ > 5, hwy > 20), 
+             color = "red", size = 2.2)
+```
+
+## Aesthetic
+
+* How to add a more variables to a two dimensional plot?
+* By mapping them to an __aesthetic__:
+    * A visual property of the objects in your plot.
+    * Include the size, the shape, or the color of the points.
+* We use the words
+    * **"value"** to describe data,
+    * and **"level"** to describe aesthetic properties.
+
+```{r, echo = FALSE, asp = 1/4}
+ggplot() +
+  geom_point(aes(1, 1), size = 20) +
+  geom_point(aes(2, 1), size = 10) +
+  geom_point(aes(3, 1), size = 20, shape = 17) +
+  geom_point(aes(4, 1), size = 20, color = "blue") +
+  scale_x_continuous(NULL, limits = c(0.5, 4.5), labels = NULL) +
+  scale_y_continuous(NULL, limits = c(0.9, 1.1), labels = NULL) +
+  theme(aspect.ratio = 1/3)
+```
+
+## Adding classes to your plot
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, color = class))
+```
+
+* If you prefer British English, use `color` instead of `color`.
+
+## Set the aesthetics manually
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy), color = "blue")
+```
+
+## The __size__ aesthetic
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, size = class))
+```
+
+## The __alpha__ aesthetic
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, alpha = class))
+```
+
+## The __shape__ aesthetic
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy, shape = class))
+```
+
+## A remark on aesthetic values
+
+* Need values that make sense for that aesthetic:
+    * The name of a color as a character string.
+    * The size of a point in mm.
+    * The shape of a point as a number.
+
+```{r shapes, echo = FALSE, out.width = "50%", fig.cap="The hollow shapes (0--14) have a border determined by `color`; the solid shapes (15--18) are filled with `color`; the filled shapes (21--24) have a border of `color` and are filled with `fill`.", warning = FALSE}
+shapes <- tibble(
+  shape = c(0, 1, 2, 5, 3, 4, 6:19, 22, 21, 24, 23, 20),
+  x = (0:24 %/% 5) / 2,
+  y = (-(0:24 %% 5)) / 4
+)
+ggplot(shapes, aes(x, y)) +
+  geom_point(aes(shape = shape), size = 5, fill = "red") +
+  geom_text(aes(label = shape), hjust = 0, nudge_x = 0.15) +
+  scale_shape_identity() +
+  expand_limits(x = 4.1) +
+  scale_x_continuous(NULL, breaks = NULL) +
+  scale_y_continuous(NULL, breaks = NULL, limits = c(-1.2, 0.2)) +
+  theme_minimal() +
+  theme(aspect.ratio = 1/2.75)
+```
+
+## Facetting
+
+```{r, out.width="40%"}
+(p <- ggplot(data = mpg) + geom_point(mapping = aes(x = displ, y = hwy)))
+```
+
+\vspace{-0.3cm}
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* Facet wrap
+
+```{r, out.width="100%"}
+p + facet_wrap(~ class, nrow = 2)
+```
+
+:::
+::: {.column width='48%'}
+
+* Facet grid
+
+```{r, out.width="100%"}
+p + facet_grid(drv ~ cyl)
+```
+
+:::
+::::
+
+
+# Geometric objects and statistical transformations
+
+## How are these two plots similar?
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r, out.width="100%", warning = FALSE, echo = FALSE, message = FALSE}
+ggplot(data = mpg) +
+  geom_point(mapping = 
+               aes(x = displ, y = hwy))
+```
+
+:::
+::: {.column width='48%'}
+
+```{r, out.width="100%", warning = FALSE, echo = FALSE, message = FALSE}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+:::
+::::
+
+<!-- # ```{r, out.width = "45%", message = FALSE} -->
+<!-- # ggplot(data = mpg) + -->
+<!-- #   geom_point(mapping = aes(x = displ, y = hwy)) -->
+<!-- #  -->
+<!-- # ggplot(data = mpg) + -->
+<!-- #   geom_smooth(mapping = aes(x = displ, y = hwy)) -->
+<!-- # ``` -->
+
+* A __geom__:
+    * The object that a plot uses to represent data.
+    * Plots often describeds by the geom type:
+        * Bar charts use bar geoms.
+        * Line charts use line geoms.
+        * Boxplots use boxplot geoms.
+    * An exception:
+        * Scatterplots use the point geom.
+
+## Geometric objects
+
+* Every __geom__ function takes a `mapping` argument.
+* But __not every aesthetic works with every geom__:
+    * __shape__ exists for `geom_point` but not for `geom_line`,
+    * and conversely for __linetype__.
+
+```{r message = FALSE, out.width="40%"}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, linetype = drv))
+```
+
+\vspace{-0.3cm}
+
+* Additionally
+    * `ggplot2` provides over 30 geoms.
+    * [extension packages](https://www.ggplot2-exts.org) provide even more.
+    * Use [RStudio's data visualization cheatsheet](https://rstudio.github.io/cheatsheets/html/data-visualization.html).
+    * To learn more about any single geom, use help: `?geom_smooth`.
+
+<!-- ## Combining two geoms -->
+
+<!-- ```{r message = FALSE} -->
+<!-- ggplot(data = mpg) + -->
+<!--   geom_point(mapping = aes(x = displ, y = hwy, color = drv)) + -->
+<!--   geom_smooth(mapping = aes(x = displ, y = hwy,  -->
+<!--                             color = drv, linetype = drv)) -->
+<!-- ``` -->
+
+## Geoms and legends
+
+```{r, message = FALSE}
+ggplot(data = mpg) + geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+<!-- ## Geoms and legends -->
+
+<!-- ```{r, message = FALSE} -->
+<!-- ggplot(data = mpg) + -->
+<!--   geom_smooth(mapping = aes(x = displ, y = hwy, group = drv)) -->
+<!-- ``` -->
+
+## Geoms and legends
+
+```{r, message = FALSE}
+ggplot(data = mpg) +
+  geom_smooth(mapping = aes(x = displ, y = hwy, color = drv))
+```
+
+## Multiple geoms in the same plot
+
+```{r, message = FALSE}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+```
+
+## A better way
+
+```{r, message = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_smooth()
+```
+
+## Local vs global mappings
+
+```{r, message = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  geom_smooth()
+```
+
+## Layer dependent `data`
+
+```{r, message = FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
+  geom_point(mapping = aes(color = class)) +
+  geom_smooth(data = filter(mpg, class == "subcompact"), se = FALSE)
+```
+## Exercise 
+
+Use `CanadaPanelSim.csv` to recreate the following plot:
+
+![](exercises/ex2-scatterplot.pdf){width=80%}
+
+## Beyond scatterplots
+
+* Other graphs, like bar charts, calculate new values to plot.
+    * Bar charts, histograms, and frequency polygons:
+        * Bin data.
+        * Plot bin counts (number of points falling in each bin).
+    * Smoothers:
+        * Fit a model to your data.
+        * Plot predictions from the model.
+    * Boxplots:
+        * Compute a robust summary of the distribution.
+        * Display a specially formatted box.
+
+```{r, out.width="45%"}
+ggplot(data = diamonds) + geom_bar(mapping = aes(x = cut))
+```
+
+
+
+
+## Statistical transformations
+
+* A __stat__:
+    * The algorithm used to calculate new values for a graph.
+    * Short for statistical transformation.
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/r4ds/visualization-stat-bar.png")
+```
+
+\vspace{-0.3cm}
+
+* `ggplot2` provides over 20 stats.
+* Each stat is a function, get help as usual, e.g. `?stat_bin`.
+* Use [RStudio's data visualization cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/data-visualization-2.1.pdf) for a complete list.
+
+## Geom and stat
+
+* Every geom has a default stat and conversely.
+  * `?geom_bar` shows that the default value for `stat` is "count".
+  * Means that `geom_bar()` uses `stat_count()`.
+  * `?stat_count` has a section called "Computed variables" with two new variables: `count` and `prop`.
+* You can generally use geoms and stats interchangeably!
+
+```{r, eval = FALSE}
+ggplot(data = diamonds) +
+  stat_count(mapping = aes(x = cut))
+```
+
+* Typically, use geoms without worrying about the stat.
+* Reasons to use a stat explicitly:
+    * To override the default stat.
+    * To override the default mapping from transformed variables
+    to aesthetics.
+    <!-- * To draw greater attention to the stat in your code. -->
+
+## Use a stat explicitly I
+
+```{r}
+ggplot(data = diamonds) +
+      stat_summary(
+        mapping = aes(x = cut, y = depth),
+        fun.min = min,
+        fun.max = max,
+        fun = median
+        )
+```
+
+## Use a stat explicitly II
+
+```{r}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, y = ..prop.., group = 1))
+```
+
+## Use a stat explicitly III
+
+```{r}
+demo <- tribble(~cut,         ~freq,
+                "Fair",       1610,
+                "Good",       4906,
+                "Very Good",  12082,
+                "Premium",    13791,
+                "Ideal",      21551)
+ ggplot(data = demo) +
+   geom_bar(mapping = aes(x = cut, y = freq), stat = "identity")
+```
+
+## Digression: the __fill__ aesthetic
+
+```{r, fig.width=8}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = cut))
+```
+
+## Fill and position ajustements
+
+```{r, fig.width=8}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity))
+```
+
+* Automatically stacked by the __position adjustement__.
+* `?position_stack` to learn more.
+
+## Fill with `position = "identity"`
+
+```{r, fig.width=8}
+ggplot(data = diamonds, mapping = aes(x = cut, fill = clarity)) +
+  geom_bar(alpha = 1/5, position = "identity")
+```
+
+* Not very useful for bars because of overlap.
+* `?position_identity` to learn more.
+
+## Fill with `position = "fill"`
+
+```{r, fig.width=8}
+ggplot(data = diamonds) +
+      geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill")
+```
+
+* Makes it easier to compare proportions across groups.
+* `?position_fill` to learn more.
+
+## Fill with `position = "dodge"`
+
+```{r, fig.width=8}
+ggplot(data = diamonds) +
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "dodge")
+```
+
+* Makes it easier to compare individual values.
+* `?position_dodge` to learn more.
+
+## `position = "jitter"`
+
+```{r}
+ggplot(data = mpg, aes(x = displ, y = hwy)) +
+  geom_point() +
+  geom_point(position = "jitter", color = "red")
+```
+
+* Graph less/__more__ accurate/__revealing__ at small/__large__ scales.
+* `?position_jitter` to learn more.
+
+# Coordinate systems and the layered grammar of graphics
+
+## Coordinate systems
+
+* The most complicated part of `ggplot2`.
+* Default: the Cartesian coordinate system.
+* Other systems occasionally helpful:
+    *   `coord_flip()` switches the x and y axes.
+    *   `coord_quickmap()` sets the aspect ratio correctly for maps.
+    *   `coord_polar()` uses polar coordinates.
+
+## `coord_flip()`
+
+```{r, out.width = "45%", fig.width=8}
+#| layout-ncol: 2
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot()
+ggplot(data = mpg, mapping = aes(x = class, y = hwy)) +
+  geom_boxplot() +
+  coord_flip()
+```
+
+* Useful for:
+    * horizontal boxplots,
+    * and long labels.
+
+
+## `coord_polar()`
+
+```{r, out.width = "45%", fig.width=9}
+#| layout-ncol: 2
+bar <- ggplot(data = diamonds) +
+      geom_bar(mapping = aes(x = cut, fill = cut),
+               show.legend = FALSE, width = 1) +
+  theme(aspect.ratio = 1) + labs(x = NULL, y = NULL)
+bar + coord_flip()
+bar + coord_polar()
+```
+
+## Exercise 
+
+Use `CanadaPanelSim.csv` to recreate the following plots:
+
+![Graph](exercises/ex2-boxplot.pdf){width=48%}
+![Graph2](exercises/ex2-barplot.pdf){width=48%}
+
+
+
+## The layered grammar of graphics
+
+```{r, eval = FALSE}
+ggplot(data = <DATA>) +
+  <GEOM_FUNCTION>(
+     mapping = aes(<MAPPINGS>),
+     stat = <STAT>,
+     position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+```
+
+* A formal system for building plots,
+* Uniquely describes _any_ plot as a combination of
+    * a dataset,
+    * a geom,
+    * a set of mappings,
+    * a stat,
+    * a position adjustment,
+    * a coordinate system,
+    * and a faceting scheme.
+
+## Example
+
+```{r, echo = FALSE, out.width = "150%"}
+knitr::include_graphics("figures/r4ds/visualization-grammar-1.png")
+```
+
+## Example
+
+```{r, echo = FALSE, out.width = "150%"}
+knitr::include_graphics("figures/r4ds/visualization-grammar-2.png")
+```
+
+## Example
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/r4ds/visualization-grammar-3.png")
+```
+
+
+<!-- # Labels and clear communication -->
+
+<!-- ## Label -->
+
+<!-- ```{r, message = FALSE, fig.width = 8} -->
+<!-- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(color = class)) + -->
+<!--   geom_smooth(se = FALSE) + -->
+<!--   labs(title = "Fuel efficiency decreases with engine size") -->
+<!-- ``` -->
+
+<!-- * Avoid titles that just describe what the plot is! -->
+
+<!-- ## More text -->
+
+<!-- *   `subtitle`: additional details beneath the title. -->
+<!-- *   `caption`: text at the bottom right of the plot. -->
+
+<!-- ```{r, message = FALSE, fig.width = 8, out.width="60%"} -->
+<!-- ggplot(mpg, aes(displ, hwy)) + -->
+<!--   geom_point(aes(color = class)) + geom_smooth(se = FALSE) + -->
+<!--   labs(title = "Fuel efficiency decreases with engine size", -->
+<!--        subtitle = str_wrap("Two seaters (sports cars) are an exception -->
+<!--                            because of their light weight", width = 45), -->
+<!--        caption = "Data from fueleconomy.gov") -->
+<!-- ``` -->
+
+<!-- ## Axes -->
+
+<!-- ```{r, message = FALSE, fig.width = 8} -->
+<!-- ggplot(mpg, aes(displ, hwy)) + -->
+<!--   geom_point(aes(color = class)) + -->
+<!--   geom_smooth(se = FALSE) + -->
+<!--   labs(x = "Engine displacement (L)", -->
+<!--        y = "Highway fuel economy (mpg)", -->
+<!--        color = "Car type") -->
+<!-- ``` -->
+
+<!-- ## Legend layout -->
+
+<!-- ```{r, out.width = "22%", results = "hold"} -->
+<!-- #| layout-ncol: 4 -->
+<!-- base <- ggplot(mpg, aes(displ, hwy)) + geom_point(aes(color = class)) -->
+
+<!-- base + theme(legend.position = "left") -->
+<!-- base + theme(legend.position = "top") -->
+<!-- base + theme(legend.position = "bottom") -->
+<!-- base + theme(legend.position = "right") # the default -->
+<!-- ``` -->
+
+<!-- * `legend.position = "none"` suppresses the display! -->
+
+<!-- ## Exercise -->
+
+<!-- Modify your previous plots with appropriate labels. -->
+
