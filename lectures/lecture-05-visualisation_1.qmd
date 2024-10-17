@@ -1,6 +1,6 @@
 ---
 title: "Data Science in Business Analytics"
-subtitle: "Visualisation and Communication I"
+subtitle: "Visualisation and Communication"
 author: "Professor Alex [aleksandr.shemendyuk@unil.ch]"
 date: "21/10/2024"
 format: 
@@ -125,7 +125,6 @@ Comparison of image scaling
 
 - **Concept**: A grammar of graphics helps to **describe and create** graphics systematically.
   - Moves beyond specific plot types (e.g., scatterplots) to understand **deeper structures** in visualizations.
-  - Quotation:  
 
 > "A grammar of graphics is a tool that enables us to concisely describe the components of a graphic"  
 > --- Hadley Wickham
@@ -830,6 +829,18 @@ ggplot(diamonds, aes(x = cut, y = carat)) +
 
 ---
 
+## Boxplot: Construction Method
+
+- **Boxplots** use the following calculations:
+  - **Median**: The middle value of the data.
+  - **Interquartile Range (IQR)**: The range between the 25th and 75th percentiles.
+  - **Whiskers**: Extend to the most extreme data points within 1.5 times the IQR. The formula is: `1.5 * IQR`.
+  - **Outliers**: Data points beyond the whiskers.
+
+![](../assets/visualization/eda-boxplot.png){width=80% fig-align="center"}
+
+---
+
 ## Violin Plots for More Detail
 
 - **Violin plots** provide a richer view than boxplots by showing the **density distribution** of the data for each category.
@@ -882,6 +893,8 @@ ggplot(diamonds, aes(x = color, y = cut)) +
   - Larger diamonds tend to have higher prices.
 
 ```{r}
+#| out-width: 60%
+
 smaller <- diamonds %>% filter(carat < 3)
 ggplot(smaller, aes(x = carat, y = price)) +
   geom_point()
@@ -897,6 +910,8 @@ ggplot(smaller, aes(x = carat, y = price)) +
   - Clusters become visible, such as diamonds around 1, 1.5, and 2 carats.
 
 ```{r}
+#| out-width: 60%
+
 ggplot(smaller, aes(x = carat, y = price)) + 
   geom_point(alpha = 1 / 100)
 ```
@@ -906,7 +921,7 @@ ggplot(smaller, aes(x = carat, y = price)) +
 ## Binning Two Numerical Variables
 
 - Another solution to overplotting is **binning**:
-  - Use `geom_bin2d()` for **rectangular bins**.
+  - Use `geom_bin_2d()` for **rectangular bins**.
   - Use `geom_hex()` for **hexagonal bins**.
   - Fill colors represent **density** (number of points per bin).
   
@@ -917,7 +932,7 @@ ggplot(smaller, aes(x = carat, y = price)) +
 ```{r}
 smaller %>% 
   ggplot(aes(x = carat, y = price)) +
-  geom_bin2d()
+  geom_bin_2d()
 ```
 
 :::
@@ -1029,14 +1044,15 @@ ggplot(mpg, aes(displ, hwy)) + geom_point() +
 ## Breaks and labels for date/datetime
 
 * `date_labels`: a format as in `?readr::parse_datetime()`.  
-* `date_breaks`: a string like `"2 days"` or `"1 month"`.  
+* `scales::breaks_width`: a string like `"2 days"` or `"1 month"`.  
 
 ```{r, fig.width = 8}
-presidential |>
-    mutate(id = 33 + row_number()) |>
-    ggplot(aes(start, id, color = party)) +
-    geom_segment(aes(xend = end, yend = id)) + geom_point() +
-    scale_x_date(NULL, breaks = presidential$start, date_labels = "'%y")
+presidential |> mutate(id = 33 + row_number()) |>
+  ggplot(aes(x = start, y = id, color = party)) +
+  geom_segment(aes(xend = end, yend = id)) + geom_point() +
+  scale_x_date(name = NULL, breaks = presidential$start,
+               minor_breaks = NULL, date_labels = "'%y") +
+  scale_y_continuous(breaks = breaks_width(1), minor_breaks = NULL)
 ```
 
 ## Legend layout
@@ -1069,21 +1085,21 @@ base + theme(legend.position = "right") # the default
 
 ```{r}
 ggplot(diamonds, aes(carat, price)) +
-    geom_bin2d()
+    geom_bin_2d()
 ```
 
 ## Tranform the scales II
 
 ```{r}
 ggplot(diamonds, aes(log10(carat), log10(price))) +
-    geom_bin2d()
+    geom_bin_2d()
 ```
 
 ## Tranform the scales III
 
 ```{r}
 ggplot(diamonds, aes(carat, price)) +
-    geom_bin2d() +
+    geom_bin_2d() +
     scale_x_log10() +
     scale_y_log10()
 ```
@@ -1195,19 +1211,20 @@ mpg %>%
 # Left
 ggplot(mpg, aes(x = displ, y = hwy)) +
   geom_point(aes(color = drv)) + geom_smooth() +
-  scale_x_continuous(limits = c(5, 6)) +
-  scale_y_continuous(limits = c(10, 25))
+  scale_x_continuous(limits = c(5, 7)) +
+  scale_y_continuous(limits = c(10, 30))
 
 # Right
 ggplot(mpg, aes(x = displ, y = hwy)) +
   geom_point(aes(color = drv)) + geom_smooth() +
-  coord_cartesian(xlim = c(5, 6), ylim = c(10, 25))
+  coord_cartesian(xlim = c(5, 7), ylim = c(10, 30))
 ```
 
 ## Adjusting the limits in scales I
 
 ```{r, out.width = "45%", message = FALSE, warning = FALSE}
 #| layout-nrow: 1
+
 suv <- mpg |>
     filter(class == "suv")
 compact <- mpg |>
