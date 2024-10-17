@@ -1179,7 +1179,7 @@ ggplot(df, aes(x, y)) +
     viridis::scale_fill_viridis()
 ```
 
-## Zooming
+## Zooming: three methods
 
 \vspace{-12pt}
 
