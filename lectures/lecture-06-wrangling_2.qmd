@@ -1,19 +1,22 @@
 ---
-title: "Data Science for Business Analytics"
-subtitle: "Data Wrangling II"
-author: "Thibault Vatter [thibault.vatter@hesge.ch]"
-date: "30/10/2023"
+title: "Data Science in Business Analytics"
+subtitle: "Data Wrangling -- 2"
+author: "Professor Alex [aleksandr.shemendyuk@unil.ch]"
+date: "04/11/2024"
 format: 
     beamer:
-        include-in-header: latex/header.tex
+        include-in-header: ../latex/header.tex
         fontsize: 10pt
 execute:
     echo: true
 ---
 
 
-```{r setup, include = FALSE, echo = FALSE}
-source("common.R")
+```{r setup}
+#| echo: false
+#| include: false
+
+source("../R/common.R")
 library(tidyverse)
 library(knitr)
 library(nycflights13)
@@ -22,7 +25,7 @@ library(nycflights13)
 ## Today
 
 ```{r echo = FALSE, out.width = "90%"}
-include_graphics("figures/r4ds/data-science-wrangle.png")
+include_graphics("../assets/r4ds/data-science-wrangle.png")
 ```
 
 
@@ -33,112 +36,119 @@ include_graphics("figures/r4ds/data-science-wrangle.png")
 
 # Relational data
 
-## Relational data
+## Relational Data
 
-* Until now: analysis of a single table of data.
-* Typically: multiple tables of data to be combined.
-* Called __relational data__:
-  * Because relations, not just the individual datasets, are important.
-* Relations are always defined for a pair of tables.
-* Relations of three or more tables are built from the relations between pairs.
+- **Until now**: Analysis of a single table of data.
+- **Typically**: In practice, data often spans multiple tables that need to be combined.
+- **Definition**: This is known as _relational data_:
+  - The relationships between tables, not just the individual datasets, are key.
+- **Relations**:
+  - Defined between pairs of tables.
+  - Relationships involving three or more tables are constructed from these pairwise relations.
 
-## Relational database systems
+## Relational Database Systems
 
-* Oracle, MySQL, Microsoft SQL Server, PostgreSQL, IBM DB2, Microsoft Access, SQLite, and others.
+- Common relational database systems include:
+  - Oracle, MySQL, Microsoft SQL Server, PostgreSQL, IBM DB2, Microsoft Access, SQLite, and others.
 
 ```{r, echo = FALSE, out.width = "50%"}
-knitr::include_graphics("figures/sql-history.png")
+knitr::include_graphics("../assets/sql-history.png")
 ```
 
-## nycflights13::flights
+## Datasets Used from `nycflights13`
 
-* All `r format(nrow(nycflights13::flights), big.mark = ",")` flights that departed from NYC in 2013
-([US BTS](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0)):
+- In this section, we introduce the datasets from the `nycflights13` package, which will be used for exploring relational data operations.
+- These datasets include information on
+  - flights,
+  - airlines,
+  - airports,
+  - planes, 
+  - and weather data.
+
+---
+
+## `nycflights13::flights`
+
+- Contains `r format(nrow(nycflights13::flights), big.mark = "'")` flights that departed from NYC in 2013:
 
 ```{r}
 flights
 ```
 
-## nycflights13::airlines
+---
+
+## `nycflights13::airlines`
+
+Displays airline information corresponding to each carrier in the `flights` dataset:
 
 ```{r}
 airlines
 ```
 
-## nycflights13::airports
+---
+
+## `nycflights13::airports`
+
+Provides details about each airport, including geographic location and other identifying information:
 
 ```{r}
 airports
 ```
 
-## nycflights13::planes
+---
+
+## `nycflights13::planes`
+
+Contains information on the planes used in the flights, including the manufacturer and year built:
 
 ```{r}
 planes
 ```
 
-## nycflights13::weather
+---
+
+## `nycflights13::weather`
+
+Records weather conditions in NYC airports at the time of each flight's departure:
 
 ```{r}
 weather
 ```
 
-## nycflights13
+## `nycflights13`: Relationships Summary
 
 ```{r, echo = FALSE}
-knitr::include_graphics("figures/r4ds/relational-nycflights.png")
+knitr::include_graphics("../assets/r4ds/relational.png")
 ```
 
-## Exercise 1
+## Keys: Primary and Foreign
 
-```{r, echo = FALSE}
-knitr::include_graphics("figures/r4ds/relational-nycflights.png")
-```
+**Keys** connect two tables by linking variables.
 
-* Imagine you wanted to draw (approximately) the route each plane flies from
-its origin to its destination.
-* What variables would you need?
-* What tables would you need to combine?
+- **Primary Key**: Uniquely identifies each observation within its own table.
+  - Examples:
+    - `airlines$carrier` in `airlines`.
+    - `airports$faa` in `airports`.
+    - `planes$tailnum` in `planes`.
+    - Compound keys: `weather$origin` and `weather$time_hour` in `weather`.
 
-## Exercise 2
+---
 
-```{r, echo = FALSE}
-knitr::include_graphics("figures/r4ds/relational-nycflights.png")
-```
+## Foreign Keys and Table Relationships
 
-* I forgot to draw the relationship between `weather` and `airports`.
-* What is the relationship and how should it appear in the diagram?
+- **Foreign Key**: Links to a primary key in another table.
+  - Examples:
+    - `flights$tailnum` links to `planes$tailnum`.
+    - `flights$carrier` links to `airlines$carrier`.
+    - Compound keys like `flights$origin` and `flights$time_hour` link to `weather$origin` and `weather$time_hour`.
 
-## Exercise 3
+- **Naming Convention**: Primary and foreign keys often share names, simplifying table joins.
 
-```{r, echo = FALSE}
-knitr::include_graphics("figures/r4ds/relational-nycflights.png")
-```
+## Verifying Primary Keys
 
-* `weather` only contains information for the origin (NYC) airports.
-* If it contained weather records for all airports in the USA, what additional relation would it define with `flights`?
+To confirm that a key is primary, we check:
 
-## Keys
-
-* Keys:
-    * Variables used to connect pair of tables.
-    * Uniquely identifies an observation.
-    * Can be:
-        * A single variable (e.g., `tailnum` for `planes`).
-        * Multiple variables (e.g., `year`, `month`, `day`, `hour`, and `origin` for `weather`).
-* Two types of __keys__:
-    * __Primary:__ uniquely identifies an observation __in its own table.__
-      * E.g., `planes$tailnum`.
-    * __Foreign:__ uniquely identifies an observation __in another table.__
-      * E.g., `flights$tailnum`.
-* Note that:
-    * A variable can be both a primary key _and_ a foreign key.
-    * A primary key and the corresponding foreign key in another table form a __relation__.
-    * Relations are typically one-to-many (e.g., flights and planes).
-
-## Is a given key primary?
-
-* Unicity
+- **Uniqueness**: Each key should uniquely identify an observation.
 
 ```{r}
 planes |>
@@ -146,11 +156,35 @@ planes |>
     filter(n > 1)
 ```
 
-* Missingness
+- **No Missing Values**: A primary key must not contain `NA` values.
 
 ```{r}
 planes |>
     filter(is.na(tailnum))
+```
+
+## Surrogate Keys
+
+- **Complex Keys**: Some tables lack a simple primary key, requiring a combination of variables to uniquely identify rows.
+  - For `flights`, the combination `time_hour`, `carrier`, and `flight` uniquely identifies each observation.
+
+```{r}
+flights |>
+    count(time_hour, carrier, flight) |>
+    filter(n > 1)
+```
+
+---
+
+## Creating a Surrogate Key
+
+- **Surrogate Key**: A simpler, unique identifier can be generated to make referencing observations easier.
+  - Adding a numeric ID as a surrogate key for each row in `flights`:
+
+```{r}
+flights2 <- flights |>
+    mutate(id = row_number(), .before = 1)
+flights2
 ```
 
 <!-- ## No explicit primary key? -->
@@ -164,13 +198,14 @@ planes |>
 <!-- * Solution: add one with `mutate()` and `row_number()`. -->
 <!-- * This is called a __surrogate key__. -->
 
-## Combining tables
+## Combining Tables
 
-* Two families of verbs to work with relational data:
-    * __Mutating joins__: Add new variables to one data frame from matching observations in another.
-    * __Filtering joins__: Filter observations from one data frame based on whether or not they match an observation in the other table.
+- Two main types of verbs for working with relational data:
+  - **Mutating Joins**: Add new variables to a data frame based on matching observations in another.
+  - **Filtering Joins**: Filter observations in a data frame depending on whether they match observations in another table.
 
-## Create a narrower dataset
+
+## Technical Slide: Narrow `flights` Dataset
 
 ```{r}
 flights2 <- flights |>
@@ -179,23 +214,7 @@ flights2 <- flights |>
 flights2
 ```
 
-## A simple example
-
-```{r}
-flights2 |>
-    select(-origin, -dest) |>
-    left_join(airlines)
-```
-
-<!-- ## Why mutating join? -->
-
-<!-- ```{r} -->
-<!-- flights2 |> -->
-<!--     select(-origin, -dest) |> -->
-<!--     mutate(name = airlines$name[match(carrier, airlines$carrier)]) -->
-<!-- ``` -->
-
-## Understanding mutating joins
+## Understanding Mutating Joins
 
 ```{r}
 x <- tribble(~key, ~val_x,
@@ -209,54 +228,66 @@ y <- tribble(~key, ~val_y,
 ```
 
 ```{r, echo = FALSE, out.width = "50%"}
-#knitr::include_graphics("figures/r4ds/join-setup.png")
-knitr::include_graphics("figures/r4ds/join-setup2.png")
+knitr::include_graphics("../assets/r4ds/join-setup2.png")
 ```
 
-## Inner join
+---
+
+## Inner Join
+
+An **inner join** retains only matching rows between tables `x` and `y`.
 
 ```{r, echo = FALSE, out.width = "90%"}
-knitr::include_graphics("figures/r4ds/join-inner.png")
+knitr::include_graphics("../assets/r4ds/join-inner.png")
 ```
 
 ```{r}
 inner_join(x, y, join_by(key))
 ```
 
-## Outer joins
+---
 
-* __Outer joins__ keep observations that appear in at least one of the tables:
-    * __Left join:__ keeps all observations in `x`.
-    * __Right join:__ keeps all observations in `y`.
-    * __Full join:__ keeps all observations in `x` and `y`
-* They work by adding to each table an additional "virtual" observation which
-* has a key that always matches (if no other key matches),
-* and a value filled with `NA`.
+## Outer Joins
 
-## Outer joins II
+- **Outer Joins** retain observations appearing in at least one of the tables:
+  - **Left join**: Keeps all observations from `x`.
+  - **Right join**: Keeps all observations from `y`.
+  - **Full join**: Keeps all observations from both `x` and `y`.
+  
+Outer joins introduce "virtual" observations with keys that match all unmatched rows, with missing values filled as `NA`.
+
+---
+
+## Outer Joins Illustrated
 
 ```{r, echo = FALSE, out.width = "50%"}
-knitr::include_graphics("figures/r4ds/join-outer.png")
+knitr::include_graphics("../assets/r4ds/join-outer.png")
 ```
 
-## A Venn diagram for joins
+---
+
+## A Venn Diagram for Joins
+
+This Venn diagram visually summarizes inner, left, right, and full joins:
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/r4ds/join-venn.png")
+knitr::include_graphics("../assets/r4ds/join-venn.png")
 ```
 
-## Duplicate keys
+## Duplicate Keys
 
-* Two possibilities:
-    * One table has duplicate keys.
-        * Useful to add in additional information as there is typically a one-to-many relationship.
-    * Both tables have duplicate keys.
-        * Usually an error because in neither table do the keys uniquely identify an observation.
-        * When you join duplicated keys, you get all possible combinations (i.e., the Cartesian product).
+- When tables contain duplicate keys, two scenarios arise:
+  - **One table has duplicate keys**:
+    - Common in one-to-many relationships where additional information is added.
+  - **Both tables have duplicate keys**:
+    - Typically an error as keys no longer uniquely identify observations.
+    - Joins produce all possible combinations (Cartesian product) when both tables have duplicate keys.
 
-## One table has duplicate keys
+---
 
-* Only `x` has duplicated keys:
+## One Table with Duplicate Keys
+
+- Only `x` contains duplicated keys:
 
 :::: {.columns}
 ::: {.column width='48%'}
@@ -280,9 +311,10 @@ y <- tribble(~key, ~val_y,
 
 :::
 ::::
+
 \vspace{0.5cm}
 
-* The join adds `val_y` to the matching rows:
+- Resulting join adds `val_y` to matching rows:
 
 :::: {.columns}
 ::: {.column width='48%'}
@@ -295,15 +327,17 @@ left_join(x, y, join_by(key))
 ::: {.column width='48%'}
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/r4ds/join-one-to-many.png")
+knitr::include_graphics("../assets/r4ds/join-one-to-many.png")
 ```
 
 :::
 ::::
 
-## Both tables have duplicate keys
+---
 
-* Both `x` and `y` have duplicated keys:
+## Both Tables with Duplicate Keys
+
+- Both `x` and `y` contain duplicated keys:
 
 :::: {.columns}
 ::: {.column width='48%'}
@@ -329,9 +363,10 @@ y <- tribble(~key, ~val_y,
 
 :::
 ::::
+
 \vspace{0.5cm}
 
-* The join creates all combinations:
+- Join results in all possible combinations:
 
 :::: {.columns}
 ::: {.column width='48%'}
@@ -344,67 +379,65 @@ left_join(x, y, join_by(key))
 ::: {.column width='48%'}
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/r4ds/join-many-to-many.png")
+knitr::include_graphics("../assets/r4ds/join-many-to-many.png")
 ```
 
 :::
 ::::
 
-## Specifying the keys
+## Specifying the Keys
 
-* Default uses all variables that appear in both tables.
-* Called a __natural join.__
+- By default, `left_join()` uses all variables common to both tables as the join keys, performing what is called a **natural join**.
+  - This is convenient but may not always produce the intended result.
 
 ```{r}
 flights2 |>
     left_join(weather)
 ```
 
-## Specifying the keys cont'd
+---
 
-* Like a natural join, but uses only some of the common variables:
+## Specifying Specific Join Keys
 
-```{r}
-flights2 |>
-    left_join(planes, join_by(tailnum))
-```
-
-## Specifying the keys cont'd
-
-* With `join_by(a == b)`, `left_join` matches variable `a` in table `x` to variable `b` in table `y`:
+- Sometimes only a subset of the common variables should be used for joining.
+  - In this example, we join `flights2` with `planes` using `tailnum` only, avoiding unintended matches on other common variables like `year`.
 
 ```{r}
 flights2 |>
-    left_join(airports, join_by(dest == faa))
+    left_join(planes, join_by(tailnum)) |> print(n = 5)
 ```
 
-## SQL is the inspiration
+- Notice that the `year` columns are disambiguated with suffixes (`year.x` and `year.y`) to indicate the origin table.
 
-\scriptsize
+---
 
-dplyr                        | SQL
------------------------------|-------------------------------------------
-`inner_join(x, y, join_by(z))` | `SELECT * FROM x INNER JOIN y USING (z)`
-`left_join(x, y, join_by(z))`  | `SELECT * FROM x LEFT OUTER JOIN y USING (z)`
-`right_join(x, y, join_by(z))` | `SELECT * FROM x RIGHT OUTER JOIN y USING (z)`
-`full_join(x, y, join_by(z))`  | `SELECT * FROM x FULL OUTER JOIN y USING (z)`
+## Custom Join Conditions
 
-\normalsize
+- We can specify joins with different variable names using `join_by(a == b)`.
+  - Here, `left_join` matches `dest` in `flights2` with `faa` in `airports`.
 
-* Note that:
-    * "INNER" and "OUTER" are optional, and often omitted.
-    * Joining different variables between the tables uses a slightly different syntax in SQL.
-    * E.g. `inner_join(x, y, join_by(a == b))` vs `SELECT * FROM x INNER JOIN y ON x.a = y.b`.
+```{r}
+flights2 |>
+    left_join(airports, join_by(dest == faa)) |> print(n = 5)
+```
 
-## Filtering joins
+- This approach clarifies which keys are matched and supports more complex join requirements.
 
-* Similar to mutating joins, but affect the observations rather than the variables:
-    * `semi_join(x, y)` __keeps__ all observations in `x` that have a match in `y`.
-        * Useful for matching filtered summary tables back to the original rows.
-    * `anti_join(x, y)` __drops__ all observations in `x` that have a match in `y`.
-        * Useful for diagnosing join mismatches.
+## Filtering Joins
 
-## Flights that went to top destinations
+Filtering joins affect the rows, not the columns:
+
+- **`semi_join(x, y)`**: Keeps all rows in `x` that have a match in `y`.
+  - Useful for filtering to matching observations in both tables.
+
+- **`anti_join(x, y)`**: Drops all rows in `x` that have a match in `y`.
+  - Useful for diagnosing mismatches, identifying records in `x` without a corresponding match in `y`.
+
+---
+
+## Flights to Top Destinations
+
+To identify flights to top destinations, filter the `flights` data for destinations with high frequency:
 
 ```{r}
 top_dest <- flights |>
@@ -416,126 +449,256 @@ flights |>
     print(n = 5)
 ```
 
-* How to extend to multiple variables?
+---
 
-## Semi-join
+## Using Semi-Join
 
-* Only keeps rows in `x` having a match in `y`:
+- `semi_join()` retains only rows in `flights` that match with rows in `top_dest`:
 
 ```{r}
-semi_join(flights, top_dest)
+semi_join(flights, top_dest, join_by(dest))
 ```
 
-## Visually understand the semi-join
+---
 
-* One-to-many:
+## Using Anti-Join
 
-```{r, echo = FALSE, out.width = "60%"}
-knitr::include_graphics("figures/r4ds/join-semi.png")
+- `anti_join()` helps identify rows in `flights2` without matches in other tables, making it useful for detecting mismatches.
+
+:::: {.columns}
+::: {.column width='48%'}
+
+- Finding destinations in `flights2` that are not listed in `airports`:
+
+```{r}
+flights2 |>
+  anti_join(
+    airports,
+    join_by(dest == faa)
+  ) |>
+  distinct(dest)
 ```
 
-* Many-to-many:
+:::
+::: {.column width='48%'}
 
-```{r, echo = FALSE, out.width = "60%"}
-knitr::include_graphics("figures/r4ds/join-semi-many.png")
+- Finding tail numbers in `flights2` that are not present in `planes`:
+
+```{r}
+flights2 |>
+  anti_join(planes,
+            join_by(tailnum)) |>
+  distinct(tailnum) |> print(5)
 ```
 
+:::
+::::
 
-## `flights` without a match in `planes`
+## Visually Understanding the Semi-Join
+
+- **One-to-Many**: A semi-join between tables with a one-to-many relationship.
+
+```{r, echo = FALSE, out.width = "50%"}
+knitr::include_graphics("../assets/r4ds/join-semi.png")
+```
+
+- **Many-to-Many**: A semi-join between tables with a many-to-many relationship.
+
+```{r, echo = FALSE, out.width = "50%"}
+knitr::include_graphics("../assets/r4ds/join-semi-many.png")
+```
+
+---
+
+## `flights` Without a Match in `planes`
+
+Using `anti_join()` to identify tail numbers in `flights` without matches in `planes`.
 
 :::: {.columns}
 ::: {.column width='53%'}
 
 ```{r}
 flights |>
-    anti_join(planes, join_by(tailnum)) |>
-    count(tailnum, sort = TRUE)
+  anti_join(planes, join_by(tailnum)) |>
+  count(tailnum, sort = TRUE)
 ```
 
 :::
 ::: {.column width='47%'}
 
 ```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/r4ds/join-anti.png")
+knitr::include_graphics("../assets/r4ds/join-anti.png")
 ```
 
 :::
 ::::
 
 
-## Exercise
+<!-- ## Exercise -->
 
-1. Install and load the `nycflights13` library and check that you can access
-the tables
-`airlines`, `airports`, `planes`, `weather`, `flights`.
+<!-- 1. Install and load the `nycflights13` library and check that you can access -->
+<!-- the tables -->
+<!-- `airlines`, `airports`, `planes`, `weather`, `flights`. -->
 
-2. Find the 48 hours (over the course of the whole year) that have the worst delays. Cross-reference it with the weather data. Can you see any patterns?
+<!-- 2. Find the 48 hours (over the course of the whole year) that have the worst delays. Cross-reference it with the weather data. Can you see any patterns? -->
 
-3. Add the latitude and the longitude of the origin and destination airport to flights. Is it easier to rename the columns before or after the join?
+<!-- 3. Add the latitude and the longitude of the origin and destination airport to flights. Is it easier to rename the columns before or after the join? -->
 
-4. Does every departing flight have corresponding weather data for that hour?
+<!-- 4. Does every departing flight have corresponding weather data for that hour? -->
 
 
-# Dates and times
+# Dates and Times
 
-## Warm-up
+## Warm-Up: Rethinking Time
 
-* Does every year have 365 days?
-* Does every day have 24 hours?
-* Does every minute have 60 seconds?
+Let's start with a few quick questions about time:
 
-## Refering to an instant in time
+- **Does every year have exactly 365 days?**
+  - *Hint*: What happens every four years?
 
-* Two types of date/time data:
-    * A __date__.
-        * Tibbles print this as `<date>`.
-    * A __date-time__ is a date plus a time.
-        * Uniquely identifies an instant in time (typically to the nearest second).
-        * Tibbles print this as `<dttm>`.
-        * Elsewhere in R, `POSIXct`.
-* __Use the simplest possible data type satisfying your needs!__
+- **Does every day always have 24 hours?**
+  - *Hint*: Consider daylight saving time adjustments.
 
-## Creating date/times
+- **Does every minute have 60 seconds?**
+  - *Hint*: Some "special" minutes may surprise you!
 
-* The __lubridate__ package:
-    * Makes it easier to work with dates and times in R.
-    * Not part of core tidyverse because only needed when  working with dates/times.
+Exploring dates and times might seem simple at first, but they can involve surprising complexity. Let’s dive in and see why!
+
+---
+
+## Referring to an Instant in Time
+
+- **Two Types of Date/Time Data**:
+  - **Date**: Represents a specific day (printed as `<date>` in tibbles).
+  - **Date-Time**: Combines a date with a time to specify a precise instant (printed as `<dttm>` in tibbles).
+    - Equivalent to `POSIXct` in base R.
+    - Use date-times only when necessary as they are more complex due to time zones.
+
+- **Tip**: Always use the simplest possible data type for your needs.
+
+---
+
+## Creating Dates and Date-Times
+
+- The **`lubridate`** package simplifies working with dates and times in R.
+  - As of `tidyverse 2.0.0`, `lubridate` is [part of the core tidyverse](https://www.tidyverse.org/blog/2023/03/tidyverse-2-0-0/).
 
 ```{r, message = FALSE}
 library(lubridate)
-today()
-now()
+today()    # Current date
+now()      # Current date-time
 ```
 
-* Other (usual) ways to create a date/time:
-    * From a string.
-    * From individual date-time components.
-    * From an existing date/time object.
+---
+
+## Additional Ways to Create Date/Times
+
+- Common methods for creating date/time objects:
+  - **From a string**.
+  - **From individual date/time components**.
+  - **From an existing date/time object**.
 
 ```{r, message = FALSE}
-as_datetime(today())
-as_date(now())
+as_datetime(today())  # Convert date to date-time
+as_date(now())        # Convert date-time to date
 ```
 
-## From a string
+## Importing Dates and Date-Times
+
+- **Automatic Parsing**: If a CSV file contains dates or date-times in ISO8601 format, `readr` will automatically detect them.
 
 ```{r}
-ymd("2017-01-31")
-mdy("January 31st, 2017")
-dmy("31-Jan-2017")
-
-ymd_hms("2017-01-31 20:11:59")
-mdy_hm("01/31/2017 08:01")
+csv <- "
+  date,datetime
+  2022-01-02,2022-01-02 05:12
+"
+read_csv(csv)
 ```
 
-* Additionally:
+---
+
+## ISO8601 Standard
+
+- **ISO8601**: International format for dates and times, with elements ordered from largest to smallest.
+  - Date: `YYYY-MM-DD` (e.g., 2022-05-03)
+  - Date-Time:
+    - `YYYY-MM-DD HH:MM:SS`
+    - `YYYY-MM-DDTHH:MM:SS`
+  - Example: 4:26pm on May 3, 2022 as
+    - `2022-05-03 16:26`
+    - `2022-05-03T16:26`
+
+---
+
+## Custom Date Formats
+
+- For non-ISO8601 formats, specify `col_types` with [`col_date()` or `col_datetime()`](https://readr.tidyverse.org/reference/parse_datetime.html#format-specification) and a [format string](https://r4ds.hadley.nz/datetimes#tbl-date-formats).
+
+| Code | Meaning                  | Example        |
+|------|---------------------------|----------------|
+| `%Y` | 4-digit year              | `2021`        |
+| `%y` | 2-digit year              | `21`          |
+| `%m` | Month number              | `02`          |
+| `%b` | Abbreviated month name    | `Feb`         |
+| `%B` | Full month name           | `February`    |
+| `%d` | Day (one or two digits)   | `2`           |
+| `%H` | Hour (24-hour clock)      | `13`          |
+| `%I` | Hour (12-hour clock)      | `1`           |
+| `%p` | AM/PM                     | `pm`          |
+| `%M` | Minutes                   | `35`          |
+| `%S` | Seconds                   | `45`          |
+| `%Z` | Time zone name            | `America/Chicago` |
+| `%z` | Offset from UTC           | `+0800`       |
+
+---
+
+## Specifying Ambiguous Date Formats
+
+- For ambiguous formats, use specific format strings:
 
 ```{r}
-ymd(20170131)
-ymd(20170131, tz = "UTC")
+csv <- "
+  date
+  01/02/15
+"
+read_csv(csv, col_types = cols(date = col_date("%m/%d/%y")))
+#> Interprets as "2015-01-02"
+
+read_csv(csv, col_types = cols(date = col_date("%d/%m/%y")))
+#> Interprets as "2015-02-01"
 ```
 
-## From individual components
+- **Locale-Specific Parsing**: Use [`locale()`](https://readr.tidyverse.org/reference/locale.html) for non-English dates, especially with `%b` or `%B`.
+
+## Creating Dates and Date-Times from Strings
+
+- **`lubridate` Helpers**: Use `ymd()`, `mdy()`, `dmy()`, etc., to parse dates automatically based on the order of year, month, and day.
+
+```{r}
+ymd("2017-01-31")            # Year-Month-Day
+mdy("January 31st, 2017")     # Month-Day-Year
+dmy("31-Jan-2017")            # Day-Month-Year
+```
+
+- **Creating Date-Times**: Add `_h`, `_m`, `_s` for hour, minute, second as needed.
+
+```{r}
+ymd_hms("2017-01-31 20:11:59")  # Year-Month-Day Hour:Minute:Second
+mdy_hm("01/31/2017 08:01")      # Month-Day-Year Hour:Minute
+```
+
+---
+
+- **Forcing Time Zones**: Specify `tz` to create date-times in a particular timezone, like UTC.
+
+```{r}
+ymd(20170131)                # Interprets as date "2017-01-31"
+ymd(20170131, tz = "UTC")    # Interprets as date-time in UTC
+```
+
+## Creating Dates and Date-Times from Components
+
+- Sometimes, date and time components are in separate columns. Use [`make_datetime()`](https://lubridate.tidyverse.org/reference/make_datetime.html) to combine them into a single date-time.
 
 ```{r}
 flights |>
@@ -543,7 +706,11 @@ flights |>
   mutate(departure = make_datetime(year, month, day, hour, minute))
 ```
 
-* For `dep_time` and others such as `arr_time`:
+---
+
+## Handling Special Formats (e.g., `dep_time`)
+
+- For columns like `dep_time` (e.g., 531 for 5:31 am), use modulus arithmetic to split hour and minute components.
 
 ```{r}
 flights_dt <- flights |>
@@ -551,71 +718,102 @@ flights_dt <- flights |>
     year, month, day, dep_time %/% 100, dep_time %% 100))
 ```
 
-## Rounding
+- This approach allows creation of consistent date-time columns from component columns, ready for analysis.
 
-* Rounding:
-    * `floor_date()` rounds down.
-    * `round_date()` rounds to.
-    * `ceiling_date()` rounds up.
+## Rounding Dates and Times
 
-```{r, out.width = "50%"}
-flights_dt |>
+- Use [rounding functions](https://lubridate.tidyverse.org/reference/round_date.html) to simplify date-time values by rounding to a specified unit:
+  - **`floor_date()`**: Rounds down to the nearest unit.
+  - **`round_date()`**: Rounds to the nearest unit.
+  - **`ceiling_date()`**: Rounds up to the nearest unit.
+
+:::: {.columns}
+::: {.column width='50%'}
+
+```{r}
+flights_dt_plot <- flights_dt |>
   filter(!is.na(dep_time)) |>
-  count(week = floor_date(dep_time, "week")) |>
+  count(
+    week = floor_date(dep_time, "week")
+  ) |>
   ggplot(aes(week, n)) +
   geom_line()
 ```
 
+:::
+::: {.column width='50%'}
 
-## Getting/setting the components
+```{r, echo=FALSE, out.width="100%"}
+flights_dt_plot
+```
 
-* Getting the components:
+:::
+::::
+
+- In this example, `floor_date()` rounds `dep_time` down to the start of each week, making it easy to plot weekly counts of departures.
+
+## Getting and Setting Date-Time Components
+
+**Extracting Components**
+
+- Use accessor functions to get individual parts of a date-time:
+  - `year()`, `month()`, `mday()` (day of month), `yday()` (day of year), `wday()` (day of week), `hour()`, `minute()`, `second()`
 
 ```{r}
 datetime <- ymd_hms("2016-07-08 12:34:56")
-c(year(datetime), month(datetime), 
-  mday(datetime), yday(datetime), wday(datetime))
+c(year(datetime), month(datetime, label = TRUE), 
+  mday(datetime), yday(datetime))
+
+wday(datetime, label = TRUE, abbr = FALSE)
 ```
 
-* Setting the components:
+---
+
+**Modifying Components**
+
+- Use these same functions to adjust components:
 
 ```{r}
 year(datetime) <- 2020
-datetime
-month(datetime) <- 01
-datetime
+month(datetime) <- 1
 hour(datetime) <- hour(datetime) + 1
 datetime
 ```
 
-* Alternatively:
+- **Note**: Changing a component will automatically roll over if values exceed their normal limits.
+
+---
+
+**Alternative: Using `update()`**
+
+- The [`update()`](https://rdrr.io/r/stats/update.html) function allows you to modify multiple components at once:
 
 ```{r}
-update(datetime, year = 2019)
+update(datetime, year = 2030, month = 2, mday = 2, hour = 2)
 ```
 
-<!-- ## Flights distribution across the day -->
+This approach is useful when multiple updates are needed, ensuring clean and efficient code.
 
-<!-- ```{r, out.width = "80%"} -->
-<!-- flights_dt |> -->
-<!--   mutate(dep_hour = update(dep_time, yday = 1)) |> -->
-<!--   ggplot(aes(dep_hour)) + -->
-<!--     geom_freqpoly(binwidth = 300) -->
-<!-- ``` -->
+## Time Spans
 
-## Time spans
+- **Goal**: Perform arithmetic operations (addition, subtraction, division) with dates and times.
+- Three main classes for handling time spans in `lubridate`:
+  - **Durations**: Represent exact time spans in seconds.
+  - **Periods**: Represent human units like days, weeks, or months.
+  - **Intervals**: Define a specific time span between a start and end date.
 
-* Goal: to do arithmetic (i.e., subtraction, addition, and division) with dates/times.
-* Three classes that represent time spans:
-    * __Durations__ (number of seconds).
-    * __Periods__ (human units like weeks and months).
-    * __Intervals__ (a starting and ending point).
+::: {.callout-tip}
+Choose the simplest class that meets your needs:
+
+- **Physical time** → Duration.
+- **Human time units** → Period.
+- **Exact time span between points** → Interval.
+:::
 
 ## Durations
 
-* A __duration__ always record a time span in seconds.
-* Larger units created at the standard rate.
-    * E.g., 60s/mn, 60mn/h, 24h/d, 7d/w, 365d/y.
+- A **duration** always records a time span in seconds, using fixed conversions for larger units:
+  - **Conversions**: 60s/minute, 60min/hour, 24h/day, 7d/week, 365.25d/year
 
 ```{r}
 dseconds(15)
@@ -626,23 +824,34 @@ dweeks(3)
 dyears(1)
 ```
 
-## Durations arithmetics
+---
 
-* Add and multiply durations:
+## Duration Arithmetic
+
+- **Basic Operations**: Add and multiply durations to combine them flexibly.
 
 ```{r}
 2 * dyears(1)
 dyears(1) + dweeks(12) + dhours(15)
 ```
 
-* Add and subtract durations to and from dates/datetimes:
+- **Date Arithmetic**: Add or subtract durations from dates/datetimes.
 
 ```{r}
 tomorrow <- today() + ddays(1)
 last_year <- today() - dyears(1)
 ```
 
-* What happens here?
+```{r}
+#| echo: false
+
+tomorrow
+last_year
+```
+
+---
+
+- **Daylight Saving Time Example**: DST can affect exact durations.
 
 ```{r}
 one_pm <- ymd_hms("2016-03-12 13:00:00", tz = "America/New_York")
@@ -650,13 +859,13 @@ one_pm
 one_pm + ddays(1)
 ```
 
+- Here, adding one day shifts the time due to DST, highlighting the difference between calendar days and fixed-second durations.
+
 ## Periods
 
-* Work with "human" times, like days (no fixed length in secs):
+- **Periods** represent time spans in "human" units, like days, months, and years (unlike durations, they don’t have a fixed length in seconds).
 
 ```{r}
-one_pm
-one_pm + days(1)
 seconds(15)
 minutes(10)
 hours(c(12, 24))
@@ -666,196 +875,241 @@ weeks(3)
 years(1)
 ```
 
-## Periods arithmetics
+---
 
-* Add and multiply periods:
+## Period Arithmetic
+
+- **Add and multiply** periods to handle flexible time spans.
 
 ```{r}
 10 * (months(6) + days(1))
 days(50) + hours(25) + minutes(2)
 ```
 
-* Add periods to dates/datetimes:
+- **Date-Time Addition**: Periods adapt to calendar-based changes like leap years and daylight saving.
 
 ```{r}
-# A leap year
-ymd("2016-01-01") + dyears(1)
-ymd("2016-01-01") + years(1)
+# Leap year behavior
+ymd("2016-01-01") + dyears(1)  # Fixed duration in seconds
+ymd("2016-01-01") + years(1)   # Calendar-aware
 
-# Daylight Savings Time
-one_pm + ddays(1)
-one_pm + days(1)
+# Daylight Saving Time adjustment
+one_pm + ddays(1)    # Exact duration
+one_pm + days(1)     # Period handling
 ```
 
-## Intervals
+## Understanding Intervals
 
-* What should the following code return?
+- **Intervals** represent a time span with a specified starting and ending point.
+  - Helpful for precise calculations that depend on specific dates.
 
-```{r, eval = FALSE}
+- **Example of Estimation**:
+  - Using `years(1) / days(1)` gives an estimated answer based on an average year length of 365.25 days.
+
+```{r}
 years(1) / days(1)
 ```
 
-* A duration with a starting point:
+- To achieve a more accurate result, we need an interval.
+
+---
+
+## Creating and Using Intervals
+
+- **Accurate Calculation with Intervals**:
+  - Define an interval from today to the same date next year to find the exact number of days:
 
 ```{r}
 next_year <- today() + years(1)
-(today() %--% next_year) / ddays(1)
+(today() %--% next_year) / ddays(1)  # Exact days until same date next year
 ```
+
+- **Leap Year Example**:
+  - Calculate days in 2023 vs. 2024 (a leap year):
+
+```{r}
+y2023 <- ymd("2023-01-01") %--% ymd("2024-01-01")
+y2024 <- ymd("2024-01-01") %--% ymd("2025-01-01")
+
+y2023 / days(1)  # Returns 365 for 2023
+y2024 / days(1)  # Returns 366 for leap year 2024
+```
+
+Intervals allow precise calculations when calendar variations, such as leap years, affect durations.
 
 ## Summary
 
-```{r, echo = FALSE, out.width = "100%"}
-knitr::include_graphics("figures/r4ds/datetimes-arithmetic.png")
+- **Choosing the Right Time Structure**:
+  - **Duration**: Use when working with exact time measurements in seconds (e.g., physical elapsed time).
+  - **Period**: Use when working with human-centric time spans, such as adding weeks or months.
+  - **Interval**: Use when calculating the precise time span between two specific dates, taking into account calendar variations (e.g., leap years).
+
+```{r, echo = FALSE, out.width = "90%"}
+knitr::include_graphics("../assets/r4ds/datetimes-arithmetic.png")
 ```
 
-* Pick the simplest data structure that solves your problem:
-    * If you only care about physical time, use a duration.
-    * If you need to add human times, use a period.
-    * If you need to figure out how long a span is in human units, use an interval.
+## Time Zones
 
-## Time zones
+- **Understanding Time Zones**: R uses the IANA time zone database, which identifies time zones by `{continent}/{city}`, e.g., `America/New_York`.
+  - Check your system’s time zone and see the full list:
 
 ```{r}
-Sys.timezone()
-length(OlsonNames())
-head(OlsonNames())
+Sys.timezone()          # Current system time zone
+length(OlsonNames())    # Total number of time zones
+head(OlsonNames())      # Sample of time zones
 ```
 
-## Same instant in different time zones
+---
 
-* Same instant, different place:
+## Representing the Same Instant in Different Time Zones
+
+- **Same instant, different time zones**:
 
 ```{r}
 (x1 <- ymd_hms("2015-06-01 12:00:00", tz = "America/New_York"))
 (x2 <- ymd_hms("2015-06-01 18:00:00", tz = "Europe/Copenhagen"))
 (x3 <- ymd_hms("2015-06-02 04:00:00", tz = "Pacific/Auckland"))
-x1 - x2
-x1 - x3
+
+# Verifying identical instants
+x1 - x2  # 0 secs
+x1 - x3  # 0 secs
 ```
 
-* Note the behavior of `c():
+- **Combining Date-Times**: Using `c()` can unify times to the first element’s time zone:
 
 ```{r}
 x4 <- c(x1, x2, x3)
 x4
 ```
 
-## Changing the time zone
+---
 
-* Keep the instant in time:
+## Changing the Time Zone Display
+
+- **Keep the Instant in Time**: Use `with_tz()` to adjust the time zone display without changing the instant.
 
 ```{r}
 x4a <- with_tz(x4, tzone = "Australia/Lord_Howe")
 x4a
-x4a - x4
+x4a - x4   # 0 seconds difference
 ```
 
-* Change the instant in time:
+---
+
+## Adjusting the Instant in Time
+
+- **Change the Instant in Time**: Use `force_tz()` when the original time zone is incorrect, altering the actual time.
 
 ```{r}
 x4b <- force_tz(x4, tzone = "Australia/Lord_Howe")
 x4b
-x4b - x4
+x4b - x4   # Difference in hours (14.5 in this case)
 ```
 
-## Exercise
-
-1. For each of the following date-times, show how you’d parse it using a lubridate function.
-
-```{r}
-d1 <- "January 1, 2010"
-d2 <- "06-Jun-2017"
-d3 <- c("August 19 (2015)", "July 1 (2015)")
-d4 <- "12/30/14" # Dec 30, 2014
-t5 <- "11:15:10.12 PM"
-```
-
-2. Write a function that given your birthday (as a date), returns how old you are in years.
-
-3. On what day of the week should you leave if you want to minimise the chance of a delay in a NY airport?
+- **Note**: Time zone offsets can vary by non-integer hours, as seen with `+1030` for Lord Howe.
 
 # Factors
 
-## Factors
+## Introduction to Factors
 
-* Factors are:
-    * Used to work with categorical variables (i.e., that have a fixed and known set of possible values).
-    * Useful to display character vectors in a non-alphabetical order.
-* The __forcats__ package:
-    * Range of helpers for working with factors.
+- **Factors** are used for working with **categorical variables**:
+  - Categorical variables have a **fixed, known set of possible values** (e.g., days of the week, levels of satisfaction).
+  - Factors allow control over the display and ordering of categorical data, even when it’s not alphabetical.
+
+- [**The `forcats` Package**](https://forcats.tidyverse.org/):
+  - Part of the tidyverse, `forcats` provides a range of helpful functions for creating and manipulating factors.
 
 ```{r}
 library(forcats)
 ```
 
-## Creating factors
+---
 
-* Imagine that you have a variable that records month:
+## Why Use Factors?
+
+- Factors are particularly useful for:
+  - Displaying categories in a **custom order** rather than alphabetical.
+  - **Reducing memory usage** when working with large categorical datasets by encoding categories.
+
+This section will explore how to create and work with factors effectively.
+
+## Creating Factors
+
+- Imagine a variable recording the month:
 
 ```{r}
 x1 <- c("Dec", "Apr", "Jan", "Mar")
 ```
 
-* Using a string to record this variable has two problems:
-    * Twelve possible months and nothing saving you from typos.
-    * It doesn't sort in a useful way.
+- Using strings to store categorical data can lead to:
+  - Typos that go unnoticed.
+  - Sorting that’s not useful for meaningful categories.
 
 ```{r}
-sort(x1)
+sort(x1)  # Alphabetical order, not chronological
 ```
 
-## Creating factors II
+---
 
-* Start by creating a list of the valid __levels__:
+## Defining Factor Levels
+
+- First, define the valid **levels** in the correct order:
 
 ```{r}
 month_levels <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
 ```
 
-* Then create a factor:
+- Then, create a factor:
 
 ```{r}
 y1 <- factor(x1, levels = month_levels)
 y1
-sort(y1)
-factor(x1) ## without levels
+sort(y1)       # Sorts in chronological order
+factor(x1)     # Without specified levels, uses alphabetical order
 ```
 
-## Creating factors III
+---
 
-* Notice:
+## Handling Typos and Custom Order
+
+- Values not in the specified levels are set to `NA`:
 
 ```{r}
 x2 <- c("Dec", "Apr", "Jam", "Mar")
 y2 <- factor(x2, levels = month_levels)
-y2
+y2  # "Jam" becomes <NA> due to invalid level
 ```
 
-* Other ordering:
+- **Custom Orders**:
+  - Factor created based on appearance order:
 
 ```{r}
-factor(x1, levels = unique(x1))
+factor(x1, levels = unique(x1))  # Custom order by appearance
 factor(x1) |>
-  fct_inorder()
+  fct_inorder()                 # Using forcats helper for order
 ```
 
-## forcats::gss_cat
+Specifying levels helps avoid errors, ensures meaningful order, and makes factors a powerful tool for categorical data.
 
-* Sample from the [General Social Survey](http://gss.norc.org):
+## Using `forcats::gss_cat`
+
+- **`gss_cat`**: A sample dataset from the [General Social Survey](http://gss.norc.org), focusing on social, economic, and demographic data.
 
 ```{r}
 gss_cat
 ```
 
-* More info with `?gss_cat`.
+- View more details about this dataset with `?gss_cat`.
 
-## See levels of a factor from a tibble
+---
+
+## Viewing Factor Levels in `gss_cat`
 
 :::: {.columns}
 ::: {.column width='48%'}
 
-* A barplot:
+- **Plotting Factor Levels**: Create a barplot to visualize distribution.
 
 ```{r, out.width = "100%"}
 ggplot(gss_cat, aes(race)) +
@@ -865,7 +1119,7 @@ ggplot(gss_cat, aes(race)) +
 :::
 ::: {.column width='48%'}
 
-* Or a count:
+- **Counting Factor Levels**: Use `count()` to summarize factor levels.
 
 ```{r}
 gss_cat |>
@@ -875,7 +1129,11 @@ gss_cat |>
 :::
 ::::
 
-## What's wrong here?
+---
+
+## Troubleshooting Factor Levels in Plots
+
+- What’s wrong with this visualization?
 
 ```{r}
 relig_summary <- gss_cat |>
@@ -888,7 +1146,11 @@ ggplot(relig_summary, aes(tvhours, relig)) +
   geom_point()
 ```
 
-## Modifying factor order
+- Consider whether the order of factor levels affects interpretation. Adjusting levels can improve clarity in plots.
+
+## Modifying Factor Order
+
+- **Reordering Factors by a Variable**: Use [`fct_reorder()`](https://forcats.tidyverse.org/reference/fct_reorder.html) to order factor levels based on another variable’s values.
 
 ```{r}
 relig_summary |>
@@ -897,31 +1159,11 @@ relig_summary |>
   geom_point()
 ```
 
-<!-- ## What's wrong here? -->
+---
 
-<!-- ```{r} -->
-<!-- rincome_summary <- gss_cat |> -->
-<!--   group_by(rincome) |> -->
-<!--   summarize(age = mean(age, na.rm = TRUE), -->
-<!--             tvhours = mean(tvhours, na.rm = TRUE), -->
-<!--             n = n()) -->
+## Modifying Factor Order for Frequency
 
-<!-- ggplot(rincome_summary, aes(age, fct_reorder(rincome, age))) + -->
-<!--   geom_point() + ylab("Income") -->
-<!-- ``` -->
-
-<!-- ## Modify factor order II -->
-
-<!-- ```{r} -->
-<!-- ggplot(rincome_summary, -->
-<!--        aes(age, fct_relevel(rincome, "Not applicable"))) + -->
-<!--   geom_point() + -->
-<!--   ylab("Income") -->
-<!-- ``` -->
-
-<!-- * Why do you think the average age for "Not applicable" is so high? -->
-
-## Modify factor order II
+- **Order by Frequency**: Use [`fct_infreq()`](https://forcats.tidyverse.org/reference/fct_inorder.html) to order factor levels by their frequency, then reverse with [`fct_rev()`](https://forcats.tidyverse.org/reference/fct_rev.html).
 
 ```{r, fig.width=10}
 gss_cat |>
@@ -930,20 +1172,24 @@ gss_cat |>
   geom_bar()
 ```
 
+## Modifying Factor Levels
 
-## Modifying factor levels
+- Beyond reordering, **changing factor levels** allows:
+  - **Clarifying labels** for readability or publication.
+  - **Collapsing levels** for higher-level summaries.
 
-* More powerful than changing the orders of the levels is changing their values:
-    * To clarify labels for publication.
-    * To collapse levels for high-level displays.
-* What's wrong here?
+- Example: Counting the current levels in `partyid`.
 
 ```{r}
 gss_cat |>
   count(partyid)
 ```
 
-## Modifying factor levels II
+---
+
+## Recoding Factor Levels
+
+- **Using [`fct_recode()`](https://forcats.tidyverse.org/reference/fct_recode.html)** to rename levels for clarity:
 
 ```{r}
 gss_cat |>
@@ -957,24 +1203,28 @@ gss_cat |>
   count(partyid)
 ```
 
-## Collapsing factors
+---
+
+## Collapsing Factor Levels
+
+- Combine multiple old levels into a single new level using [`fct_recode()`](https://forcats.tidyverse.org/reference/fct_recode.html):
 
 ```{r}
 gss_cat |>
   mutate(partyid = fct_recode(partyid,
-    "Republican, strong"    = "Strong republican",
-    "Republican, weak"      = "Not str republican",
-    "Independent, near rep" = "Ind,near rep",
-    "Independent, near dem" = "Ind,near dem",
-    "Democrat, weak"        = "Not str democrat",
-    "Democrat, strong"      = "Strong democrat",
-    "Other"                 = "No answer",
-    "Other"                 = "Don't know",
-    "Other"                 = "Other party" )) |>
+    "Republican, strong" = "Strong republican",
+    "Republican, weak"   = "Not str republican",
+    "Other"              = "No answer",
+    "Other"              = "Don't know",
+    "Other"              = "Other party")) |>
   count(partyid)
 ```
 
-## Collapsing factors II
+---
+
+## Simplifying Factor Levels with `fct_collapse()`
+
+- **[`fct_collapse()`](https://forcats.tidyverse.org/reference/fct_collapse.html)** is ideal for grouping several levels together.
 
 ```{r}
 gss_cat |>
@@ -987,82 +1237,84 @@ gss_cat |>
   count(partyid)
 ```
 
-## Collapsing factor III
+---
+
+## Lumping Small Categories with `fct_lump()`
+
+- **[`fct_lump()`](https://forcats.tidyverse.org/reference/fct_lump.html)** groups less common levels into “Other” to simplify plots.
 
 ```{r}
 gss_cat |>
   mutate(relig = fct_lump(relig)) |>
   count(relig)
 
+# Or keep the top 3 most common levels
 gss_cat |>
   mutate(relig = fct_lump(relig, n = 3)) |>
   count(relig, sort = TRUE)
 ```
 
-
-## Exercise
-
-1. In `CanadaPanelSim.csv`, declare the appropriate variables as factor. Set proper factor levels:
-
-  * `RA_GENDER`: gender (1 male, 2 female, 3 unknown)
-  * `RA_MARITALSTATUS`: marital status (1 married, 0 unmarried)
-  * `RA_VEH_USE`: vehicle use (1 commute, 2 pleasure, 0 other)
-
-2. Create a boxplot for the distance driven per vehicle use. Make sure the boxes appear in increasing order with respect to the median distance driven.
-
-
 # Strings
 
-## String basics
+## Basics of Strings in R
 
-```{r, message = FALSE}
-library(stringr) # package for string manipulation
+- **Creating Strings**: Use either double quotes `"` or single quotes `'` to define strings.
 
-# To create strings
+```{r}
 string1 <- "This is a string"
 string2 <- 'To get a "quote" inside a string, use single quotes'
 ```
 
-* Backslash as escape character:
+- **Escape Character**: The backslash `\` allows you to include special characters:
+  - `\"` for double quotes, `\'` for single quotes, `\\` for a backslash.
 
 ```{r}
-double_quote <- "\"" # or '"'
-single_quote <- '\'' # or "'"
+double_quote <- "\""   # or '"'
+single_quote <- '\''   # or "'"
 ```
 
-*  The printed representation is not the string itself:
+---
+
+## String Display vs. Content
+
+- The displayed representation of a string in R may include escape characters.
 
 ```{r}
 x <- c("\"", "\\")
-x
-writeLines(x)
+x               # Displays escapes
+writeLines(x)   # Raw contents without escapes
 ```
 
-## More on strings
+- Use `writeLines()` to view the actual contents of a string, bypassing escape characters in the display.
 
-* Special characters:
-    * Use `"\n"`, for newline, or,`"\t"`, for tab.
-    * Complete list by requesting help on `"` (`?'"'`, or `?"'"`)
-* Other usefuls things:
+## Special Characters and Useful String Functions
+
+- **Special Characters**:
+  - `"\n"` for newline, `"\t"` for tab.
+  - Check additional characters using `?'"'` or `?"'"`.
+
+- **Examples**:
 
 ```{r}
-(x <- "\u00b5") # Non-English characters
-c("one", "two", "three") # Character vectors
-str_length(c("a", "R for data science", NA)) # String length
+(x <- "\u00b5")                   # Non-English character
+c("one", "two", "three")          # Creating character vector
+str_length(c("a", "R for data science", NA)) # Calculate string length
 ```
 
-* `stringr` autocomplete:
+- **String Autocomplete**: `stringr` functions support autocomplete for easy access to string manipulation tools.
 
 ```{r, echo = FALSE}
-knitr::include_graphics("figures/r4ds/stringr-autocomplete.png")
+knitr::include_graphics("../assets/r4ds/stringr-autocomplete.png")
 ```
 
-## More on strings II
+---
+
+## String Manipulation: Combining and Handling NA
 
 :::: {.columns}
 ::: {.column width='48%'}
 
-* Combining strings:
+- **Combining Strings**: Use `str_c()` to concatenate strings.
 
 ```{r}
 str_c("x", "y")
@@ -1073,7 +1325,7 @@ str_c("x", "y", sep = ", ")
 :::
 ::: {.column width='48%'}
 
-* Missing values:
+- **Handling Missing Values**: Use `str_replace_na()` to replace `NA` in strings.
 
 ```{r}
 x <- c("abc", NA)
@@ -1084,18 +1336,21 @@ str_c("|-", str_replace_na(x), "-|")
 :::
 ::::
 
-* Recycling:
+---
+
+## String Recycling and Collapsing
+
+- **Recycling**: Extend strings to match vector lengths.
 
 ```{r}
 str_c("prefix-", c("a", "b", "c"), "-suffix")
 ```
 
-* Collapsing a vector of strings:
+- **Collapsing Vectors**: Collapse elements of a character vector into a single string.
 
 ```{r}
 str_c(c("x", "y", "z"), collapse = ", ")
 ```
-
 
 ## Subsetting strings
 
@@ -1110,97 +1365,89 @@ x
 
 * See also `str_to_upper()` or `str_to_title()`.
 
-## Locales
+## Locales and String Manipulation
+
+- **Locales** affect how characters are treated based on language and regional rules.
+  - Example: Turkish has two forms of the letter "i" — with and without a dot.
+  - The capitalization behavior for these letters differs in Turkish.
 
 ```{r}
-# Turkish has two i's: with and without a dot, and it
-# has a different rule for capitalising them:
+# Default (system locale)
 str_to_upper(c("i", "ı"))
+
+# Turkish locale specified
 str_to_upper(c("i", "ı"), locale = "tr")
 ```
 
-* The locale:
-    * An ISO 639 language code, which is a [two or three letter abbreviation](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
-    * If blank, R uses the current locale, as provided by your operating system.
+- **Setting Locale**:
+  - Use an ISO 639 language code, a [two- or three-letter abbreviation](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes).
+  - If omitted, R uses the system’s default locale.
 
+## Regular Expressions
 
-## Regular expressions
+> "Some people, when confronted with a problem, think  
+> 'I know, I'll use regular expressions.'  
+> Now, they have two problems."  
+> — Jamie Zawinski
 
-> Some people, when confronted with a problem, think
-> "I know, I'll use regular expressions."
-> Now, they have two problems.
-> -------- Jamie Zawinski
+- **Regular expressions** (regex) are a powerful language for describing patterns in strings.
+- **Regex Capabilities**:
+  - **Match**: Identify strings that contain a specific pattern.
+  - **Locate**: Find the exact positions where patterns occur in a string.
+  - **Extract**: Retrieve the content that matches a pattern.
+  - **Replace**: Substitute matches with a new value.
+  - **Split**: Divide a string based on a pattern match.
+- **Further Learning**:
+  - [Read the chapter on regex from *R for Data Science*](https://r4ds.hadley.nz/regexps) for a comprehensive guide.
+  
+## Basic Pattern Matching in Regex
 
-* A language that allows you to describe patterns in strings.
-* Allows you for instance to:
-    * Determine which strings match a pattern.
-    * Find the positions of matches.
-    * Extract the content of matches.
-    * Replace matches with new values.
-    * Split a string based on a match.
-* [Read the chapter on regex from the book!](https://r4ds.hadley.nz/regexps)
-
-## Basic matches
-
-```{r echo = FALSE}
-knitr::opts_chunk$set(
-  fig.align = 'default',
-  out.width="10%"
-)
-library(stringr)
-```
-
-* The simplest patterns match exact strings:
+- **Exact Match**: The simplest patterns match exact strings.
 
 ```{r}
 x <- c("apple", "banana", "pear")
-str_view(x, "an")
+str_view(x, "an")    # Matches "an" in the strings
 ```
 
-* Next step is `.`, which matches any character (except a newline):
+- **Wildcard Character**: `.` matches any character (except newline).
 
 ```{r}
-str_view(x, ".a.")
+str_view(x, ".a.")   # Matches any character, "a", and another character
 ```
 
-* If "`.`" matches any character, how to match the character "`.`"?
+---
 
-## Basic matches II
+## Escaping Special Characters
 
-* If "`.`" matches any character, how to match the character "`.`"?
-    * Need to use an "escape" (like string, a backslash `\`).
-    * So to match an `.`, need the regexp `\.`.
-    * But `\` is also an escape symbol in strings.
-    * So to create the regexp `\.`, use the string `"\\."`.
+- Since `.` matches any character, how do we match a literal `.`?
+  - **Escape** it with `\\.`: backslash (`\`) is the escape character.
 
 ```{r}
-# To create the regexp, we need \\
-dot <- "\\."
-# But the expression itself only contains one:
-writeLines(dot)
-# And this tells R to look for an explicit .
-str_view(c("abc", "a.c", "bef"), "a\\.c")
+# Define regex for matching a literal dot
+dot <- "\\."  
+writeLines(dot)      # Actual content is a single dot
+str_view(c("abc", "a.c", "bef"), "a\\.c")  # Matches "a.c" only
 ```
 
-## Basic matches III
+---
 
-* If `\` is an escape character, how do you match a literal `\`?
-    * Need to escape it, i.e. create the regexp `\\`.
-    * To create that regexp with a string, which also needs to escape `\`, need to write `"\\\\"`
-    * I.e., need four backslashes to match one!
+## Matching Literal Backslashes
+
+- To match a literal `\`, use `\\` as the regex.
+  - **Double the escape**: to represent `\\`, use `\\\\` in the string.
 
 ```{r}
 x <- "a\\b"
-writeLines(x)
-str_view(x, "\\\\")
+writeLines(x)         # Shows "a\b"
+str_view(x, "\\\\")   # Matches a single literal backslash
 ```
 
-## Anchors
+## Anchors in Regex
 
-* By default, regexps match any part of a string.
-* Often useful to _anchor_ the regexp:
-    * `^` to match the start of the string.
-    * `$` to match the end of the string.
+- By default, regex patterns match any part of a string.
+- **Anchors** help specify where in the string to match:
+  - `^` for the **start** of a string.
+  - `$` for the **end** of a string.
 
 ```{r}
 x <- c("apple", "banana", "pear")
@@ -1208,27 +1455,26 @@ x <- c("apple", "banana", "pear")
 
 :::: {.columns}
 ::: {.column width='48%'}
-
+- **Example: Start Anchor**  
 ```{r, out.width="20%"}
+# Matches "a" at the start
 str_view(x, "^a")
 ```
-
 :::
 ::: {.column width='48%'}
-
+- **Example: End Anchor**  
 ```{r, out.width="20%"}
+# Matches "a" at the end
 str_view(x, "a$")
 ```
-
 :::
 ::::
-\vspace{0.5cm}
 
-* To remember, [Evan Misshula's mnemonic](https://twitter.com/emisshula/status/323863393167613953): if you begin with power (`^`), you end up with money (`$`).
+---
 
-## Anchors II
+## Matching the Entire String
 
-* To force a regexp to only match a complete string, anchor it with both `^` and `$`:
+- To match a complete string, use both `^` and `$`:
 
 ```{r}
 x <- c("apple pie", "apple", "apple cake")
@@ -1236,188 +1482,227 @@ x <- c("apple pie", "apple", "apple cake")
 
 :::: {.columns}
 ::: {.column width='48%'}
-
+- **Partial Match**  
 ```{r, out.width="20%"}
+# Matches "apple" anywhere
 str_view(x, "apple")
 ```
-
 :::
 ::: {.column width='48%'}
-
+- **Full String Match**  
 ```{r, out.width="20%"}
+# Matches "apple" as the entire string
 str_view(x, "^apple$")
 ```
-
 :::
 ::::
 
-## Character classes and alternatives
+## Character Classes and Alternatives
 
-* Some special patterns match more than one character:
-    * Already seen `.` (matches any character apart from a newline).
-    * Two other useful tools:
-        * `\d`: matches any digit.
-        * `\s`: matches any whitespace (e.g. space, tab, newline).
-    * To create a regexp containing `\d` or `\s`:
-        * Need to escape the `\` for the string.
-        * So type `"\\d"` or `"\\s"`.
-* The other two tools are:
-    * __Character classes__
-        * `[abc]`: matches a, b, or c.
-        * `[^abc]`: matches anything except a, b, or c.
-    * __Alternatives__
-        * `abc|d..f`: matches either `"abc"`, or `"deaf"`.
+- **Special Patterns**:
+  - `.`: Matches any character except newline.
+  - `\\d`: Matches any digit (remember to escape `\`).
+  - `\\s`: Matches any whitespace character.
 
-## Character classes
+- **Character Classes**:
+  - `[abc]`: Matches `a`, `b`, or `c`.
+  - `[^abc]`: Matches anything except `a`, `b`, or `c`.
 
-* Can be used as an alternative to backslash escapes.
+- **Alternatives**:
+  - Use `|` to match multiple patterns.
+  - Example: `abc|def` matches `"abc"` or `"def"`.
+
+---
+
+## Character Classes in Practice
+
+- Character classes provide flexibility in matching.
 
 :::: {.columns}
 ::: {.column width='30%'}
 
+- **Exact Character Match**  
 ```{r, out.width="20%"}
-str_view(c("abc",
-           "a.c",
-           "a*c",
-           "a c"),
-         "a[.]c")
+str_view(
+  c(
+    "abc", 
+    "a.c", 
+    "a*c", 
+    "a c"
+  ), 
+  "a[.]c"
+)
 ```
 
 :::
 ::: {.column width='30%'}
 
+- **Match a Specific Character**  
 ```{r, out.width="20%"}
-str_view(c("abc",
-           "a.c",
-           "a*c",
-           "a c"),
-         ".[*]c")
+str_view(
+  c(
+    "abc", 
+    "a.c", 
+    "a*c", 
+    "a c"
+  ), 
+  ".[*]c"
+)
 ```
 
 :::
 ::: {.column width='30%'}
 
+- **Match Spaces Explicitly**  
 ```{r, out.width="20%"}
-str_view(c("abc",
-           "a.c",
-           "a*c",
-           "a c"),
-         "a[ ]")
+str_view(
+  c(
+    "abc",
+    "a.c",
+    "a*c",
+    "a c"
+    ), 
+  "a[ ]"
+  )
 ```
 
 :::
 ::::
-\vspace{0.5cm}
 
-* Used to pick between one or more alternative patterns.
-* Works for most regex metacharacters: `$` `.` `|` `?` `*` `+` `(` `)` `[` `{`.
-* But some have special meaning even inside a character class.
-    * Must be handled with backslash escapes: `]` `\` `^` and `-`.
+---
 
-## Alternatives
+## Using Alternatives
 
-* Note that the precedence for `|` is low:
-    * `abc|xyz`: matches `abc` or `xyz`, not `abcyz` or `abxyz`.
-* Same as mathematical expressions: if it gets confusing, use parentheses.
+- **Alternatives** with `|` allow pattern flexibility.
+  - Remember, `|` has low precedence.
+  - `gr(e|a)y`: Matches both "grey" and "gray".
 
 ```{r}
 str_view(c("grey", "gray"), "gr(e|a)y")
 ```
 
-## Repetition
+## Repetition in Regex
 
-* To control how many times a pattern matches:
-    * `?`: 0 or 1.
-    * `+`: 1 or more.
-    * `*`: 0 or more.
-
+- Control the number of matches with these quantifiers:
+  - `?`: Matches 0 or 1 times.
+  - `+`: Matches 1 or more times.
+  - `*`: Matches 0 or more times.
 
 ```{r}
-# 1888 is the longest year in Roman numerals
+# Example string: Longest year in Roman numerals
 x <- "MDCCCLXXXVIII"
 ```
 
 :::: {.columns}
 ::: {.column width='30%'}
 
+- **Optional Match**  
 ```{r, out.width="100%"}
 str_view(x, "CC?")
 ```
-
 :::
 ::: {.column width='30%'}
 
+- **One or More Matches**  
 ```{r, out.width="100%"}
 str_view(x, "CC+")
 ```
-
 :::
 ::: {.column width='30%'}
 
+- **Match Group**  
 ```{r, out.width="100%"}
 str_view(x, 'C[LX]+')
 ```
-
 :::
 ::::
 
-* The precedence of these operators is high:
-    * `colou?r`: matches either US or British spellings.
-    * Most uses will need parentheses, like `bana(na)+`.
+---
 
-## Repetition
+## Specifying Exact Match Counts
 
-* To specify the number of matches precisely:
-    * `{n}`: exactly n.
-    * `{n,}`: n or more.
-    * `{,m}`: at most m.
-    * `{n,m}`: between n and m.
+- **Precise Quantifiers**:
+  - `{n}`: Exactly `n` matches.
+  - `{n,}`: `n` or more matches.
+  - `{n,m}`: Between `n` and `m` matches.
 
 :::: {.columns}
 ::: {.column width='30%'}
 
+- **Match Exactly 2**  
 ```{r, out.width="100%"}
 str_view(x, "C{2}")
 ```
-
 :::
 ::: {.column width='30%'}
 
+- **Match 2 or More**  
 ```{r, out.width="100%"}
 str_view(x, "C{2,}")
 ```
-
 :::
 ::: {.column width='30%'}
 
+- **Match Between 2 and 3**  
 ```{r, out.width="100%"}
 str_view(x, "C{2,3}")
 ```
-
 :::
 ::::
-\vspace{0.5cm}
 
-## Grouping and backreferences
+## Grouping and Backreferences
 
-* Earlier: parentheses as a way to disambiguate complex expressions.
-* But parentheses also create a _numbered_ capturing group.
-* A capturing group stores _the part of the string_ matched by the part of the regexp inside the parentheses.
-* Refer to the same text as previously matched by a capturing group with _backreferences_, like `\1`, `\2` etc.
+- Parentheses (`()`) in regex:
+  - Organize complex patterns.
+  - **Capture** parts of a match, storing them as **numbered groups**.
+
+- **Backreferences**:
+  - Refer back to previously captured groups using `\1`, `\2`, etc.
 
 ```{r}
 str_view(fruit, "(..)\\1", match = TRUE)
 ```
 
+- This example finds words with repeated pairs of letters, like "banana" or "cucumber".
+
+---
+
+## Grouping and Backreferences II
+
+- More advanced patterns with backreferences:
+  - Example: Finding words that start and end with the same letters:
+
+```{r}
+str_view(words, "^(..).*\\1$")
+```
+
+- **Reordering Using Capturing Groups**:
+  - Use `str_replace()` with backreferences to reorder text, referencing each captured group.
+
+```{r}
+sentences |> 
+  str_replace("(\\w+) (\\w+) (\\w+)", "\\1 \\3 \\2") |>
+  head(2)
+```
+
+This example reorders the second and third words in sentences.
+
+---
+
+## Non-Capturing Groups
+
+- **Non-capturing groups**:
+  - Useful when you want to group patterns without capturing them, preventing unnecessary backreference groups.
+  - Use `(?:...)` for non-capturing.
+
+```{r}
+x <- c("a gray cat", "a grey dog")
+str_match(x, "gr(?:e|a)y")
+```
+
+- **Example**:
+  - `(?:e|a)` specifies either "e" or "a" without creating an extra backreference group.
+
+This can simplify patterns by omitting captures where they aren’t needed, while still using grouping to clarify complex regex structures.
+
 <!-- * [Cool applications in chapter 14.4 of the 1st edition!](https://r4ds.had.co.nz/strings.html#tools) -->
-
-
-## Exercise
-
-Use the `words` data provided by the `stringr` package.
-
-1. Append a pre-fix `"word_"` to any of the words.
-2. Use an appropriate function to convert `"übung"` into `"uebung"`.
-3. Find all words that start with a vowel and end with a consonant.
-4. Are there any words that contain at least one of each different vowel?
-
