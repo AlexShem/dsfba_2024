@@ -1,0 +1,1423 @@
+---
+title: "Data Science for Business Analytics"
+subtitle: "Data Wrangling II"
+author: "Thibault Vatter [thibault.vatter@hesge.ch]"
+date: "30/10/2023"
+format: 
+    beamer:
+        include-in-header: latex/header.tex
+        fontsize: 10pt
+execute:
+    echo: true
+---
+
+
+```{r setup, include = FALSE, echo = FALSE}
+source("common.R")
+library(tidyverse)
+library(knitr)
+library(nycflights13)
+```
+
+## Today
+
+```{r echo = FALSE, out.width = "90%"}
+include_graphics("figures/r4ds/data-science-wrangle.png")
+```
+
+
+## Outline
+
+\tableofcontents
+
+
+# Relational data
+
+## Relational data
+
+* Until now: analysis of a single table of data.
+* Typically: multiple tables of data to be combined.
+* Called __relational data__:
+  * Because relations, not just the individual datasets, are important.
+* Relations are always defined for a pair of tables.
+* Relations of three or more tables are built from the relations between pairs.
+
+## Relational database systems
+
+* Oracle, MySQL, Microsoft SQL Server, PostgreSQL, IBM DB2, Microsoft Access, SQLite, and others.
+
+```{r, echo = FALSE, out.width = "50%"}
+knitr::include_graphics("figures/sql-history.png")
+```
+
+## nycflights13::flights
+
+* All `r format(nrow(nycflights13::flights), big.mark = ",")` flights that departed from NYC in 2013
+([US BTS](http://www.transtats.bts.gov/DatabaseInfo.asp?DB_ID=120&Link=0)):
+
+```{r}
+flights
+```
+
+## nycflights13::airlines
+
+```{r}
+airlines
+```
+
+## nycflights13::airports
+
+```{r}
+airports
+```
+
+## nycflights13::planes
+
+```{r}
+planes
+```
+
+## nycflights13::weather
+
+```{r}
+weather
+```
+
+## nycflights13
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/r4ds/relational-nycflights.png")
+```
+
+## Exercise 1
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/r4ds/relational-nycflights.png")
+```
+
+* Imagine you wanted to draw (approximately) the route each plane flies from
+its origin to its destination.
+* What variables would you need?
+* What tables would you need to combine?
+
+## Exercise 2
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/r4ds/relational-nycflights.png")
+```
+
+* I forgot to draw the relationship between `weather` and `airports`.
+* What is the relationship and how should it appear in the diagram?
+
+## Exercise 3
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/r4ds/relational-nycflights.png")
+```
+
+* `weather` only contains information for the origin (NYC) airports.
+* If it contained weather records for all airports in the USA, what additional relation would it define with `flights`?
+
+## Keys
+
+* Keys:
+    * Variables used to connect pair of tables.
+    * Uniquely identifies an observation.
+    * Can be:
+        * A single variable (e.g., `tailnum` for `planes`).
+        * Multiple variables (e.g., `year`, `month`, `day`, `hour`, and `origin` for `weather`).
+* Two types of __keys__:
+    * __Primary:__ uniquely identifies an observation __in its own table.__
+      * E.g., `planes$tailnum`.
+    * __Foreign:__ uniquely identifies an observation __in another table.__
+      * E.g., `flights$tailnum`.
+* Note that:
+    * A variable can be both a primary key _and_ a foreign key.
+    * A primary key and the corresponding foreign key in another table form a __relation__.
+    * Relations are typically one-to-many (e.g., flights and planes).
+
+## Is a given key primary?
+
+* Unicity
+
+```{r}
+planes |>
+    count(tailnum) |>
+    filter(n > 1)
+```
+
+* Missingness
+
+```{r}
+planes |>
+    filter(is.na(tailnum))
+```
+
+<!-- ## No explicit primary key? -->
+
+<!-- ```{r} -->
+<!-- flights |> -->
+<!--     count(year, month, day, flight) |> -->
+<!--     filter(n > 1) -->
+<!-- ``` -->
+
+<!-- * Solution: add one with `mutate()` and `row_number()`. -->
+<!-- * This is called a __surrogate key__. -->
+
+## Combining tables
+
+* Two families of verbs to work with relational data:
+    * __Mutating joins__: Add new variables to one data frame from matching observations in another.
+    * __Filtering joins__: Filter observations from one data frame based on whether or not they match an observation in the other table.
+
+## Create a narrower dataset
+
+```{r}
+flights2 <- flights |>
+    select(year:day, hour, origin, dest, tailnum, carrier)
+
+flights2
+```
+
+## A simple example
+
+```{r}
+flights2 |>
+    select(-origin, -dest) |>
+    left_join(airlines)
+```
+
+<!-- ## Why mutating join? -->
+
+<!-- ```{r} -->
+<!-- flights2 |> -->
+<!--     select(-origin, -dest) |> -->
+<!--     mutate(name = airlines$name[match(carrier, airlines$carrier)]) -->
+<!-- ``` -->
+
+## Understanding mutating joins
+
+```{r}
+x <- tribble(~key, ~val_x,
+             1, "x1",
+             2, "x2",
+             3, "x3")
+y <- tribble(~key, ~val_y,
+             1, "y1",
+             2, "y2",
+             4, "y3")
+```
+
+```{r, echo = FALSE, out.width = "50%"}
+#knitr::include_graphics("figures/r4ds/join-setup.png")
+knitr::include_graphics("figures/r4ds/join-setup2.png")
+```
+
+## Inner join
+
+```{r, echo = FALSE, out.width = "90%"}
+knitr::include_graphics("figures/r4ds/join-inner.png")
+```
+
+```{r}
+inner_join(x, y, join_by(key))
+```
+
+## Outer joins
+
+* __Outer joins__ keep observations that appear in at least one of the tables:
+    * __Left join:__ keeps all observations in `x`.
+    * __Right join:__ keeps all observations in `y`.
+    * __Full join:__ keeps all observations in `x` and `y`
+* They work by adding to each table an additional "virtual" observation which
+* has a key that always matches (if no other key matches),
+* and a value filled with `NA`.
+
+## Outer joins II
+
+```{r, echo = FALSE, out.width = "50%"}
+knitr::include_graphics("figures/r4ds/join-outer.png")
+```
+
+## A Venn diagram for joins
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/r4ds/join-venn.png")
+```
+
+## Duplicate keys
+
+* Two possibilities:
+    * One table has duplicate keys.
+        * Useful to add in additional information as there is typically a one-to-many relationship.
+    * Both tables have duplicate keys.
+        * Usually an error because in neither table do the keys uniquely identify an observation.
+        * When you join duplicated keys, you get all possible combinations (i.e., the Cartesian product).
+
+## One table has duplicate keys
+
+* Only `x` has duplicated keys:
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r}
+x <- tribble(~key, ~val_x,
+             1, "x1",
+             2, "x2",
+             2, "x3",
+             1, "x4")
+```
+
+:::
+::: {.column width='48%'}
+
+```{r}
+y <- tribble(~key, ~val_y,
+             1, "y1",
+             2, "y2")
+```
+
+:::
+::::
+\vspace{0.5cm}
+
+* The join adds `val_y` to the matching rows:
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r}
+left_join(x, y, join_by(key))
+```
+
+:::
+::: {.column width='48%'}
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/r4ds/join-one-to-many.png")
+```
+
+:::
+::::
+
+## Both tables have duplicate keys
+
+* Both `x` and `y` have duplicated keys:
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r}
+x <- tribble(~key, ~val_x,
+             1, "x1",
+             2, "x2",
+             2, "x3",
+             3, "x4")
+```
+
+:::
+::: {.column width='48%'}
+
+```{r}
+y <- tribble(~key, ~val_y,
+             1, "y1",
+             2, "y2",
+             2, "y3",
+             3, "y4")
+```
+
+:::
+::::
+\vspace{0.5cm}
+
+* The join creates all combinations:
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r}
+left_join(x, y, join_by(key))
+```
+
+:::
+::: {.column width='48%'}
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/r4ds/join-many-to-many.png")
+```
+
+:::
+::::
+
+## Specifying the keys
+
+* Default uses all variables that appear in both tables.
+* Called a __natural join.__
+
+```{r}
+flights2 |>
+    left_join(weather)
+```
+
+## Specifying the keys cont'd
+
+* Like a natural join, but uses only some of the common variables:
+
+```{r}
+flights2 |>
+    left_join(planes, join_by(tailnum))
+```
+
+## Specifying the keys cont'd
+
+* With `join_by(a == b)`, `left_join` matches variable `a` in table `x` to variable `b` in table `y`:
+
+```{r}
+flights2 |>
+    left_join(airports, join_by(dest == faa))
+```
+
+## SQL is the inspiration
+
+\scriptsize
+
+dplyr                        | SQL
+-----------------------------|-------------------------------------------
+`inner_join(x, y, join_by(z))` | `SELECT * FROM x INNER JOIN y USING (z)`
+`left_join(x, y, join_by(z))`  | `SELECT * FROM x LEFT OUTER JOIN y USING (z)`
+`right_join(x, y, join_by(z))` | `SELECT * FROM x RIGHT OUTER JOIN y USING (z)`
+`full_join(x, y, join_by(z))`  | `SELECT * FROM x FULL OUTER JOIN y USING (z)`
+
+\normalsize
+
+* Note that:
+    * "INNER" and "OUTER" are optional, and often omitted.
+    * Joining different variables between the tables uses a slightly different syntax in SQL.
+    * E.g. `inner_join(x, y, join_by(a == b))` vs `SELECT * FROM x INNER JOIN y ON x.a = y.b`.
+
+## Filtering joins
+
+* Similar to mutating joins, but affect the observations rather than the variables:
+    * `semi_join(x, y)` __keeps__ all observations in `x` that have a match in `y`.
+        * Useful for matching filtered summary tables back to the original rows.
+    * `anti_join(x, y)` __drops__ all observations in `x` that have a match in `y`.
+        * Useful for diagnosing join mismatches.
+
+## Flights that went to top destinations
+
+```{r}
+top_dest <- flights |>
+    count(dest, sort = TRUE) |>
+    head(10)
+
+flights |>
+    filter(dest %in% top_dest$dest) |>
+    print(n = 5)
+```
+
+* How to extend to multiple variables?
+
+## Semi-join
+
+* Only keeps rows in `x` having a match in `y`:
+
+```{r}
+semi_join(flights, top_dest)
+```
+
+## Visually understand the semi-join
+
+* One-to-many:
+
+```{r, echo = FALSE, out.width = "60%"}
+knitr::include_graphics("figures/r4ds/join-semi.png")
+```
+
+* Many-to-many:
+
+```{r, echo = FALSE, out.width = "60%"}
+knitr::include_graphics("figures/r4ds/join-semi-many.png")
+```
+
+
+## `flights` without a match in `planes`
+
+:::: {.columns}
+::: {.column width='53%'}
+
+```{r}
+flights |>
+    anti_join(planes, join_by(tailnum)) |>
+    count(tailnum, sort = TRUE)
+```
+
+:::
+::: {.column width='47%'}
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/r4ds/join-anti.png")
+```
+
+:::
+::::
+
+
+## Exercise
+
+1. Install and load the `nycflights13` library and check that you can access
+the tables
+`airlines`, `airports`, `planes`, `weather`, `flights`.
+
+2. Find the 48 hours (over the course of the whole year) that have the worst delays. Cross-reference it with the weather data. Can you see any patterns?
+
+3. Add the latitude and the longitude of the origin and destination airport to flights. Is it easier to rename the columns before or after the join?
+
+4. Does every departing flight have corresponding weather data for that hour?
+
+
+# Dates and times
+
+## Warm-up
+
+* Does every year have 365 days?
+* Does every day have 24 hours?
+* Does every minute have 60 seconds?
+
+## Refering to an instant in time
+
+* Two types of date/time data:
+    * A __date__.
+        * Tibbles print this as `<date>`.
+    * A __date-time__ is a date plus a time.
+        * Uniquely identifies an instant in time (typically to the nearest second).
+        * Tibbles print this as `<dttm>`.
+        * Elsewhere in R, `POSIXct`.
+* __Use the simplest possible data type satisfying your needs!__
+
+## Creating date/times
+
+* The __lubridate__ package:
+    * Makes it easier to work with dates and times in R.
+    * Not part of core tidyverse because only needed when  working with dates/times.
+
+```{r, message = FALSE}
+library(lubridate)
+today()
+now()
+```
+
+* Other (usual) ways to create a date/time:
+    * From a string.
+    * From individual date-time components.
+    * From an existing date/time object.
+
+```{r, message = FALSE}
+as_datetime(today())
+as_date(now())
+```
+
+## From a string
+
+```{r}
+ymd("2017-01-31")
+mdy("January 31st, 2017")
+dmy("31-Jan-2017")
+
+ymd_hms("2017-01-31 20:11:59")
+mdy_hm("01/31/2017 08:01")
+```
+
+* Additionally:
+
+```{r}
+ymd(20170131)
+ymd(20170131, tz = "UTC")
+```
+
+## From individual components
+
+```{r}
+flights |>
+  select(year:day, hour, minute, dep_time) |>
+  mutate(departure = make_datetime(year, month, day, hour, minute))
+```
+
+* For `dep_time` and others such as `arr_time`:
+
+```{r}
+flights_dt <- flights |>
+  mutate(dep_time = make_datetime(
+    year, month, day, dep_time %/% 100, dep_time %% 100))
+```
+
+## Rounding
+
+* Rounding:
+    * `floor_date()` rounds down.
+    * `round_date()` rounds to.
+    * `ceiling_date()` rounds up.
+
+```{r, out.width = "50%"}
+flights_dt |>
+  filter(!is.na(dep_time)) |>
+  count(week = floor_date(dep_time, "week")) |>
+  ggplot(aes(week, n)) +
+  geom_line()
+```
+
+
+## Getting/setting the components
+
+* Getting the components:
+
+```{r}
+datetime <- ymd_hms("2016-07-08 12:34:56")
+c(year(datetime), month(datetime), 
+  mday(datetime), yday(datetime), wday(datetime))
+```
+
+* Setting the components:
+
+```{r}
+year(datetime) <- 2020
+datetime
+month(datetime) <- 01
+datetime
+hour(datetime) <- hour(datetime) + 1
+datetime
+```
+
+* Alternatively:
+
+```{r}
+update(datetime, year = 2019)
+```
+
+<!-- ## Flights distribution across the day -->
+
+<!-- ```{r, out.width = "80%"} -->
+<!-- flights_dt |> -->
+<!--   mutate(dep_hour = update(dep_time, yday = 1)) |> -->
+<!--   ggplot(aes(dep_hour)) + -->
+<!--     geom_freqpoly(binwidth = 300) -->
+<!-- ``` -->
+
+## Time spans
+
+* Goal: to do arithmetic (i.e., subtraction, addition, and division) with dates/times.
+* Three classes that represent time spans:
+    * __Durations__ (number of seconds).
+    * __Periods__ (human units like weeks and months).
+    * __Intervals__ (a starting and ending point).
+
+## Durations
+
+* A __duration__ always record a time span in seconds.
+* Larger units created at the standard rate.
+    * E.g., 60s/mn, 60mn/h, 24h/d, 7d/w, 365d/y.
+
+```{r}
+dseconds(15)
+dminutes(10)
+dhours(c(12, 24))
+ddays(0:5)
+dweeks(3)
+dyears(1)
+```
+
+## Durations arithmetics
+
+* Add and multiply durations:
+
+```{r}
+2 * dyears(1)
+dyears(1) + dweeks(12) + dhours(15)
+```
+
+* Add and subtract durations to and from dates/datetimes:
+
+```{r}
+tomorrow <- today() + ddays(1)
+last_year <- today() - dyears(1)
+```
+
+* What happens here?
+
+```{r}
+one_pm <- ymd_hms("2016-03-12 13:00:00", tz = "America/New_York")
+one_pm
+one_pm + ddays(1)
+```
+
+## Periods
+
+* Work with "human" times, like days (no fixed length in secs):
+
+```{r}
+one_pm
+one_pm + days(1)
+seconds(15)
+minutes(10)
+hours(c(12, 24))
+days(7)
+months(1:3)
+weeks(3)
+years(1)
+```
+
+## Periods arithmetics
+
+* Add and multiply periods:
+
+```{r}
+10 * (months(6) + days(1))
+days(50) + hours(25) + minutes(2)
+```
+
+* Add periods to dates/datetimes:
+
+```{r}
+# A leap year
+ymd("2016-01-01") + dyears(1)
+ymd("2016-01-01") + years(1)
+
+# Daylight Savings Time
+one_pm + ddays(1)
+one_pm + days(1)
+```
+
+## Intervals
+
+* What should the following code return?
+
+```{r, eval = FALSE}
+years(1) / days(1)
+```
+
+* A duration with a starting point:
+
+```{r}
+next_year <- today() + years(1)
+(today() %--% next_year) / ddays(1)
+```
+
+## Summary
+
+```{r, echo = FALSE, out.width = "100%"}
+knitr::include_graphics("figures/r4ds/datetimes-arithmetic.png")
+```
+
+* Pick the simplest data structure that solves your problem:
+    * If you only care about physical time, use a duration.
+    * If you need to add human times, use a period.
+    * If you need to figure out how long a span is in human units, use an interval.
+
+## Time zones
+
+```{r}
+Sys.timezone()
+length(OlsonNames())
+head(OlsonNames())
+```
+
+## Same instant in different time zones
+
+* Same instant, different place:
+
+```{r}
+(x1 <- ymd_hms("2015-06-01 12:00:00", tz = "America/New_York"))
+(x2 <- ymd_hms("2015-06-01 18:00:00", tz = "Europe/Copenhagen"))
+(x3 <- ymd_hms("2015-06-02 04:00:00", tz = "Pacific/Auckland"))
+x1 - x2
+x1 - x3
+```
+
+* Note the behavior of `c():
+
+```{r}
+x4 <- c(x1, x2, x3)
+x4
+```
+
+## Changing the time zone
+
+* Keep the instant in time:
+
+```{r}
+x4a <- with_tz(x4, tzone = "Australia/Lord_Howe")
+x4a
+x4a - x4
+```
+
+* Change the instant in time:
+
+```{r}
+x4b <- force_tz(x4, tzone = "Australia/Lord_Howe")
+x4b
+x4b - x4
+```
+
+## Exercise
+
+1. For each of the following date-times, show how you’d parse it using a lubridate function.
+
+```{r}
+d1 <- "January 1, 2010"
+d2 <- "06-Jun-2017"
+d3 <- c("August 19 (2015)", "July 1 (2015)")
+d4 <- "12/30/14" # Dec 30, 2014
+t5 <- "11:15:10.12 PM"
+```
+
+2. Write a function that given your birthday (as a date), returns how old you are in years.
+
+3. On what day of the week should you leave if you want to minimise the chance of a delay in a NY airport?
+
+# Factors
+
+## Factors
+
+* Factors are:
+    * Used to work with categorical variables (i.e., that have a fixed and known set of possible values).
+    * Useful to display character vectors in a non-alphabetical order.
+* The __forcats__ package:
+    * Range of helpers for working with factors.
+
+```{r}
+library(forcats)
+```
+
+## Creating factors
+
+* Imagine that you have a variable that records month:
+
+```{r}
+x1 <- c("Dec", "Apr", "Jan", "Mar")
+```
+
+* Using a string to record this variable has two problems:
+    * Twelve possible months and nothing saving you from typos.
+    * It doesn't sort in a useful way.
+
+```{r}
+sort(x1)
+```
+
+## Creating factors II
+
+* Start by creating a list of the valid __levels__:
+
+```{r}
+month_levels <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
+                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+```
+
+* Then create a factor:
+
+```{r}
+y1 <- factor(x1, levels = month_levels)
+y1
+sort(y1)
+factor(x1) ## without levels
+```
+
+## Creating factors III
+
+* Notice:
+
+```{r}
+x2 <- c("Dec", "Apr", "Jam", "Mar")
+y2 <- factor(x2, levels = month_levels)
+y2
+```
+
+* Other ordering:
+
+```{r}
+factor(x1, levels = unique(x1))
+factor(x1) |>
+  fct_inorder()
+```
+
+## forcats::gss_cat
+
+* Sample from the [General Social Survey](http://gss.norc.org):
+
+```{r}
+gss_cat
+```
+
+* More info with `?gss_cat`.
+
+## See levels of a factor from a tibble
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* A barplot:
+
+```{r, out.width = "100%"}
+ggplot(gss_cat, aes(race)) +
+  geom_bar()
+```
+
+:::
+::: {.column width='48%'}
+
+* Or a count:
+
+```{r}
+gss_cat |>
+  count(race)
+```
+
+:::
+::::
+
+## What's wrong here?
+
+```{r}
+relig_summary <- gss_cat |>
+  group_by(relig) |>
+  summarize(age = mean(age, na.rm = TRUE),
+            tvhours = mean(tvhours, na.rm = TRUE),
+            n = n())
+
+ggplot(relig_summary, aes(tvhours, relig)) +
+  geom_point()
+```
+
+## Modifying factor order
+
+```{r}
+relig_summary |>
+  mutate(relig = fct_reorder(relig, tvhours)) |>
+  ggplot(aes(tvhours, relig)) +
+  geom_point()
+```
+
+<!-- ## What's wrong here? -->
+
+<!-- ```{r} -->
+<!-- rincome_summary <- gss_cat |> -->
+<!--   group_by(rincome) |> -->
+<!--   summarize(age = mean(age, na.rm = TRUE), -->
+<!--             tvhours = mean(tvhours, na.rm = TRUE), -->
+<!--             n = n()) -->
+
+<!-- ggplot(rincome_summary, aes(age, fct_reorder(rincome, age))) + -->
+<!--   geom_point() + ylab("Income") -->
+<!-- ``` -->
+
+<!-- ## Modify factor order II -->
+
+<!-- ```{r} -->
+<!-- ggplot(rincome_summary, -->
+<!--        aes(age, fct_relevel(rincome, "Not applicable"))) + -->
+<!--   geom_point() + -->
+<!--   ylab("Income") -->
+<!-- ``` -->
+
+<!-- * Why do you think the average age for "Not applicable" is so high? -->
+
+## Modify factor order II
+
+```{r, fig.width=10}
+gss_cat |>
+  mutate(marital = marital |> fct_infreq() |> fct_rev()) |>
+  ggplot(aes(marital)) +
+  geom_bar()
+```
+
+
+## Modifying factor levels
+
+* More powerful than changing the orders of the levels is changing their values:
+    * To clarify labels for publication.
+    * To collapse levels for high-level displays.
+* What's wrong here?
+
+```{r}
+gss_cat |>
+  count(partyid)
+```
+
+## Modifying factor levels II
+
+```{r}
+gss_cat |>
+  mutate(partyid = fct_recode(partyid,
+    "Republican, strong"    = "Strong republican",
+    "Republican, weak"      = "Not str republican",
+    "Independent, near rep" = "Ind,near rep",
+    "Independent, near dem" = "Ind,near dem",
+    "Democrat, weak"        = "Not str democrat",
+    "Democrat, strong"      = "Strong democrat")) |>
+  count(partyid)
+```
+
+## Collapsing factors
+
+```{r}
+gss_cat |>
+  mutate(partyid = fct_recode(partyid,
+    "Republican, strong"    = "Strong republican",
+    "Republican, weak"      = "Not str republican",
+    "Independent, near rep" = "Ind,near rep",
+    "Independent, near dem" = "Ind,near dem",
+    "Democrat, weak"        = "Not str democrat",
+    "Democrat, strong"      = "Strong democrat",
+    "Other"                 = "No answer",
+    "Other"                 = "Don't know",
+    "Other"                 = "Other party" )) |>
+  count(partyid)
+```
+
+## Collapsing factors II
+
+```{r}
+gss_cat |>
+  mutate(partyid = fct_collapse(partyid,
+    other = c("No answer", "Don't know", "Other party"),
+    rep = c("Strong republican", "Not str republican"),
+    ind = c("Ind,near rep", "Independent", "Ind,near dem"),
+    dem = c("Not str democrat", "Strong democrat")
+  )) |>
+  count(partyid)
+```
+
+## Collapsing factor III
+
+```{r}
+gss_cat |>
+  mutate(relig = fct_lump(relig)) |>
+  count(relig)
+
+gss_cat |>
+  mutate(relig = fct_lump(relig, n = 3)) |>
+  count(relig, sort = TRUE)
+```
+
+
+## Exercise
+
+1. In `CanadaPanelSim.csv`, declare the appropriate variables as factor. Set proper factor levels:
+
+  * `RA_GENDER`: gender (1 male, 2 female, 3 unknown)
+  * `RA_MARITALSTATUS`: marital status (1 married, 0 unmarried)
+  * `RA_VEH_USE`: vehicle use (1 commute, 2 pleasure, 0 other)
+
+2. Create a boxplot for the distance driven per vehicle use. Make sure the boxes appear in increasing order with respect to the median distance driven.
+
+
+# Strings
+
+## String basics
+
+```{r, message = FALSE}
+library(stringr) # package for string manipulation
+
+# To create strings
+string1 <- "This is a string"
+string2 <- 'To get a "quote" inside a string, use single quotes'
+```
+
+* Backslash as escape character:
+
+```{r}
+double_quote <- "\"" # or '"'
+single_quote <- '\'' # or "'"
+```
+
+*  The printed representation is not the string itself:
+
+```{r}
+x <- c("\"", "\\")
+x
+writeLines(x)
+```
+
+## More on strings
+
+* Special characters:
+    * Use `"\n"`, for newline, or,`"\t"`, for tab.
+    * Complete list by requesting help on `"` (`?'"'`, or `?"'"`)
+* Other usefuls things:
+
+```{r}
+(x <- "\u00b5") # Non-English characters
+c("one", "two", "three") # Character vectors
+str_length(c("a", "R for data science", NA)) # String length
+```
+
+* `stringr` autocomplete:
+
+```{r, echo = FALSE}
+knitr::include_graphics("figures/r4ds/stringr-autocomplete.png")
+```
+
+## More on strings II
+
+:::: {.columns}
+::: {.column width='48%'}
+
+* Combining strings:
+
+```{r}
+str_c("x", "y")
+str_c("x", "y", "z")
+str_c("x", "y", sep = ", ")
+```
+
+:::
+::: {.column width='48%'}
+
+* Missing values:
+
+```{r}
+x <- c("abc", NA)
+str_c("|-", x, "-|")
+str_c("|-", str_replace_na(x), "-|")
+```
+
+:::
+::::
+
+* Recycling:
+
+```{r}
+str_c("prefix-", c("a", "b", "c"), "-suffix")
+```
+
+* Collapsing a vector of strings:
+
+```{r}
+str_c(c("x", "y", "z"), collapse = ", ")
+```
+
+
+## Subsetting strings
+
+```{r}
+x <- c("Apple", "Banana", "Pear")
+str_sub(x, 1, 3)
+str_sub(x, -3, -1)
+str_sub("a", 1, 5)
+str_sub(x, 1, 1) <- str_to_lower(str_sub(x, 1, 1))
+x
+```
+
+* See also `str_to_upper()` or `str_to_title()`.
+
+## Locales
+
+```{r}
+# Turkish has two i's: with and without a dot, and it
+# has a different rule for capitalising them:
+str_to_upper(c("i", "ı"))
+str_to_upper(c("i", "ı"), locale = "tr")
+```
+
+* The locale:
+    * An ISO 639 language code, which is a [two or three letter abbreviation](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+    * If blank, R uses the current locale, as provided by your operating system.
+
+
+## Regular expressions
+
+> Some people, when confronted with a problem, think
+> "I know, I'll use regular expressions."
+> Now, they have two problems.
+> -------- Jamie Zawinski
+
+* A language that allows you to describe patterns in strings.
+* Allows you for instance to:
+    * Determine which strings match a pattern.
+    * Find the positions of matches.
+    * Extract the content of matches.
+    * Replace matches with new values.
+    * Split a string based on a match.
+* [Read the chapter on regex from the book!](https://r4ds.hadley.nz/regexps)
+
+## Basic matches
+
+```{r echo = FALSE}
+knitr::opts_chunk$set(
+  fig.align = 'default',
+  out.width="10%"
+)
+library(stringr)
+```
+
+* The simplest patterns match exact strings:
+
+```{r}
+x <- c("apple", "banana", "pear")
+str_view(x, "an")
+```
+
+* Next step is `.`, which matches any character (except a newline):
+
+```{r}
+str_view(x, ".a.")
+```
+
+* If "`.`" matches any character, how to match the character "`.`"?
+
+## Basic matches II
+
+* If "`.`" matches any character, how to match the character "`.`"?
+    * Need to use an "escape" (like string, a backslash `\`).
+    * So to match an `.`, need the regexp `\.`.
+    * But `\` is also an escape symbol in strings.
+    * So to create the regexp `\.`, use the string `"\\."`.
+
+```{r}
+# To create the regexp, we need \\
+dot <- "\\."
+# But the expression itself only contains one:
+writeLines(dot)
+# And this tells R to look for an explicit .
+str_view(c("abc", "a.c", "bef"), "a\\.c")
+```
+
+## Basic matches III
+
+* If `\` is an escape character, how do you match a literal `\`?
+    * Need to escape it, i.e. create the regexp `\\`.
+    * To create that regexp with a string, which also needs to escape `\`, need to write `"\\\\"`
+    * I.e., need four backslashes to match one!
+
+```{r}
+x <- "a\\b"
+writeLines(x)
+str_view(x, "\\\\")
+```
+
+## Anchors
+
+* By default, regexps match any part of a string.
+* Often useful to _anchor_ the regexp:
+    * `^` to match the start of the string.
+    * `$` to match the end of the string.
+
+```{r}
+x <- c("apple", "banana", "pear")
+```
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r, out.width="20%"}
+str_view(x, "^a")
+```
+
+:::
+::: {.column width='48%'}
+
+```{r, out.width="20%"}
+str_view(x, "a$")
+```
+
+:::
+::::
+\vspace{0.5cm}
+
+* To remember, [Evan Misshula's mnemonic](https://twitter.com/emisshula/status/323863393167613953): if you begin with power (`^`), you end up with money (`$`).
+
+## Anchors II
+
+* To force a regexp to only match a complete string, anchor it with both `^` and `$`:
+
+```{r}
+x <- c("apple pie", "apple", "apple cake")
+```
+
+:::: {.columns}
+::: {.column width='48%'}
+
+```{r, out.width="20%"}
+str_view(x, "apple")
+```
+
+:::
+::: {.column width='48%'}
+
+```{r, out.width="20%"}
+str_view(x, "^apple$")
+```
+
+:::
+::::
+
+## Character classes and alternatives
+
+* Some special patterns match more than one character:
+    * Already seen `.` (matches any character apart from a newline).
+    * Two other useful tools:
+        * `\d`: matches any digit.
+        * `\s`: matches any whitespace (e.g. space, tab, newline).
+    * To create a regexp containing `\d` or `\s`:
+        * Need to escape the `\` for the string.
+        * So type `"\\d"` or `"\\s"`.
+* The other two tools are:
+    * __Character classes__
+        * `[abc]`: matches a, b, or c.
+        * `[^abc]`: matches anything except a, b, or c.
+    * __Alternatives__
+        * `abc|d..f`: matches either `"abc"`, or `"deaf"`.
+
+## Character classes
+
+* Can be used as an alternative to backslash escapes.
+
+:::: {.columns}
+::: {.column width='30%'}
+
+```{r, out.width="20%"}
+str_view(c("abc",
+           "a.c",
+           "a*c",
+           "a c"),
+         "a[.]c")
+```
+
+:::
+::: {.column width='30%'}
+
+```{r, out.width="20%"}
+str_view(c("abc",
+           "a.c",
+           "a*c",
+           "a c"),
+         ".[*]c")
+```
+
+:::
+::: {.column width='30%'}
+
+```{r, out.width="20%"}
+str_view(c("abc",
+           "a.c",
+           "a*c",
+           "a c"),
+         "a[ ]")
+```
+
+:::
+::::
+\vspace{0.5cm}
+
+* Used to pick between one or more alternative patterns.
+* Works for most regex metacharacters: `$` `.` `|` `?` `*` `+` `(` `)` `[` `{`.
+* But some have special meaning even inside a character class.
+    * Must be handled with backslash escapes: `]` `\` `^` and `-`.
+
+## Alternatives
+
+* Note that the precedence for `|` is low:
+    * `abc|xyz`: matches `abc` or `xyz`, not `abcyz` or `abxyz`.
+* Same as mathematical expressions: if it gets confusing, use parentheses.
+
+```{r}
+str_view(c("grey", "gray"), "gr(e|a)y")
+```
+
+## Repetition
+
+* To control how many times a pattern matches:
+    * `?`: 0 or 1.
+    * `+`: 1 or more.
+    * `*`: 0 or more.
+
+
+```{r}
+# 1888 is the longest year in Roman numerals
+x <- "MDCCCLXXXVIII"
+```
+
+:::: {.columns}
+::: {.column width='30%'}
+
+```{r, out.width="100%"}
+str_view(x, "CC?")
+```
+
+:::
+::: {.column width='30%'}
+
+```{r, out.width="100%"}
+str_view(x, "CC+")
+```
+
+:::
+::: {.column width='30%'}
+
+```{r, out.width="100%"}
+str_view(x, 'C[LX]+')
+```
+
+:::
+::::
+
+* The precedence of these operators is high:
+    * `colou?r`: matches either US or British spellings.
+    * Most uses will need parentheses, like `bana(na)+`.
+
+## Repetition
+
+* To specify the number of matches precisely:
+    * `{n}`: exactly n.
+    * `{n,}`: n or more.
+    * `{,m}`: at most m.
+    * `{n,m}`: between n and m.
+
+:::: {.columns}
+::: {.column width='30%'}
+
+```{r, out.width="100%"}
+str_view(x, "C{2}")
+```
+
+:::
+::: {.column width='30%'}
+
+```{r, out.width="100%"}
+str_view(x, "C{2,}")
+```
+
+:::
+::: {.column width='30%'}
+
+```{r, out.width="100%"}
+str_view(x, "C{2,3}")
+```
+
+:::
+::::
+\vspace{0.5cm}
+
+## Grouping and backreferences
+
+* Earlier: parentheses as a way to disambiguate complex expressions.
+* But parentheses also create a _numbered_ capturing group.
+* A capturing group stores _the part of the string_ matched by the part of the regexp inside the parentheses.
+* Refer to the same text as previously matched by a capturing group with _backreferences_, like `\1`, `\2` etc.
+
+```{r}
+str_view(fruit, "(..)\\1", match = TRUE)
+```
+
+<!-- * [Cool applications in chapter 14.4 of the 1st edition!](https://r4ds.had.co.nz/strings.html#tools) -->
+
+
+## Exercise
+
+Use the `words` data provided by the `stringr` package.
+
+1. Append a pre-fix `"word_"` to any of the words.
+2. Use an appropriate function to convert `"übung"` into `"uebung"`.
+3. Find all words that start with a vowel and end with a consonant.
+4. Are there any words that contain at least one of each different vowel?
+
