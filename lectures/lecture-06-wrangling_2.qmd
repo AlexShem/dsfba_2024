@@ -184,7 +184,12 @@ flights |>
 ```{r}
 flights2 <- flights |>
     mutate(id = row_number(), .before = 1)
-flights2
+```
+
+```{r}
+#| echo: false
+
+flights2 %>% print(n = 5)
 ```
 
 <!-- ## No explicit primary key? -->
@@ -392,7 +397,7 @@ knitr::include_graphics("../assets/r4ds/join-many-to-many.png")
 
 ```{r}
 flights2 |>
-    left_join(weather)
+    left_join(weather) |> print(n = 5)
 ```
 
 ---
@@ -466,7 +471,7 @@ semi_join(flights, top_dest, join_by(dest))
 - `anti_join()` helps identify rows in `flights2` without matches in other tables, making it useful for detecting mismatches.
 
 :::: {.columns}
-::: {.column width='48%'}
+::: {.column width='40%'}
 
 - Finding destinations in `flights2` that are not listed in `airports`:
 
@@ -480,15 +485,14 @@ flights2 |>
 ```
 
 :::
-::: {.column width='48%'}
+::: {.column width='58%'}
 
 - Finding tail numbers in `flights2` that are not present in `planes`:
 
 ```{r}
 flights2 |>
-  anti_join(planes,
-            join_by(tailnum)) |>
-  distinct(tailnum) |> print(5)
+  anti_join(planes, join_by(tailnum)) |>
+  distinct(tailnum) |> print(n = 5)
 ```
 
 :::
@@ -515,7 +519,7 @@ knitr::include_graphics("../assets/r4ds/join-semi-many.png")
 Using `anti_join()` to identify tail numbers in `flights` without matches in `planes`.
 
 :::: {.columns}
-::: {.column width='53%'}
+::: {.column width='56%'}
 
 ```{r}
 flights |>
@@ -524,7 +528,7 @@ flights |>
 ```
 
 :::
-::: {.column width='47%'}
+::: {.column width='44%'}
 
 ```{r, echo = FALSE, out.width = "100%"}
 knitr::include_graphics("../assets/r4ds/join-anti.png")
@@ -580,7 +584,7 @@ Exploring dates and times might seem simple at first, but they can involve surpr
 
 ## Creating Dates and Date-Times
 
-- The **`lubridate`** package simplifies working with dates and times in R.
+- [The **`lubridate`** package](https://lubridate.tidyverse.org/) simplifies working with dates and times in R.
   - As of `tidyverse 2.0.0`, `lubridate` is [part of the core tidyverse](https://www.tidyverse.org/blog/2023/03/tidyverse-2-0-0/).
 
 ```{r, message = FALSE}
@@ -661,11 +665,11 @@ csv <- "
   date
   01/02/15
 "
-read_csv(csv, col_types = cols(date = col_date("%m/%d/%y")))
 #> Interprets as "2015-01-02"
+read_csv(csv, col_types = cols(date = col_date("%m/%d/%y")))
 
-read_csv(csv, col_types = cols(date = col_date("%d/%m/%y")))
 #> Interprets as "2015-02-01"
+read_csv(csv, col_types = cols(date = col_date("%d/%m/%y")))
 ```
 
 - **Locale-Specific Parsing**: Use [`locale()`](https://readr.tidyverse.org/reference/locale.html) for non-English dates, especially with `%b` or `%B`.
@@ -728,7 +732,7 @@ flights_dt <- flights |>
   - **`ceiling_date()`**: Rounds up to the nearest unit.
 
 :::: {.columns}
-::: {.column width='50%'}
+::: {.column width='56%'}
 
 ```{r}
 flights_dt_plot <- flights_dt |>
@@ -741,7 +745,7 @@ flights_dt_plot <- flights_dt |>
 ```
 
 :::
-::: {.column width='50%'}
+::: {.column width='44%'}
 
 ```{r, echo=FALSE, out.width="100%"}
 flights_dt_plot
@@ -921,7 +925,7 @@ years(1) / days(1)
 
 ```{r}
 next_year <- today() + years(1)
-(today() %--% next_year) / ddays(1)  # Exact days until same date next year
+(today() %--% next_year) / ddays(1)
 ```
 
 - **Leap Year Example**:
@@ -929,6 +933,7 @@ next_year <- today() + years(1)
 
 ```{r}
 y2023 <- ymd("2023-01-01") %--% ymd("2024-01-01")
+y2023
 y2024 <- ymd("2024-01-01") %--% ymd("2025-01-01")
 
 y2023 / days(1)  # Returns 365 for 2023
@@ -1065,7 +1070,9 @@ month_levels <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun",
 ```{r}
 y1 <- factor(x1, levels = month_levels)
 y1
+
 sort(y1)       # Sorts in chronological order
+
 factor(x1)     # Without specified levels, uses alphabetical order
 ```
 
@@ -1301,7 +1308,7 @@ c("one", "two", "three")          # Creating character vector
 str_length(c("a", "R for data science", NA)) # Calculate string length
 ```
 
-- **String Autocomplete**: `stringr` functions support autocomplete for easy access to string manipulation tools.
+- **String Autocomplete**: [`stringr` functions](https://stringr.tidyverse.org/) support autocomplete for easy access to string manipulation tools.
 
 ```{r, echo = FALSE}
 knitr::include_graphics("../assets/r4ds/stringr-autocomplete.png")
@@ -1312,9 +1319,9 @@ knitr::include_graphics("../assets/r4ds/stringr-autocomplete.png")
 ## String Manipulation: Combining and Handling NA
 
 :::: {.columns}
-::: {.column width='48%'}
+::: {.column width='50%'}
 
-- **Combining Strings**: Use `str_c()` to concatenate strings.
+- **Combining Strings**: Use [`str_c()`](https://stringr.tidyverse.org/reference/str_c.html) to concatenate strings.
 
 ```{r}
 str_c("x", "y")
@@ -1323,9 +1330,9 @@ str_c("x", "y", sep = ", ")
 ```
 
 :::
-::: {.column width='48%'}
+::: {.column width='50%'}
 
-- **Handling Missing Values**: Use `str_replace_na()` to replace `NA` in strings.
+- **Handling Missing Values**: Use [`str_replace_na()`](https://stringr.tidyverse.org/reference/str_replace_na.html) to replace `NA` in strings.
 
 ```{r}
 x <- c("abc", NA)
@@ -1363,7 +1370,7 @@ str_sub(x, 1, 1) <- str_to_lower(str_sub(x, 1, 1))
 x
 ```
 
-* See also `str_to_upper()` or `str_to_title()`.
+* See also [`str_to_lower()`](https://stringr.tidyverse.org/reference/case.html), [`str_to_upper()`](https://stringr.tidyverse.org/reference/case.html), or [`str_to_title()`](https://stringr.tidyverse.org/reference/case.html).
 
 ## Locales and String Manipulation
 
@@ -1401,6 +1408,9 @@ str_to_upper(c("i", "ı"), locale = "tr")
   - [Read the chapter on regex from *R for Data Science*](https://r4ds.hadley.nz/regexps) for a comprehensive guide.
   
 ## Basic Pattern Matching in Regex
+
+- **View Pattern Matches**: Use [`str_view()`](https://stringr.tidyverse.org/reference/str_view.html) to visualize pattern matches.
+  - `str_view(string, pattern)` shows the pattern matches in the string.
 
 - **Exact Match**: The simplest patterns match exact strings.
 
@@ -1484,14 +1494,14 @@ x <- c("apple pie", "apple", "apple cake")
 ::: {.column width='48%'}
 - **Partial Match**  
 ```{r, out.width="20%"}
-# Matches "apple" anywhere
+# Matches anywhere
 str_view(x, "apple")
 ```
 :::
 ::: {.column width='48%'}
 - **Full String Match**  
 ```{r, out.width="20%"}
-# Matches "apple" as the entire string
+# Matches as the entire string
 str_view(x, "^apple$")
 ```
 :::
@@ -1551,7 +1561,7 @@ str_view(
 ```
 
 :::
-::: {.column width='30%'}
+::: {.column width='26%'}
 
 - **Match Spaces Explicitly**  
 ```{r, out.width="20%"}
@@ -1660,27 +1670,28 @@ str_view(x, "C{2,3}")
   - Refer back to previously captured groups using `\1`, `\2`, etc.
 
 ```{r}
-str_view(fruit, "(..)\\1", match = TRUE)
+str_view(stringr::fruit, "(..)\\1")
 ```
 
-- This example finds words with repeated pairs of letters, like "banana" or "cucumber".
+- Imagine as `(..)` capturing the first two characters, and `\\1` referencing the first captured group.
+- This example finds words with repeated pairs of letters, like "banana" (`(an)(an)`) or "cucumber" [(`(cu)(cu)`)](https://i.redd.it/gwynh1m2zwab1.jpg).
 
 ---
 
 ## Grouping and Backreferences II
 
 - More advanced patterns with backreferences:
-  - Example: Finding words that start and end with the same letters:
+  - Example: Finding words that start and end with the same two letters:
 
 ```{r}
-str_view(words, "^(..).*\\1$")
+str_view(stringr::words, "^(..).*\\1$")
 ```
 
 - **Reordering Using Capturing Groups**:
   - Use `str_replace()` with backreferences to reorder text, referencing each captured group.
 
 ```{r}
-sentences |> 
+stringr::sentences |> 
   str_replace("(\\w+) (\\w+) (\\w+)", "\\1 \\3 \\2") |>
   head(2)
 ```

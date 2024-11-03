@@ -48,7 +48,7 @@ knit_hooks$set(chunk = function(x, options) {
 theme_set(theme_light(base_size = 18))
 
 options(
-  digits = 3,
+  digits = 5,
   str = strOptions(strict.width = "cut"),
   width = 69,
   tibble.width = 69,
@@ -61,7 +61,7 @@ options(
 # registerS3method("wrap", "error", envir = asNamespace("knitr"),
 #                  function(x, options) {
 #                    msg <- conditionMessage(x)
-# 
+#
 #                    call <- conditionCall(x)
 #                    if (is.null(call)) {
 #                      msg <- paste0("Error: ", msg)
@@ -77,7 +77,7 @@ error_wrap <- function(x, width = getOption("width")) {
   lines <- strsplit(x, "\n", fixed = TRUE)[[1]]
   paste(strwrap(lines, width = width), collapse = "\n")
 }
-# 
+#
 # wrap.simpleError <- function(x, width = NULL) {
 #   width <- getOption("width")
 #   # # x is an error object, with components "call" and "message".  Ignore
