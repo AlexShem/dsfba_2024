@@ -18,6 +18,20 @@ format:
     code-link: true
     link-external-icon: false
     link-external-newwindow: true
+  beamer:
+    include-in-header: ../latex/header.tex
+    fontsize: 10pt
+  pdf:
+    number-sections: true
+    include-in-header: 
+      text: |
+        \usepackage[headsepline]{scrlayer-scrpage}
+        \usepackage{fontspec}
+        \ihead{DSIBA: Series 4}
+        \chead{}
+        \ohead{\headmark}
+        \automark{section}
+    papersize: a4
 ---
 
 ```{r setup}
