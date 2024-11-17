@@ -75,7 +75,7 @@ library(broom)
 - Enables smooth data exploration and efficient manipulation, especially in interactive analysis.
 - Supports consistent and flexible workflows across multiple `dplyr` functions.
 
-## Practical Example: Tidy Evaluation
+## Practical Example: Tidy Evaluation {.scrollable}
 
 ```{r}
 #| echo: true
@@ -84,13 +84,13 @@ library(broom)
 starwars[starwars$homeworld == "Naboo" & starwars$species == "Human", ]
 
 # Filtering with Tidy Evaluation
-starwars %>% filter(homeworld == "Naboo", species == "Human")
+starwars %>% dplyr::filter(homeworld == "Naboo", species == "Human")
 ```
 
 1. Use the `$` operator to reference columns.
     - Not recommended for `dplyr` workflows.
     - Good when developing scripts or functions to avoid external dependencies.
-2. Use the `filter()` function with direct column references.
+2. Use the `dplyr::filter()` function with direct column references.
     - Cleaner and more readable.
     - Preferred method for `dplyr` workflows.
 
@@ -116,7 +116,7 @@ starwars %>% filter(homeworld == "Naboo", species == "Human")
 
 ```{r}
 #| echo: true
-# Using env-variable and data-variables
+# Using df as an env-variable
 df <- tibble::tibble(x = runif(3), y = runif(3))
 df %>% dplyr::mutate(z = x + y)
 ```
@@ -126,6 +126,7 @@ df %>% dplyr::mutate(z = x + y)
 ```{r}
 #| echo: true
 # Filtering with Data Masking
+# Here, "homeworld" and "species" are data-variables
 starwars %>%
   dplyr::filter(homeworld == "Naboo" & species == "Human") %>% 
   dplyr::select(name, homeworld, species)
@@ -165,8 +166,18 @@ starwars %>%
 #| echo: true
 #| eval: true
 
-# Selecting columns by pattern
+# Selecting columns that start with "c"
 mtcars %>% select(starts_with("c"))
+```
+
+### Contains
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Selecting columns that contain a letter "t"
+mtcars %>% select(contains("t"))
 ```
 
 ### Match
@@ -175,8 +186,8 @@ mtcars %>% select(starts_with("c"))
 #| echo: true
 #| eval: true
 
-# Selecting columns by pattern
-mtcars %>% select(contains("t"))
+# Selecting columns that start with letters a-g
+mtcars %>% select(matches("^[a-g]"))
 ```
 
 ### Type
@@ -200,7 +211,7 @@ mtcars %>% select(where(is.numeric))
 3. Select all variables or the last variable
     - `everything()`, `last_col()`
 4. Select variables with a function
-    - `tidyselect::where()`
+    - `where()`
 
 ## Programming with `dplyr`
 
@@ -235,12 +246,14 @@ mtcars %>%
   var_summary(mpg)
 ```
 
-## "Across" Multiple Columns {.smaller}
+## Across Multiple Columns {.smaller}
 
 - `dplyr::across()` function allows applying operations across **multiple columns**.
 - Useful for summarizing, mutating, and filtering multiple columns.
 
-`across(.cols, .fns, .names = NULL, .unpack = FALSE)`
+**Syntax:**
+
+> `across(.cols, .fns, .names = NULL, .unpack = FALSE)`
 
 - `.cols`: `<tidy-select>` Columns to apply the function.
 - `.fns`: Function to apply to the columns.
@@ -261,12 +274,10 @@ mtcars %>%
 # Applying mean across multiple columns
 vars <- c("mpg", "vs")
 mtcars %>%
-  dplyr::summarise(
-    dplyr::across(
-      tidyselect::all_of(vars),
-      mean
-    )
-  )
+  dplyr::summarise(dplyr::across(
+    tidyselect::all_of(vars),
+    mean
+  ))
 ```
 
 ### Multiple Functions
@@ -277,12 +288,10 @@ mtcars %>%
 
 # Applying multiple functions across numeric columns
 mtcars %>%
-  dplyr::summarise(
-    dplyr::across(
-      tidyselect::where(is.numeric), 
-      list(avg = mean, std = sd)
-    )
-  )
+  dplyr::summarise(dplyr::across(
+    tidyselect::where(is.numeric), 
+    list(avg = mean, std = sd)
+  ))
 ```
 
 ### String to Factor
@@ -311,7 +320,11 @@ starwars %>%
 
 ---
 
-## Practical Example: Custom Summarization
+## Practical Example: Custom Summarization {.scrollable}
+
+::: {.panel-tabset}
+
+### Embracing `{{{ }}}`
 
 ```{r}
 #| echo: true
@@ -326,6 +339,24 @@ summarise_mean <- function(data, vars) {
 }
 mtcars %>% group_by(cyl) %>% summarise_mean(where(is.numeric))
 ```
+
+### Using `...`
+
+```{r}
+#| echo: true
+#| eval: true
+# Function to calculate means of numeric columns
+summarise_mean <- function(.data, ...) {
+  .data %>% 
+    summarise(
+      n = n(),
+      across(c(...), ~ mean(.x, na.rm = TRUE), .names = "{.col}_avg")
+    )
+}
+mtcars %>% group_by(cyl) %>% summarise_mean(mpg, disp, hp, wt)
+```
+
+:::
 
 ## Name Injection in Variable Names
 
@@ -457,7 +488,7 @@ mtcars_nested
 
 # Fit models to each subset
 mtcars_nested <- mtcars_nested %>% 
-  mutate(model = map(data, ~ lm(mpg ~ wt, data = .x)))
+  mutate(model = map(data, \(df) lm(mpg ~ wt, data = df)))
 mtcars_nested
 ```
 
@@ -490,15 +521,19 @@ mtcars_nested
 ::: {.column width="50%"}
 **Common Use Cases:**
 
-- Model coefficients
-- Model statistics
-- Predictions
+- Model coefficients (coefficients, p-values)
+- Model statistics (R-squared, AIC)
+- Predictions and residuals
 :::
 
 ::::
 
 - `broom` provides functions like `tidy()`, `augment()`, and `glance()` to convert model outputs to data frames.
 - This allows for consistent analysis and visualization of multiple models' outputs.
+- For linear models, `lm()`, see:
+  - `broom::tidy.lm()`
+  - `broom::glance.lm()`
+  - `broom::augment.lm()`
 
 ---
 
@@ -518,11 +553,15 @@ mtcars_nested %>% unnest(tidy_results)
 
 ---
 
-## Advanced Tidying: `augment()` and `glance()`
+## Advanced Tidying: `augment()` and `glance()` {.scrollable}
+
 - **`augment()`**: Adds model predictions and residuals to the original data.
 - **`glance()`**: Summarizes model fit statistics.
 
 ```{r}
+#| echo: true
+#| eval: true
+
 # Adding model summaries
 mtcars_nested <- mtcars_nested %>%
   mutate(
@@ -531,51 +570,188 @@ mtcars_nested <- mtcars_nested %>%
   )
 ```
 
-## The Nest-Map-Unnest Workflow
+---
+
+## Model Fit Summaries {.smaller}
+
+::: {.panel-tabset}
+
+### Data
 
 ```{r}
 #| echo: true
-#| eval: false
-results <- nested_data %>%
-  mutate(
-    model = map(data, ~lm(mass ~ height, data = .x)),
-    tidied = map(model, tidy)
-  ) %>%
-  unnest(tidied)
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>% 
+  select(cyl, data, model, tidy_results, augmented, glance_results)
 ```
 
-# Advanced Applications {background-color="#43464B"}
-
-## Multi-Level Modeling
+### Tidy
 
 ```{r}
 #| echo: true
-#| eval: false
-# Example of more complex modeling
-advanced_models <- nested_data %>%
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>%
+  select(cyl, data, model, tidy_results) %>%
+  unnest(tidy_results)
+```
+
+### Augmented
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>%
+  select(cyl, data, model, augmented) %>%
+  unnest(augmented)
+```
+
+### Glance
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>%
+  select(cyl, data, model, glance_results) %>%
+  unnest(glance_results)
+```
+
+:::
+
+---
+
+## Practical Application: Model Comparison {.smaller}
+
+- Easily compare models across groups with tidied outputs.
+- Sort or filter by fit statistics, visualize parameter estimates, or compare residuals.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Example: Sorting by R-squared from glance results
+mtcars_nested %>%
+  select(cyl, data, model, glance_results) %>%
+  unnest(glance_results) %>%
+  arrange(desc(r.squared))
+```
+
+# Model Selection: Comparing Different Models {background-color="#43464B"}
+
+## Linear Regression Models
+
+- Create multiple linear models on `mtcars` data for each cylinder group.
+- Fit models and store results in a nested data frame.
+- Nest the `mtcars` data by cylinder group:
+
+```{r}
+#| echo: true
+#| eval: true
+
+mtcars_nested <- mtcars %>%
+  group_by(cyl) %>%
+  nest()
+mtcars_nested
+```
+
+## Fit Linear Models {.smaller}
+
+- Consider building linear models for each cylinder group:
+  - `mpg ~ wt`
+  - `mpg ~ wt + hp`
+  - `mpg ~ wt + hp + qsec`
+  
+```{r}
+#| echo: true
+#| eval: true
+
+# Fit linear models
+mtcars_lm <- mtcars_nested %>% 
   mutate(
-    model = map(data, ~lm(mass ~ height + birth_year, data = .x)),
-    metrics = map(model, glance)
+    model_wt = map(data, \(df) lm(mpg ~ wt, data = df)),
+    model_wt_hp = map(data, \(df) lm(mpg ~ wt + hp, data = df)),
+    model_wt_hp_qsec = map(data, \(df) lm(mpg ~ wt + hp + qsec, data = df))
   )
+mtcars_lm
+```
+
+## All Model Statistics {.smaller}
+
+- Use `pivot_longer()` to reshape the data for comparison.
+- Using `broom::glance()` to extract model statistics.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Extract model statistics
+mtcars_glance <- mtcars_lm %>%
+  pivot_longer(
+    cols = starts_with("model"),
+    names_to = "model",
+    values_to = "model_fit"
+  ) %>% 
+  mutate(
+    model_stats = map(model_fit, glance)
+  )
+mtcars_glance
+```
+
+## Unnest and Compare Models {.smaller}
+
+- Use `unnest()` to extract model statistics for comparison.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Pivot longer for comparison
+mtcars_lm_stats <- mtcars_glance %>%
+  unnest(model_stats)
+mtcars_lm_stats
+```
+
+## Model Selection  {.smaller}
+
+- Select the best model based on, for example, lowest BIC values.
+- Use `dplyr::slice_min()` to select the row with the minimum BIC value.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Select best model by BIC
+mtcars_lm_stats %>%
+  slice_min(BIC) %>% 
+  relocate(BIC, .after = model_fit)
 ```
 
 ## Summary and Best Practices
 
 - Use tidy evaluation for cleaner code
-- Leverage nested data frames for grouped analyses
-- Apply broom for consistent model outputs
-- Consider computational efficiency
+- Leverage `nest`'ed data frames for grouped analyses
+- Apply `broom` for consistent model outputs
+- Consider computational efficiency and readability
 
-## Resources {.smaller}
+## Resources
 
 :::: {.columns}
 
 ::: {.column width="50%"}
 **Documentation**
 
-- [tidyverse.org](https://www.tidyverse.org)
+- [tidyselect: Selection Helpers](https://tidyselect.r-lib.org/reference/language.html)
+- [Nested data](https://tidyr.tidyverse.org/articles/nest.html)
 - [dplyr programming](https://dplyr.tidyverse.org/articles/programming.html)
 - [broom documentation](https://broom.tidymodels.org)
+- [broom and dplyr](https://broom.tidymodels.org/articles/broom_and_dplyr.html)
 :::
 
 ::: {.column width="50%"}
@@ -587,14 +763,3 @@ advanced_models <- nested_data %>%
 :::
 
 ::::
-
-# Questions? {background-color="#43464B"}
-
-::: {.notes}
-Remember to:
-- Address common pitfalls
-- Share additional resources
-- Provide contact information
-:::
-
-

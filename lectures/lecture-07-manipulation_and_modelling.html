@@ -443,13 +443,13 @@ Professor Alex
 <li>Reduces the need for <code>df$column</code> syntax; instead, use <code>column</code> directly.</li>
 <li>Enables smooth data exploration and efficient manipulation, especially in interactive analysis.</li>
 <li>Supports consistent and flexible workflows across multiple <code>dplyr</code> functions.</li>
-</ul></section><section id="practical-example-tidy-evaluation" class="slide level2"><h2>Practical Example: Tidy Evaluation</h2>
+</ul></section><section id="practical-example-tidy-evaluation" class="slide level2 scrollable"><h2>Practical Example: Tidy Evaluation</h2>
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Filtering without Tidy Evaluation</span></span>
 <span><span class="va">starwars</span><span class="op">[</span><span class="va">starwars</span><span class="op">$</span><span class="va">homeworld</span> <span class="op">==</span> <span class="st">"Naboo"</span> <span class="op">&amp;</span> <span class="va">starwars</span><span class="op">$</span><span class="va">species</span> <span class="op">==</span> <span class="st">"Human"</span>, <span class="op">]</span></span>
 <span></span>
 <span><span class="co"># Filtering with Tidy Evaluation</span></span>
-<span><span class="va">starwars</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span><span class="op">(</span><span class="va">homeworld</span> <span class="op">==</span> <span class="st">"Naboo"</span>, <span class="va">species</span> <span class="op">==</span> <span class="st">"Human"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">starwars</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">homeworld</span> <span class="op">==</span> <span class="st">"Naboo"</span>, <span class="va">species</span> <span class="op">==</span> <span class="st">"Human"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <ol type="1">
 <li>Use the <code>$</code> operator to reference columns.
@@ -458,7 +458,7 @@ Professor Alex
 <li>Good when developing scripts or functions to avoid external dependencies.</li>
 </ul>
 </li>
-<li>Use the <code><a href="https://rdrr.io/r/stats/filter.html">filter()</a></code> function with direct column references.
+<li>Use the <code><a href="https://dplyr.tidyverse.org/reference/filter.html">dplyr::filter()</a></code> function with direct column references.
 <ul>
 <li>Cleaner and more readable.</li>
 <li>Preferred method for <code>dplyr</code> workflows.</li>
@@ -483,22 +483,23 @@ Professor Alex
 <div class="tab-content">
 <div id="tabset-1-1">
 <div class="cell">
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Using env-variable and data-variables</span></span>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Using df as an env-variable</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">df</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>z <span class="op">=</span> <span class="va">x</span> <span class="op">+</span> <span class="va">y</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
-       x      y      z
-   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
-1 0.410  0.902  1.31  
-2 0.309  0.536  0.845 
-3 0.0392 0.0449 0.0840</code></pre>
+      x      y     z
+  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;
+1 0.484 0.0431 0.527
+2 0.162 0.381  0.544
+3 0.765 0.274  1.04 </code></pre>
 </div>
 </div>
 </div>
 <div id="tabset-1-2">
 <div class="cell">
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Filtering with Data Masking</span></span>
+<span><span class="co"># Here, "homeworld" and "species" are data-variables</span></span>
 <span><span class="va">starwars</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">homeworld</span> <span class="op">==</span> <span class="st">"Naboo"</span> <span class="op">&amp;</span> <span class="va">species</span> <span class="op">==</span> <span class="st">"Human"</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">name</span>, <span class="va">homeworld</span>, <span class="va">species</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -542,13 +543,14 @@ Professor Alex
 <div class="panel-tabset">
 <ul id="tabset-2" class="panel-tabset-tabby">
 <li><a data-tabby-default="" href="#tabset-2-1">Prefix</a></li>
-<li><a href="#tabset-2-2">Match</a></li>
-<li><a href="#tabset-2-3">Type</a></li>
+<li><a href="#tabset-2-2">Contains</a></li>
+<li><a href="#tabset-2-3">Match</a></li>
+<li><a href="#tabset-2-4">Type</a></li>
 </ul>
 <div class="tab-content">
 <div id="tabset-2-1">
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Selecting columns by pattern</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Selecting columns that start with "c"</span></span>
 <span><span class="va">mtcars</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="fu">starts_with</span><span class="op">(</span><span class="st">"c"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                    cyl carb
@@ -589,7 +591,7 @@ Volvo 142E            4    2</code></pre>
 </div>
 <div id="tabset-2-2">
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Selecting columns by pattern</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Selecting columns that contain a letter "t"</span></span>
 <span><span class="va">mtcars</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="fu">contains</span><span class="op">(</span><span class="st">"t"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                    drat    wt
@@ -630,7 +632,48 @@ Volvo 142E          4.11 2.780</code></pre>
 </div>
 <div id="tabset-2-3">
 <div class="cell">
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Selecting all numeric columns</span></span>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Selecting columns that start with letters a-g</span></span>
+<span><span class="va">mtcars</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="fu">matches</span><span class="op">(</span><span class="st">"^[a-g]"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                    cyl  disp drat am gear carb
+Mazda RX4             6 160.0 3.90  1    4    4
+Mazda RX4 Wag         6 160.0 3.90  1    4    4
+Datsun 710            4 108.0 3.85  1    4    1
+Hornet 4 Drive        6 258.0 3.08  0    3    1
+Hornet Sportabout     8 360.0 3.15  0    3    2
+Valiant               6 225.0 2.76  0    3    1
+Duster 360            8 360.0 3.21  0    3    4
+Merc 240D             4 146.7 3.69  0    4    2
+Merc 230              4 140.8 3.92  0    4    2
+Merc 280              6 167.6 3.92  0    4    4
+Merc 280C             6 167.6 3.92  0    4    4
+Merc 450SE            8 275.8 3.07  0    3    3
+Merc 450SL            8 275.8 3.07  0    3    3
+Merc 450SLC           8 275.8 3.07  0    3    3
+Cadillac Fleetwood    8 472.0 2.93  0    3    4
+Lincoln Continental   8 460.0 3.00  0    3    4
+Chrysler Imperial     8 440.0 3.23  0    3    4
+Fiat 128              4  78.7 4.08  1    4    1
+Honda Civic           4  75.7 4.93  1    4    2
+Toyota Corolla        4  71.1 4.22  1    4    1
+Toyota Corona         4 120.1 3.70  0    3    1
+Dodge Challenger      8 318.0 2.76  0    3    2
+AMC Javelin           8 304.0 3.15  0    3    2
+Camaro Z28            8 350.0 3.73  0    3    4
+Pontiac Firebird      8 400.0 3.08  0    3    2
+Fiat X1-9             4  79.0 4.08  1    4    1
+Porsche 914-2         4 120.3 4.43  1    5    2
+Lotus Europa          4  95.1 3.77  1    5    2
+Ford Pantera L        8 351.0 4.22  1    5    4
+Ferrari Dino          6 145.0 3.62  1    5    6
+Maserati Bora         8 301.0 3.54  1    5    8
+Volvo 142E            4 121.0 4.11  1    4    2</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-2-4">
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Selecting all numeric columns</span></span>
 <span><span class="va">mtcars</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.numeric</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     mpg cyl  disp  hp drat    wt  qsec vs am gear carb
@@ -696,7 +739,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </li>
 <li>Select variables with a function
 <ul>
-<li><code><a href="https://tidyselect.r-lib.org/reference/where.html">tidyselect::where()</a></code></li>
+<li><code>where()</code></li>
 </ul>
 </li>
 </ol></section><section id="programming-with-dplyr" class="slide level2"><h2>Programming with <code>dplyr</code>
@@ -713,7 +756,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 <code>.data[[ ]]</code> helps when column names are in character vectors.</li>
 </ul></section><section id="practical-example-indirection-with-embracing" class="slide level2"><h2>Practical Example: Indirection with Embracing</h2>
 <div class="cell">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Embracing with {{ }}</span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Embracing with {{ }}</span></span>
 <span><span class="va">var_summary</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">var</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">data</span> <span class="op">%&gt;%</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    n <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -733,13 +776,16 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 3     8    14  10.4  19.2</code></pre>
 </div>
 </div>
-</section><section id="across-multiple-columns" class="slide level2 smaller"><h2>“Across” Multiple Columns</h2>
+</section><section id="across-multiple-columns" class="slide level2 smaller"><h2>Across Multiple Columns</h2>
 <ul>
 <li>
 <code><a href="https://dplyr.tidyverse.org/reference/across.html">dplyr::across()</a></code> function allows applying operations across <strong>multiple columns</strong>.</li>
 <li>Useful for summarizing, mutating, and filtering multiple columns.</li>
 </ul>
+<p><strong>Syntax:</strong></p>
+<blockquote>
 <p><code>across(.cols, .fns, .names = NULL, .unpack = FALSE)</code></p>
+</blockquote>
 <ul>
 <li>
 <code>.cols</code>: <code>&lt;tidy-select&gt;</code> Columns to apply the function.</li>
@@ -765,15 +811,13 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 <div class="tab-content">
 <div id="tabset-3-1">
 <div class="cell">
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Applying mean across multiple columns</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Applying mean across multiple columns</span></span>
 <span><span class="va">vars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"mpg"</span>, <span class="st">"vs"</span><span class="op">)</span></span>
 <span><span class="va">mtcars</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span></span>
-<span>      <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span>,</span>
-<span>      <span class="va">mean</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span></span>
+<span>    <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">vars</span><span class="op">)</span>,</span>
+<span>    <span class="va">mean</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       mpg     vs
 1 20.09062 0.4375</code></pre>
@@ -782,14 +826,12 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </div>
 <div id="tabset-3-2">
 <div class="cell">
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Applying multiple functions across numeric columns</span></span>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Applying multiple functions across numeric columns</span></span>
 <span><span class="va">mtcars</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span></span>
-<span>      <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/where.html">where</a></span><span class="op">(</span><span class="va">is.numeric</span><span class="op">)</span>, </span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>avg <span class="op">=</span> <span class="va">mean</span>, std <span class="op">=</span> <span class="va">sd</span><span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span></span>
+<span>    <span class="fu">tidyselect</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/where.html">where</a></span><span class="op">(</span><span class="va">is.numeric</span><span class="op">)</span>, </span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>avg <span class="op">=</span> <span class="va">mean</span>, std <span class="op">=</span> <span class="va">sd</span><span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   mpg_avg  mpg_std cyl_avg  cyl_std disp_avg disp_std   hp_avg   hp_std
 1 20.09062 6.026948  6.1875 1.785922 230.7219 123.9387 146.6875 68.56287
@@ -802,7 +844,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </div>
 <div id="tabset-3-3">
 <div class="cell">
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Converting character columns to factors</span></span>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Converting character columns to factors</span></span>
 <span><span class="va">starwars</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="fu">where</span><span class="op">(</span><span class="va">is.character</span><span class="op">)</span>, <span class="va">as.factor</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
 <span>  <span class="fu">select</span><span class="op">(</span><span class="va">name</span>, <span class="fu">where</span><span class="op">(</span><span class="va">is.factor</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -836,9 +878,16 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 <ul>
 <li>Use <code><a href="https://dplyr.tidyverse.org/reference/across.html">dplyr::across()</a></code> inside <code><a href="https://dplyr.tidyverse.org/reference/summarise.html">dplyr::summarise()</a></code> to calculate statistics on chosen columns.</li>
 <li>Control output column names using <code>.names</code> within <code><a href="https://dplyr.tidyverse.org/reference/across.html">dplyr::across()</a></code>.</li>
-</ul></section><section id="practical-example-custom-summarization" class="slide level2"><h2>Practical Example: Custom Summarization</h2>
+</ul></section><section id="practical-example-custom-summarization" class="slide level2 scrollable"><h2>Practical Example: Custom Summarization</h2>
+<div class="panel-tabset">
+<ul id="tabset-4" class="panel-tabset-tabby">
+<li><a data-tabby-default="" href="#tabset-4-1">Embracing <code>{{ }}</code></a></li>
+<li><a href="#tabset-4-2">Using <code>...</code></a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-4-1">
 <div class="cell">
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Function to calculate means of numeric columns</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Function to calculate means of numeric columns</span></span>
 <span><span class="va">summarise_mean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span>, <span class="va">vars</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">data</span> <span class="op">%&gt;%</span> </span>
 <span>    <span class="fu">summarise</span><span class="op">(</span></span>
@@ -857,6 +906,30 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 # ℹ 3 more variables: gear_avg &lt;dbl&gt;, carb_avg &lt;dbl&gt;, n_avg &lt;dbl&gt;</code></pre>
 </div>
 </div>
+</div>
+<div id="tabset-4-2">
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Function to calculate means of numeric columns</span></span>
+<span><span class="va">summarise_mean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">.data</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">.data</span> <span class="op">%&gt;%</span> </span>
+<span>    <span class="fu">summarise</span><span class="op">(</span></span>
+<span>      n <span class="op">=</span> <span class="fu">n</span><span class="op">(</span><span class="op">)</span>,</span>
+<span>      <span class="fu">across</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">...</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">.x</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, .names <span class="op">=</span> <span class="st">"{.col}_avg"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">mtcars</span> <span class="op">%&gt;%</span> <span class="fu">group_by</span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">summarise_mean</span><span class="op">(</span><span class="va">mpg</span>, <span class="va">disp</span>, <span class="va">hp</span>, <span class="va">wt</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 6
+    cyl     n mpg_avg disp_avg hp_avg wt_avg
+  &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+1     4    11    26.7     105.   82.6   2.29
+2     6     7    19.7     183.  122.    3.12
+3     8    14    15.1     353.  209.    4.00</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section><section id="name-injection-in-variable-names" class="slide level2"><h2>Name Injection in Variable Names</h2>
 <p><strong>Dynamic Name Creation with Name Injection</strong></p>
 <ul>
@@ -867,7 +940,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 <div class="columns">
 <div class="column" style="width:38%;">
 <div class="cell">
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Dynamic name assignment</span></span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Dynamic name assignment</span></span>
 <span><span class="va">name</span> <span class="op">&lt;-</span> <span class="st">"dynamic_var"</span></span>
 <span><span class="fu">tibble</span><span class="op">(</span><span class="st">"{name}"</span> <span class="op">:=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -879,7 +952,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </div>
 </div><div class="column" style="width:58%;">
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Using dynamic name within a function</span></span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Using dynamic name within a function</span></span>
 <span><span class="va">my_df</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">tibble</span><span class="op">(</span><span class="st">"{{ x }}_2"</span> <span class="op">:=</span> <span class="va">x</span> <span class="op">*</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -906,7 +979,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </ul>
 <div class="cell columns column-output-location">
 <div class="column">
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Creating a nested data frame by grouping</span></span>
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Creating a nested data frame by grouping</span></span>
 <span><span class="va">df</span> <span class="op">&lt;-</span> <span class="fu">tribble</span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">g</span>, <span class="op">~</span><span class="va">x</span>, <span class="op">~</span><span class="va">y</span>,</span>
 <span>   <span class="fl">1</span>,  <span class="fl">1</span>,  <span class="fl">2</span>,</span>
@@ -927,14 +1000,14 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </div></div>
 </section><section id="practical-example-unnesting" class="slide level2"><h2>Practical Example: (Un)Nesting</h2>
 <div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby">
-<li><a data-tabby-default="" href="#tabset-4-1">Original Data</a></li>
-<li><a href="#tabset-4-2">Nested Data</a></li>
+<ul id="tabset-5" class="panel-tabset-tabby">
+<li><a data-tabby-default="" href="#tabset-5-1">Original Data</a></li>
+<li><a href="#tabset-5-2">Nested Data</a></li>
 </ul>
 <div class="tab-content">
-<div id="tabset-4-1">
+<div id="tabset-5-1">
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Display some columns</span></span>
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Display some columns</span></span>
 <span><span class="va">starwars</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="va">species</span>, <span class="va">name</span>, <span class="va">height</span>, <span class="va">mass</span>, <span class="va">gender</span>, <span class="va">homeworld</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 87 × 6
@@ -954,10 +1027,10 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </div>
 </div>
 </div>
-<div id="tabset-4-2">
+<div id="tabset-5-2">
 <div class="cell columns column-output-location">
 <div class="column">
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Nesting data by species</span></span>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Nesting data by species</span></span>
 <span><span class="va">starwars</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">nest</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -993,7 +1066,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </ul>
 <div class="cell columns column-output-location">
 <div class="column">
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Nesting mtcars data by cylinder</span></span>
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Nesting mtcars data by cylinder</span></span>
 <span><span class="va">mtcars_nested</span> <span class="op">&lt;-</span> <span class="va">mtcars</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">nest</span><span class="op">(</span><span class="op">)</span></span>
@@ -1015,9 +1088,9 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 <li>Store each model in a new list-column.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Fit models to each subset</span></span>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Fit models to each subset</span></span>
 <span><span class="va">mtcars_nested</span> <span class="op">&lt;-</span> <span class="va">mtcars_nested</span> <span class="op">%&gt;%</span> </span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>model <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">wt</span>, data <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>model <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">data</span>, \<span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">wt</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">mtcars_nested</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
@@ -1034,7 +1107,7 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 <li>Generate predictions for each model using <code>map()</code> to apply <code><a href="https://rdrr.io/r/stats/predict.html">predict()</a></code>.</li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Generate predictions</span></span>
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Generate predictions</span></span>
 <span><span class="va">mtcars_nested</span> <span class="op">&lt;-</span> <span class="va">mtcars_nested</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>predictions <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">model</span>, <span class="va">predict</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">mtcars_nested</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -1060,19 +1133,26 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 </div><div class="column" style="width:50%;">
 <p><strong>Common Use Cases:</strong></p>
 <ul>
-<li>Model coefficients</li>
-<li>Model statistics</li>
-<li>Predictions</li>
+<li>Model coefficients (coefficients, p-values)</li>
+<li>Model statistics (R-squared, AIC)</li>
+<li>Predictions and residuals</li>
 </ul>
 </div></div>
 <ul>
 <li>
 <code>broom</code> provides functions like <code><a href="https://generics.r-lib.org/reference/tidy.html">tidy()</a></code>, <code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code>, and <code><a href="https://generics.r-lib.org/reference/glance.html">glance()</a></code> to convert model outputs to data frames.</li>
 <li>This allows for consistent analysis and visualization of multiple models’ outputs.</li>
+<li>For linear models, <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>, see:
+<ul>
+<li><code><a href="https://broom.tidymodels.org/reference/tidy.lm.html">broom::tidy.lm()</a></code></li>
+<li><code><a href="https://broom.tidymodels.org/reference/glance.lm.html">broom::glance.lm()</a></code></li>
+<li><code><a href="https://broom.tidymodels.org/reference/augment.lm.html">broom::augment.lm()</a></code></li>
+</ul>
+</li>
 </ul></section><section id="practical-example-tidying-with-broomtidy" class="slide level2 smaller"><h2>Practical Example: Tidying with <code>broom::tidy()</code>
 </h2>
 <div class="cell">
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Tidying model results</span></span>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Tidying model results</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://broom.tidymodels.org/">broom</a></span><span class="op">)</span></span>
 <span><span class="va">mtcars_nested</span> <span class="op">&lt;-</span> <span class="va">mtcars_nested</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>tidy_results <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">model</span>, <span class="fu">broom</span><span class="fu">::</span><span class="va"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">)</span><span class="op">)</span></span>
@@ -1094,47 +1174,283 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 6     8 &lt;tibble&gt; &lt;lm&gt;   &lt;dbl [14]&gt;  wt         -2.19     0.739     -2.97 1.18e-2</code></pre>
 </div>
 </div>
-</section><section id="advanced-tidying-augment-and-glance" class="slide level2"><h2>Advanced Tidying: <code>augment()</code> and <code>glance()</code>
+</section><section id="advanced-tidying-augment-and-glance" class="slide level2 scrollable"><h2>Advanced Tidying: <code>augment()</code> and <code>glance()</code>
 </h2>
 <ul>
 <li>
 <strong><code><a href="https://generics.r-lib.org/reference/augment.html">augment()</a></code></strong>: Adds model predictions and residuals to the original data.</li>
 <li>
 <strong><code><a href="https://generics.r-lib.org/reference/glance.html">glance()</a></code></strong>: Summarizes model fit statistics.</li>
-</ul></section><section id="the-nest-map-unnest-workflow" class="slide level2"><h2>The Nest-Map-Unnest Workflow</h2>
+</ul>
 <div class="cell">
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="va">nested_data</span> <span class="op">%&gt;%</span></span>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Adding model summaries</span></span>
+<span><span class="va">mtcars_nested</span> <span class="op">&lt;-</span> <span class="va">mtcars_nested</span> <span class="op">%&gt;%</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span></span>
-<span>    model <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">mass</span> <span class="op">~</span> <span class="va">height</span>, data <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    tidied <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">model</span>, <span class="va">tidy</span><span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">tidied</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-</section></section><section><section id="advanced-applications" class="title-slide slide level1 center" data-background-color="#43464B"><h1>Advanced Applications</h1>
-
-</section><section id="multi-level-modeling" class="slide level2"><h2>Multi-Level Modeling</h2>
-<div class="cell">
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Example of more complex modeling</span></span>
-<span><span class="va">advanced_models</span> <span class="op">&lt;-</span> <span class="va">nested_data</span> <span class="op">%&gt;%</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span></span>
-<span>    model <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">mass</span> <span class="op">~</span> <span class="va">height</span> <span class="op">+</span> <span class="va">birth_year</span>, data <span class="op">=</span> <span class="va">.x</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    metrics <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">model</span>, <span class="va">glance</span><span class="op">)</span></span>
+<span>    augmented <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">model</span>, <span class="va">augment</span><span class="op">)</span>,</span>
+<span>    glance_results <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">model</span>, <span class="va">glance</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="model-fit-summaries" class="slide level2 smaller"><h2>Model Fit Summaries</h2>
+<div class="panel-tabset">
+<ul id="tabset-6" class="panel-tabset-tabby">
+<li><a data-tabby-default="" href="#tabset-6-1">Data</a></li>
+<li><a href="#tabset-6-2">Tidy</a></li>
+<li><a href="#tabset-6-3">Augmented</a></li>
+<li><a href="#tabset-6-4">Glance</a></li>
+</ul>
+<div class="tab-content">
+<div id="tabset-6-1">
+<div class="cell">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mtcars_nested</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">cyl</span>, <span class="va">data</span>, <span class="va">model</span>, <span class="va">tidy_results</span>, <span class="va">augmented</span>, <span class="va">glance_results</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 6
+# Groups:   cyl [3]
+    cyl data               model  tidy_results     augmented glance_results   
+  &lt;dbl&gt; &lt;list&gt;             &lt;list&gt; &lt;list&gt;           &lt;list&gt;    &lt;list&gt;           
+1     6 &lt;tibble [7 × 10]&gt;  &lt;lm&gt;   &lt;tibble [2 × 5]&gt; &lt;tibble&gt;  &lt;tibble [1 × 12]&gt;
+2     4 &lt;tibble [11 × 10]&gt; &lt;lm&gt;   &lt;tibble [2 × 5]&gt; &lt;tibble&gt;  &lt;tibble [1 × 12]&gt;
+3     8 &lt;tibble [14 × 10]&gt; &lt;lm&gt;   &lt;tibble [2 × 5]&gt; &lt;tibble&gt;  &lt;tibble [1 × 12]&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-2">
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mtcars_nested</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">cyl</span>, <span class="va">data</span>, <span class="va">model</span>, <span class="va">tidy_results</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">tidy_results</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 8
+# Groups:   cyl [3]
+    cyl data               model  term      estimate std.error statistic p.value
+  &lt;dbl&gt; &lt;list&gt;             &lt;list&gt; &lt;chr&gt;        &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1     6 &lt;tibble [7 × 10]&gt;  &lt;lm&gt;   (Interce…    28.4      4.18       6.79 1.05e-3
+2     6 &lt;tibble [7 × 10]&gt;  &lt;lm&gt;   wt           -2.78     1.33      -2.08 9.18e-2
+3     4 &lt;tibble [11 × 10]&gt; &lt;lm&gt;   (Interce…    39.6      4.35       9.10 7.77e-6
+4     4 &lt;tibble [11 × 10]&gt; &lt;lm&gt;   wt           -5.65     1.85      -3.05 1.37e-2
+5     8 &lt;tibble [14 × 10]&gt; &lt;lm&gt;   (Interce…    23.9      3.01       7.94 4.05e-6
+6     8 &lt;tibble [14 × 10]&gt; &lt;lm&gt;   wt           -2.19     0.739     -2.97 1.18e-2</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-3">
+<div class="cell">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mtcars_nested</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">cyl</span>, <span class="va">data</span>, <span class="va">model</span>, <span class="va">augmented</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">augmented</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 × 11
+# Groups:   cyl [3]
+     cyl data     model    mpg    wt .fitted .resid   .hat .sigma .cooksd
+   &lt;dbl&gt; &lt;list&gt;   &lt;list&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+ 1     6 &lt;tibble&gt; &lt;lm&gt;    21    2.62    21.1 -0.125 0.467   1.30  0.00947
+ 2     6 &lt;tibble&gt; &lt;lm&gt;    21    2.88    20.4  0.584 0.220   1.26  0.0454 
+ 3     6 &lt;tibble&gt; &lt;lm&gt;    21.4  3.22    19.5  1.93  0.155   0.772 0.299  
+ 4     6 &lt;tibble&gt; &lt;lm&gt;    18.1  3.46    18.8 -0.690 0.297   1.24  0.105  
+ 5     6 &lt;tibble&gt; &lt;lm&gt;    19.2  3.44    18.8  0.355 0.280   1.29  0.0250 
+ 6     6 &lt;tibble&gt; &lt;lm&gt;    17.8  3.44    18.8 -1.05  0.280   1.15  0.217  
+ 7     6 &lt;tibble&gt; &lt;lm&gt;    19.7  2.77    20.7 -1.01  0.301   1.15  0.231  
+ 8     4 &lt;tibble&gt; &lt;lm&gt;    22.8  2.32    26.5 -3.67  0.0913  3.26  0.0670 
+ 9     4 &lt;tibble&gt; &lt;lm&gt;    24.4  3.19    21.6  2.84  0.343   3.31  0.289  
+10     4 &lt;tibble&gt; &lt;lm&gt;    22.8  3.15    21.8  1.02  0.321   3.51  0.0325 
+# ℹ 22 more rows
+# ℹ 1 more variable: .std.resid &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-6-4">
+<div class="cell">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mtcars_nested</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">cyl</span>, <span class="va">data</span>, <span class="va">model</span>, <span class="va">glance_results</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">glance_results</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 15
+# Groups:   cyl [3]
+    cyl data     model  r.squared adj.r.squared sigma statistic p.value    df
+  &lt;dbl&gt; &lt;list&gt;   &lt;list&gt;     &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+1     6 &lt;tibble&gt; &lt;lm&gt;       0.465         0.357  1.17      4.34  0.0918     1
+2     4 &lt;tibble&gt; &lt;lm&gt;       0.509         0.454  3.33      9.32  0.0137     1
+3     8 &lt;tibble&gt; &lt;lm&gt;       0.423         0.375  2.02      8.80  0.0118     1
+# ℹ 6 more variables: logLik &lt;dbl&gt;, AIC &lt;dbl&gt;, BIC &lt;dbl&gt;, deviance &lt;dbl&gt;,
+#   df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section><section id="practical-application-model-comparison" class="slide level2 smaller"><h2>Practical Application: Model Comparison</h2>
+<ul>
+<li>Easily compare models across groups with tidied outputs.</li>
+<li>Sort or filter by fit statistics, visualize parameter estimates, or compare residuals.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Example: Sorting by R-squared from glance results</span></span>
+<span><span class="va">mtcars_nested</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">cyl</span>, <span class="va">data</span>, <span class="va">model</span>, <span class="va">glance_results</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">glance_results</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">arrange</span><span class="op">(</span><span class="fu">desc</span><span class="op">(</span><span class="va">r.squared</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 15
+# Groups:   cyl [3]
+    cyl data     model  r.squared adj.r.squared sigma statistic p.value    df
+  &lt;dbl&gt; &lt;list&gt;   &lt;list&gt;     &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;
+1     4 &lt;tibble&gt; &lt;lm&gt;       0.509         0.454  3.33      9.32  0.0137     1
+2     6 &lt;tibble&gt; &lt;lm&gt;       0.465         0.357  1.17      4.34  0.0918     1
+3     8 &lt;tibble&gt; &lt;lm&gt;       0.423         0.375  2.02      8.80  0.0118     1
+# ℹ 6 more variables: logLik &lt;dbl&gt;, AIC &lt;dbl&gt;, BIC &lt;dbl&gt;, deviance &lt;dbl&gt;,
+#   df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</div>
+</div>
+</section></section><section><section id="model-selection-comparing-different-models" class="title-slide slide level1 center" data-background-color="#43464B"><h1>Model Selection: Comparing Different Models</h1>
+
+</section><section id="linear-regression-models" class="slide level2"><h2>Linear Regression Models</h2>
+<ul>
+<li>Create multiple linear models on <code>mtcars</code> data for each cylinder group.</li>
+<li>Fit models and store results in a nested data frame.</li>
+<li>Nest the <code>mtcars</code> data by cylinder group:</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mtcars_nested</span> <span class="op">&lt;-</span> <span class="va">mtcars</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">group_by</span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">nest</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">mtcars_nested</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+# Groups:   cyl [3]
+    cyl data              
+  &lt;dbl&gt; &lt;list&gt;            
+1     6 &lt;tibble [7 × 10]&gt; 
+2     4 &lt;tibble [11 × 10]&gt;
+3     8 &lt;tibble [14 × 10]&gt;</code></pre>
+</div>
+</div>
+</section><section id="fit-linear-models" class="slide level2 smaller"><h2>Fit Linear Models</h2>
+<ul>
+<li>Consider building linear models for each cylinder group:
+<ul>
+<li><code>mpg ~ wt</code></li>
+<li><code>mpg ~ wt + hp</code></li>
+<li><code>mpg ~ wt + hp + qsec</code></li>
+</ul>
+</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Fit linear models</span></span>
+<span><span class="va">mtcars_lm</span> <span class="op">&lt;-</span> <span class="va">mtcars_nested</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    model_wt <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">data</span>, \<span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">wt</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    model_wt_hp <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">data</span>, \<span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">wt</span> <span class="op">+</span> <span class="va">hp</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    model_wt_hp_qsec <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">data</span>, \<span class="op">(</span><span class="va">df</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">mpg</span> <span class="op">~</span> <span class="va">wt</span> <span class="op">+</span> <span class="va">hp</span> <span class="op">+</span> <span class="va">qsec</span>, data <span class="op">=</span> <span class="va">df</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">mtcars_lm</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 5
+# Groups:   cyl [3]
+    cyl data               model_wt model_wt_hp model_wt_hp_qsec
+  &lt;dbl&gt; &lt;list&gt;             &lt;list&gt;   &lt;list&gt;      &lt;list&gt;          
+1     6 &lt;tibble [7 × 10]&gt;  &lt;lm&gt;     &lt;lm&gt;        &lt;lm&gt;            
+2     4 &lt;tibble [11 × 10]&gt; &lt;lm&gt;     &lt;lm&gt;        &lt;lm&gt;            
+3     8 &lt;tibble [14 × 10]&gt; &lt;lm&gt;     &lt;lm&gt;        &lt;lm&gt;            </code></pre>
+</div>
+</div>
+</section><section id="all-model-statistics" class="slide level2 smaller"><h2>All Model Statistics</h2>
+<ul>
+<li>Use <code>pivot_longer()</code> to reshape the data for comparison.</li>
+<li>Using <code><a href="https://generics.r-lib.org/reference/glance.html">broom::glance()</a></code> to extract model statistics.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Extract model statistics</span></span>
+<span><span class="va">mtcars_glance</span> <span class="op">&lt;-</span> <span class="va">mtcars_lm</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">pivot_longer</span><span class="op">(</span></span>
+<span>    cols <span class="op">=</span> <span class="fu">starts_with</span><span class="op">(</span><span class="st">"model"</span><span class="op">)</span>,</span>
+<span>    names_to <span class="op">=</span> <span class="st">"model"</span>,</span>
+<span>    values_to <span class="op">=</span> <span class="st">"model_fit"</span></span>
+<span>  <span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    model_stats <span class="op">=</span> <span class="fu">map</span><span class="op">(</span><span class="va">model_fit</span>, <span class="va">glance</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">mtcars_glance</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 5
+# Groups:   cyl [3]
+    cyl data               model            model_fit model_stats      
+  &lt;dbl&gt; &lt;list&gt;             &lt;chr&gt;            &lt;list&gt;    &lt;list&gt;           
+1     6 &lt;tibble [7 × 10]&gt;  model_wt         &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+2     6 &lt;tibble [7 × 10]&gt;  model_wt_hp      &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+3     6 &lt;tibble [7 × 10]&gt;  model_wt_hp_qsec &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+4     4 &lt;tibble [11 × 10]&gt; model_wt         &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+5     4 &lt;tibble [11 × 10]&gt; model_wt_hp      &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+6     4 &lt;tibble [11 × 10]&gt; model_wt_hp_qsec &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+7     8 &lt;tibble [14 × 10]&gt; model_wt         &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+8     8 &lt;tibble [14 × 10]&gt; model_wt_hp      &lt;lm&gt;      &lt;tibble [1 × 12]&gt;
+9     8 &lt;tibble [14 × 10]&gt; model_wt_hp_qsec &lt;lm&gt;      &lt;tibble [1 × 12]&gt;</code></pre>
+</div>
+</div>
+</section><section id="unnest-and-compare-models" class="slide level2 smaller"><h2>Unnest and Compare Models</h2>
+<ul>
+<li>Use <code>unnest()</code> to extract model statistics for comparison.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Pivot longer for comparison</span></span>
+<span><span class="va">mtcars_lm_stats</span> <span class="op">&lt;-</span> <span class="va">mtcars_glance</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">unnest</span><span class="op">(</span><span class="va">model_stats</span><span class="op">)</span></span>
+<span><span class="va">mtcars_lm_stats</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 16
+# Groups:   cyl [3]
+    cyl data     model model_fit r.squared adj.r.squared sigma statistic p.value
+  &lt;dbl&gt; &lt;list&gt;   &lt;chr&gt; &lt;list&gt;        &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1     6 &lt;tibble&gt; mode… &lt;lm&gt;          0.465         0.357  1.17      4.34  0.0918
+2     6 &lt;tibble&gt; mode… &lt;lm&gt;          0.589         0.383  1.14      2.87  0.169 
+3     6 &lt;tibble&gt; mode… &lt;lm&gt;          0.602         0.204  1.30      1.51  0.371 
+4     4 &lt;tibble&gt; mode… &lt;lm&gt;          0.509         0.454  3.33      9.32  0.0137
+5     4 &lt;tibble&gt; mode… &lt;lm&gt;          0.681         0.601  2.85      8.53  0.0104
+6     4 &lt;tibble&gt; mode… &lt;lm&gt;          0.701         0.572  2.95      5.46  0.0299
+7     8 &lt;tibble&gt; mode… &lt;lm&gt;          0.423         0.375  2.02      8.80  0.0118
+8     8 &lt;tibble&gt; mode… &lt;lm&gt;          0.497         0.406  1.97      5.44  0.0228
+9     8 &lt;tibble&gt; mode… &lt;lm&gt;          0.507         0.360  2.05      3.43  0.0601
+# ℹ 7 more variables: df &lt;dbl&gt;, logLik &lt;dbl&gt;, AIC &lt;dbl&gt;, BIC &lt;dbl&gt;,
+#   deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</div>
+</div>
+</section><section id="model-selection" class="slide level2 smaller"><h2>Model Selection</h2>
+<ul>
+<li>Select the best model based on, for example, lowest BIC values.</li>
+<li>Use <code><a href="https://dplyr.tidyverse.org/reference/slice.html">dplyr::slice_min()</a></code> to select the row with the minimum BIC value.</li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Select best model by BIC</span></span>
+<span><span class="va">mtcars_lm_stats</span> <span class="op">%&gt;%</span></span>
+<span>  <span class="fu">slice_min</span><span class="op">(</span><span class="va">BIC</span><span class="op">)</span> <span class="op">%&gt;%</span> </span>
+<span>  <span class="fu">relocate</span><span class="op">(</span><span class="va">BIC</span>, .after <span class="op">=</span> <span class="va">model_fit</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 16
+# Groups:   cyl [3]
+    cyl data     model   model_fit   BIC r.squared adj.r.squared sigma statistic
+  &lt;dbl&gt; &lt;list&gt;   &lt;chr&gt;   &lt;list&gt;    &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt;
+1     4 &lt;tibble&gt; model_… &lt;lm&gt;       60.3     0.681         0.601  2.85      8.53
+2     6 &lt;tibble&gt; model_… &lt;lm&gt;       25.5     0.465         0.357  1.17      4.34
+3     8 &lt;tibble&gt; model_… &lt;lm&gt;       65.2     0.423         0.375  2.02      8.80
+# ℹ 7 more variables: p.value &lt;dbl&gt;, df &lt;dbl&gt;, logLik &lt;dbl&gt;, AIC &lt;dbl&gt;,
+#   deviance &lt;dbl&gt;, df.residual &lt;int&gt;, nobs &lt;int&gt;</code></pre>
+</div>
 </div>
 </section><section id="summary-and-best-practices" class="slide level2"><h2>Summary and Best Practices</h2>
 <ul>
 <li>Use tidy evaluation for cleaner code</li>
-<li>Leverage nested data frames for grouped analyses</li>
-<li>Apply broom for consistent model outputs</li>
-<li>Consider computational efficiency</li>
-</ul></section><section id="resources" class="slide level2 smaller"><h2>Resources</h2>
+<li>Leverage <code>nest</code>’ed data frames for grouped analyses</li>
+<li>Apply <code>broom</code> for consistent model outputs</li>
+<li>Consider computational efficiency and readability</li>
+</ul></section><section id="resources" class="slide level2"><h2>Resources</h2>
 <div class="columns">
 <div class="column" style="width:50%;">
 <p><strong>Documentation</strong></p>
 <ul>
-<li><a href="https://www.tidyverse.org">tidyverse.org</a></li>
+<li><a href="https://tidyselect.r-lib.org/reference/language.html">tidyselect: Selection Helpers</a></li>
+<li><a href="https://tidyr.tidyverse.org/articles/nest.html">Nested data</a></li>
 <li><a href="https://dplyr.tidyverse.org/articles/programming.html">dplyr programming</a></li>
 <li><a href="https://broom.tidymodels.org">broom documentation</a></li>
+<li><a href="https://broom.tidymodels.org/articles/broom_and_dplyr.html">broom and dplyr</a></li>
 </ul>
 </div><div class="column" style="width:50%;">
 <p><strong>Further Reading</strong></p>
@@ -1144,25 +1460,13 @@ Volvo 142E          21.4   4 121.0 109 4.11 2.780 18.60  1  1    4    2</code></
 <li>tidyverse blog posts</li>
 </ul>
 </div></div>
-</section></section><section id="questions" class="title-slide slide level1 center" data-background-color="#43464B"><h1>Questions?</h1>
-<aside class="notes"><p>Remember to: - Address common pitfalls - Share additional resources - Provide contact information</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside><div class="quarto-auto-generated-content">
+<div class="quarto-auto-generated-content">
 <p><img src="unilogo_noir_300dpi.png" class="slide-logo"></p>
 <div class="footer footer-default">
 <p>Advanced R Programming and Modelling - Lecture 7</p>
 </div>
 </div>
-</section>
+</section></section>
 </div>
   </div>
 
