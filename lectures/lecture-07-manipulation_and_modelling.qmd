@@ -1,0 +1,779 @@
+---
+title: "Advanced Data Manipulation and Modelling with `tidyverse`"
+subtitle: "Tidy Evaluation, Nested Data, and Model Building"
+author: "Professor Alex"
+format:
+  revealjs:
+    monofont: DejaVu Sans Mono
+    theme: default
+    logo: "unilogo_noir_300dpi.png"
+    footer: "Advanced R Programming and Modelling - Lecture 7"
+    slide-number: true
+    incremental: false
+    preview-links: true
+    code-line-numbers: false
+    highlight-style: printing
+    code-block-height: 500px
+    code-copy: true
+    code-link: true
+    link-external-icon: false
+    link-external-newwindow: true
+  beamer:
+    include-in-header: ../latex/header.tex
+    fontsize: 10pt
+  pdf:
+    number-sections: true
+    include-in-header: 
+      text: |
+        \usepackage[headsepline]{scrlayer-scrpage}
+        \usepackage{fontspec}
+        \ihead{DSIBA: Series 4}
+        \chead{}
+        \ohead{\headmark}
+        \automark{section}
+    papersize: a4
+---
+
+```{r setup}
+#| echo: false
+#| eval: true
+#| message: false
+# Load necessary libraries
+library(conflicted)
+conflict_prefer("filter", "dplyr")
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(broom)
+```
+
+# Introduction to Tidy Evaluation in `dplyr` {background-color="#43464B"}
+
+## Overview
+
+- Modern data manipulation in R with `tidyverse`
+- Focus on tidy evaluation principles
+- Practical applications in data science workflows
+
+## What We'll Cover Today
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Part 1: Tidy Evaluation in `dplyr`**
+
+- Data masking
+- Tidy selection
+- Programming with `dplyr`
+:::
+
+::: {.column width="50%"}
+**Part 2: Nested Data & Modelling**
+
+- Nested data frames
+- Model building
+- Result aggregation
+:::
+
+::::
+
+# Part 1: Tidy Evaluation in `dplyr` {background-color="#43464B"}
+
+## What is Tidy Evaluation?
+- **Tidy Evaluation** is a form of non-standard evaluation used in the `tidyverse`.
+- It allows simpler expressions for data manipulation, making code more concise and readable.
+- Two main concepts: **Data Masking** and **Tidy Selection**.
+
+## Why Use Tidy Evaluation?
+- Reduces the need for `df$column` syntax; instead, use `column` directly.
+- Enables smooth data exploration and efficient manipulation, especially in interactive analysis.
+- Supports consistent and flexible workflows across multiple `dplyr` functions.
+
+## Practical Example: Tidy Evaluation {.scrollable}
+
+```{r}
+#| echo: true
+#| eval: false
+# Filtering without Tidy Evaluation
+starwars[starwars$homeworld == "Naboo" & starwars$species == "Human", ]
+
+# Filtering with Tidy Evaluation
+starwars %>% dplyr::filter(homeworld == "Naboo", species == "Human")
+```
+
+1. Use the `$` operator to reference columns.
+    - Not recommended for `dplyr` workflows.
+    - Good when developing scripts or functions to avoid external dependencies.
+2. Use the `dplyr::filter()` function with direct column references.
+    - Cleaner and more readable.
+    - Preferred method for `dplyr` workflows.
+
+## Overview of Data Masking
+
+- **Data Masking** allows using data frame columns as if they were variables in the environment.
+- Avoids repetitive references to the data frame.
+- Key for efficient filtering, summarizing, and mutating.
+
+---
+
+## Data Masking in Action
+- Distinguishes between **env-variables** (programming variables) and **data-variables** (statistical variables).
+- Env-variables are created with `<-`, while data-variables are within the data frame.
+
+---
+
+## Practical Example: Data Masking
+
+::: {.panel-tabset}
+
+### Env-Variables
+
+```{r}
+#| echo: true
+# Using df as an env-variable
+df <- tibble::tibble(x = runif(3), y = runif(3))
+df %>% dplyr::mutate(z = x + y)
+```
+
+### Data-Variables
+
+```{r}
+#| echo: true
+# Filtering with Data Masking
+# Here, "homeworld" and "species" are data-variables
+starwars %>%
+  dplyr::filter(homeworld == "Naboo" & species == "Human") %>% 
+  dplyr::select(name, homeworld, species)
+```
+
+:::
+
+## Tidy Selection
+
+**What is Tidy Selection?**
+
+- **Tidy Selection** is a set of tools provided by `tidyselect` package to easily select columns by name, type, or position.
+- Allows for selecting columns dynamically within functions like
+    - `dplyr::select()`
+    - `dplyr::mutate()`
+    - `dplyr::across()`
+
+---
+
+## Tidy Selection Syntax
+
+- Examples: 
+    - `tidyselect::starts_with()`
+    - `tidyselect::ends_with()`
+    - `tidyselect::where()`
+- Can specify columns using multiple criteria within a single function.
+
+---
+
+## Practical Example: Tidy Selection
+
+::: {.panel-tabset}
+
+### Prefix
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Selecting columns that start with "c"
+mtcars %>% select(starts_with("c"))
+```
+
+### Contains
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Selecting columns that contain a letter "t"
+mtcars %>% select(contains("t"))
+```
+
+### Match
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Selecting columns that start with letters a-g
+mtcars %>% select(matches("^[a-g]"))
+```
+
+### Type
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Selecting all numeric columns
+mtcars %>% select(where(is.numeric))
+```
+
+:::
+
+## Tidy Selection: Common Selectors
+
+1. Select variables that match a pattern
+    - `starts_with()`, `ends_with()`, `contains()`, `matches()`, `num_range()`
+2. Select variables from character vector
+    - `all_of()`, `any_of()`
+3. Select all variables or the last variable
+    - `everything()`, `last_col()`
+4. Select variables with a function
+    - `where()`
+
+## Programming with `dplyr`
+
+**What is Indirection in `dplyr`?**
+
+- **Indirection** refers to using variables dynamically within `dplyr` functions.
+- Useful in functions and loops, especially when column names are stored as strings or variables.
+
+---
+
+## Techniques for Indirection
+- Use `{{{ }}}` to embrace expressions within function arguments.
+- `.data[[ ]]` helps when column names are in character vectors.
+
+---
+
+## Practical Example: Indirection with Embracing
+
+```{r}
+#| echo: true
+#| eval: true
+# Embracing with {{ }}
+var_summary <- function(data, var) {
+  data %>% dplyr::summarise(
+    n = dplyr::n(),
+    min = min({{ var }}),
+    max = max({{ var }})
+  )
+}
+mtcars %>%
+  dplyr::group_by(cyl) %>%
+  var_summary(mpg)
+```
+
+## Across Multiple Columns {.smaller}
+
+- `dplyr::across()` function allows applying operations across **multiple columns**.
+- Useful for summarizing, mutating, and filtering multiple columns.
+
+**Syntax:**
+
+> `across(.cols, .fns, .names = NULL, .unpack = FALSE)`
+
+- `.cols`: `<tidy-select>` Columns to apply the function.
+- `.fns`: Function to apply to the columns.
+    - A function, e.g. `mean`
+    - A `purrr`-style lambda function, e.g. `~mean(.x, na.rm = TRUE)`
+    - A named list of functions, e.g. `list(mean = mean, n_miss = ~ sum(is.na(.x)))`
+
+## Practical Example: Using `across()`
+
+::: {.panel-tabset}
+
+### Single Function
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Applying mean across multiple columns
+vars <- c("mpg", "vs")
+mtcars %>%
+  dplyr::summarise(dplyr::across(
+    tidyselect::all_of(vars),
+    mean
+  ))
+```
+
+### Multiple Functions
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Applying multiple functions across numeric columns
+mtcars %>%
+  dplyr::summarise(dplyr::across(
+    tidyselect::where(is.numeric), 
+    list(avg = mean, std = sd)
+  ))
+```
+
+### String to Factor
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Converting character columns to factors
+starwars %>%
+  mutate(across(where(is.character), as.factor)) %>% 
+  select(name, where(is.factor))
+```
+
+:::
+
+## Flexible Summary Functions
+
+- Functions can accept variable column expressions to compute summaries dynamically.
+- `dplyr::across()` is key for creating flexible summaries over multiple columns.
+
+**Custom Summarization Syntax**
+
+- Use `dplyr::across()` inside `dplyr::summarise()` to calculate statistics on chosen columns.
+- Control output column names using `.names` within `dplyr::across()`.
+
+---
+
+## Practical Example: Custom Summarization {.scrollable}
+
+::: {.panel-tabset}
+
+### Embracing `{{{ }}}`
+
+```{r}
+#| echo: true
+#| eval: true
+# Function to calculate means of numeric columns
+summarise_mean <- function(data, vars) {
+  data %>% 
+    summarise(
+      n = n(),
+      across({{ vars }}, ~ mean(.x, na.rm = TRUE), .names = "{.col}_avg")
+    )
+}
+mtcars %>% group_by(cyl) %>% summarise_mean(where(is.numeric))
+```
+
+### Using `...`
+
+```{r}
+#| echo: true
+#| eval: true
+# Function to calculate means of numeric columns
+summarise_mean <- function(.data, ...) {
+  .data %>% 
+    summarise(
+      n = n(),
+      across(c(...), ~ mean(.x, na.rm = TRUE), .names = "{.col}_avg")
+    )
+}
+mtcars %>% group_by(cyl) %>% summarise_mean(mpg, disp, hp, wt)
+```
+
+:::
+
+## Name Injection in Variable Names
+
+**Dynamic Name Creation with Name Injection**
+
+- `:=` allows creating dynamic names for variables in a pipeline.
+- Useful when column names are generated programmatically or from environment variables.
+
+---
+
+## Practical Example: Name Injection
+
+:::: {.columns}
+
+::: {.column width="38%"}
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Dynamic name assignment
+name <- "dynamic_var"
+tibble("{name}" := 2)
+```
+
+:::
+
+::: {.column width="58%"}
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Using dynamic name within a function
+my_df <- function(x) {
+  tibble("{{ x }}_2" := x * 2)
+}
+my_var <- 10
+my_df(my_var)
+```
+
+:::
+
+::::
+
+# Part 2: Nested Data & Modelling {background-color="#43464B"}
+
+## What is a Nested Data Frame?
+- A **Nested Data Frame** contains one or more columns as lists of data frames.
+- Useful for organizing grouped data or subsetting for complex transformations and modeling.
+
+## Creating Nested Data Frames
+- Use `tidyr::nest()` to group columns into list-columns.
+- Each list entry represents a data subset, allowing efficient grouping and nested operations.
+
+```{r}
+#| echo: true
+#| eval: true
+#| output-location: column
+
+# Creating a nested data frame by grouping
+df <- tribble(
+  ~g, ~x, ~y,
+   1,  1,  2,
+   2,  4,  6,
+   2,  5,  7,
+   3, 10,  NA
+)
+df %>% tidyr::nest(data = c(x, y))
+```
+
+## Practical Example: (Un)Nesting
+
+::: {.panel-tabset}
+
+### Original Data
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Display some columns
+starwars %>% select(species, name, height, mass, gender, homeworld)
+```
+
+### Nested Data
+
+```{r}
+#| echo: true
+#| eval: true
+#| output-location: column
+
+# Nesting data by species
+starwars %>%
+  dplyr::group_by(species) %>%
+  tidyr::nest()
+```
+
+:::
+
+## Using Nested Data for Modeling
+- Nested data is ideal for **fitting models across groups**.
+- Each subset in a list-column can hold an individual model or analysis result.
+
+---
+
+## Practical Example: Nesting `mtcars` for Modeling
+- Group `mtcars` by `cyl` (number of cylinders) and nest data within each group.
+```{r}
+#| echo: true
+#| eval: true
+#| output-location: column
+# Nesting mtcars data by cylinder
+mtcars_nested <- mtcars %>%
+  group_by(cyl) %>%
+  nest()
+mtcars_nested
+```
+
+---
+
+## Building Models on Nested Data
+- Use `purrr::map()` to fit models within each nested group.
+- Store each model in a new list-column.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Fit models to each subset
+mtcars_nested <- mtcars_nested %>% 
+  mutate(model = map(data, \(df) lm(mpg ~ wt, data = df)))
+mtcars_nested
+```
+
+---
+
+## Extracting Predictions
+- Generate predictions for each model using `map()` to apply `predict()`.
+
+```{r}
+#| echo: true
+#| eval: true
+# Generate predictions
+mtcars_nested <- mtcars_nested %>%
+  mutate(predictions = map(model, predict))
+mtcars_nested
+```
+
+## Applying `broom` for Model Summaries {.smaller}
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Available Functions:**
+
+- `broom::tidy()`
+- `broom::glance()`
+- `broom::augment()`
+:::
+
+::: {.column width="50%"}
+**Common Use Cases:**
+
+- Model coefficients (coefficients, p-values)
+- Model statistics (R-squared, AIC)
+- Predictions and residuals
+:::
+
+::::
+
+- `broom` provides functions like `tidy()`, `augment()`, and `glance()` to convert model outputs to data frames.
+- This allows for consistent analysis and visualization of multiple models' outputs.
+- For linear models, `lm()`, see:
+  - `broom::tidy.lm()`
+  - `broom::glance.lm()`
+  - `broom::augment.lm()`
+
+---
+
+## Practical Example: Tidying with `broom::tidy()` {.smaller}
+```{r}
+#| echo: true
+#| eval: true
+#| output-location: fragment
+# Tidying model results
+library(broom)
+mtcars_nested <- mtcars_nested %>%
+  mutate(tidy_results = purrr::map(model, broom::tidy))
+
+# Unnesting to view all results in a flat format
+mtcars_nested %>% unnest(tidy_results)
+```
+
+---
+
+## Advanced Tidying: `augment()` and `glance()` {.scrollable}
+
+- **`augment()`**: Adds model predictions and residuals to the original data.
+- **`glance()`**: Summarizes model fit statistics.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Adding model summaries
+mtcars_nested <- mtcars_nested %>%
+  mutate(
+    augmented = map(model, augment),
+    glance_results = map(model, glance)
+  )
+```
+
+---
+
+## Model Fit Summaries {.smaller}
+
+::: {.panel-tabset}
+
+### Data
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>% 
+  select(cyl, data, model, tidy_results, augmented, glance_results)
+```
+
+### Tidy
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>%
+  select(cyl, data, model, tidy_results) %>%
+  unnest(tidy_results)
+```
+
+### Augmented
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>%
+  select(cyl, data, model, augmented) %>%
+  unnest(augmented)
+```
+
+### Glance
+
+```{r}
+#| echo: true
+#| eval: true
+#| code-overflow: scroll
+
+mtcars_nested %>%
+  select(cyl, data, model, glance_results) %>%
+  unnest(glance_results)
+```
+
+:::
+
+---
+
+## Practical Application: Model Comparison {.smaller}
+
+- Easily compare models across groups with tidied outputs.
+- Sort or filter by fit statistics, visualize parameter estimates, or compare residuals.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Example: Sorting by R-squared from glance results
+mtcars_nested %>%
+  select(cyl, data, model, glance_results) %>%
+  unnest(glance_results) %>%
+  arrange(desc(r.squared))
+```
+
+# Model Selection: Comparing Different Models {background-color="#43464B"}
+
+## Linear Regression Models
+
+- Create multiple linear models on `mtcars` data for each cylinder group.
+- Fit models and store results in a nested data frame.
+- Nest the `mtcars` data by cylinder group:
+
+```{r}
+#| echo: true
+#| eval: true
+
+mtcars_nested <- mtcars %>%
+  group_by(cyl) %>%
+  nest()
+mtcars_nested
+```
+
+## Fit Linear Models {.smaller}
+
+- Consider building linear models for each cylinder group:
+  - `mpg ~ wt`
+  - `mpg ~ wt + hp`
+  - `mpg ~ wt + hp + qsec`
+  
+```{r}
+#| echo: true
+#| eval: true
+
+# Fit linear models
+mtcars_lm <- mtcars_nested %>% 
+  mutate(
+    model_wt = map(data, \(df) lm(mpg ~ wt, data = df)),
+    model_wt_hp = map(data, \(df) lm(mpg ~ wt + hp, data = df)),
+    model_wt_hp_qsec = map(data, \(df) lm(mpg ~ wt + hp + qsec, data = df))
+  )
+mtcars_lm
+```
+
+## All Model Statistics {.smaller}
+
+- Use `pivot_longer()` to reshape the data for comparison.
+- Using `broom::glance()` to extract model statistics.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Extract model statistics
+mtcars_glance <- mtcars_lm %>%
+  pivot_longer(
+    cols = starts_with("model"),
+    names_to = "model",
+    values_to = "model_fit"
+  ) %>% 
+  mutate(
+    model_stats = map(model_fit, glance)
+  )
+mtcars_glance
+```
+
+## Unnest and Compare Models {.smaller}
+
+- Use `unnest()` to extract model statistics for comparison.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Pivot longer for comparison
+mtcars_lm_stats <- mtcars_glance %>%
+  unnest(model_stats)
+mtcars_lm_stats
+```
+
+## Model Selection  {.smaller}
+
+- Select the best model based on, for example, lowest BIC values.
+- Use `dplyr::slice_min()` to select the row with the minimum BIC value.
+
+```{r}
+#| echo: true
+#| eval: true
+
+# Select best model by BIC
+mtcars_lm_stats %>%
+  slice_min(BIC) %>% 
+  relocate(BIC, .after = model_fit)
+```
+
+## Summary and Best Practices
+
+- Use tidy evaluation for cleaner code
+- Leverage `nest`'ed data frames for grouped analyses
+- Apply `broom` for consistent model outputs
+- Consider computational efficiency and readability
+
+## Resources
+
+:::: {.columns}
+
+::: {.column width="50%"}
+**Documentation**
+
+- [tidyselect: Selection Helpers](https://tidyselect.r-lib.org/reference/language.html)
+- [Nested data](https://tidyr.tidyverse.org/articles/nest.html)
+- [dplyr programming](https://dplyr.tidyverse.org/articles/programming.html)
+- [broom documentation](https://broom.tidymodels.org)
+- [broom and dplyr](https://broom.tidymodels.org/articles/broom_and_dplyr.html)
+:::
+
+::: {.column width="50%"}
+**Further Reading**
+
+- R for Data Science
+- Advanced R by Hadley Wickham
+- tidyverse blog posts
+:::
+
+::::
