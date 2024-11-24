@@ -1,0 +1,86 @@
+---
+title: "Diamonds distribution dashboard"
+output: flexdashboard::flex_dashboard
+runtime: shiny
+---
+
+```{r setup, include = FALSE}
+library(flexdashboard) 
+library(tidyverse)
+knitr::opts_chunk$set(fig.width = 5)
+```
+
+# Statistics
+
+## Column 1 {.tabset}
+
+### Cut
+
+How many diamonds of each cut quality do we have in the data set?
+
+```{r}
+ggplot(diamonds, aes(cut)) + geom_bar()
+```
+
+### Color
+
+This graph is interactive!
+
+```{r}
+ggplot(diamonds, aes(color)) + geom_bar()
+plotly::ggplotly()
+```
+
+### Carat
+
+Here we can manually adjust plotting options using shiny:
+
+```{r}
+sliderInput("binwidth", label = "Width of bins:",
+            min = 0.05, max = 1, value = 0.2, step = 0.05)
+```
+
+```{r}
+renderPlot({
+    ggplot(diamonds, aes(carat)) + geom_histogram(binwidth = input$binwidth)
+})
+```
+
+## Column
+
+### 
+
+```{r}
+valueBox(max(diamonds$price), caption = "Highest price", icon = 'fa-pencil')
+```
+
+### 
+
+```{r}
+valueBox(diamonds$cut |> fct_infreq() |> levels() |> head(1), 
+         caption = "Most common cut")
+```
+
+### The largest diamonds
+
+```{r}
+diamonds %>%
+  arrange(desc(carat)) %>%
+  head(100) %>%
+  select(carat, cut, price) %>%
+  DT::datatable()
+```
+
+# A map
+
+This map has nothing to do with diamonds.
+
+```{r}
+library(leaflet)
+leaflet() |>
+  setView(6.6323, 46.5197, zoom = 13) |> 
+  addTiles() |>
+  addMarkers(6.58443210712653, 46.52254230211193, popup = "Internef") 
+```
+
+

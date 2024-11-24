@@ -1,0 +1,100 @@
+---
+title: "My presentation"
+author: "John Doe"
+execute:
+  echo: true
+format: revealjs
+date: "2023-11-20"
+# format: beamer
+# format: pptx
+---
+
+## Quarto
+
+Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+
+## Bullets
+
+When you click the **Render** button a document will be generated that includes:
+
+-   Content authored with markdown
+-   Output from executable code
+
+## Code
+
+When you click the **Render** button a presentation will be generated that includes both content and the output of embedded code. You can embed code like [this](https://quarto.org/docs/computations/r.html):
+
+```{r}
+1 + 1
+```
+
+
+This chunk will not show code, but only the results. See [this website](https://quarto.org/docs/computations/execution-options.html) for more options.
+```{r}
+#| echo: false
+#| layout-ncol: 2
+library(ggplot2)
+ggplot(mpg, aes(displ, hwy)) + geom_point()
+ggplot(mpg, aes(displ, hwy)) + geom_smooth()
+```
+
+## Columns
+
+You can create multiple columns like this:
+
+:::: {.columns}
+
+::: {.column width="35%"}
+Here I put a list with
+
+* First bullet
+* Second bullet
+:::
+
+::: {.column width="55%"}
+And here some code:
+```{r}
+my_function <- function(x) x + 1
+my_function(41)
+```
+:::
+
+::::
+
+## leaflet
+
+```{r}
+library(leaflet)
+leaflet() |>
+    setView(6.583581, 46.522155, zoom = 16) |>
+    addTiles() |>
+    addMarkers(6.583581, 46.522155, popup = "Room 237")
+```
+
+## dygraphs
+
+```{r}
+library(dygraphs)
+dygraph(nhtemp, main = "New Haven Temperatures") |>
+  dyRangeSelector(dateWindow = c("1920-01-01", "1960-01-01"))
+```
+
+## threejs
+
+```{r}
+library(threejs)
+data(ego)
+graphjs(ego, bg="black")
+```
+
+## rbokeh
+
+```{r}
+library(rbokeh)
+figure() |>
+  ly_points(Sepal.Length, Sepal.Width, data = iris,
+    color = Species, glyph = Species,
+    hover = list(Sepal.Length, Sepal.Width))
+```
+
+
