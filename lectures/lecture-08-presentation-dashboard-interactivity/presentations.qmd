@@ -1,0 +1,305 @@
+---
+title: "Creating Presentations with Quarto"
+subtitle: "Using Reveal.js for Data Science Communication"
+author: "Professor Alex"
+date: "2024-11-24"
+format:
+  revealjs:
+    monofont: DejaVu Sans Mono
+    theme: simple
+    transition: slide
+    slide-number: true
+    code-annotations: hover
+---
+
+## Overview
+
+- **Why use Quarto for presentations?**
+  - Seamless integration with R.
+  - Live coding and visualizations.
+  - Markdown simplicity combined with advanced features.
+- **Reveal.js advantages:**
+  - Interactive and web-ready.
+  - Supports themes, transitions, and multimedia.
+
+# Setting Up a Presentation
+
+## YAML Header Example {.scrollable}
+
+```yaml
+---
+title: "Creating Presentations with Quarto"
+subtitle: "Using Reveal.js for Data Science Communication"
+author: "Professor Alex"
+date: "2024-11-24"
+format:
+  revealjs:
+    monofont: DejaVu Sans Mono # <1>
+    theme: default
+    transition: slide
+    slide-number: true
+---
+```
+1. **Customize fonts:** Set `monofont` for code blocks.
+
+- **All features:** see [Reveal.js Overview](https://quarto.org/docs/presentations/revealjs/)
+- **Key options:**
+  - `format: revealjs` – sets the format to Reveal.js presentation.
+  - `theme` – choose from pre-built themes like `simple`, `night`, `beige`, see [Reveal.js themes](https://quarto.org/docs/presentations/revealjs/#themes).
+  - `transition` – slide transition effects (`fade`, `slide`, `zoom`).
+
+# Structuring Content
+
+## Slide Structure {.scrollable}
+
+- Use Markdown for headings:
+  - `#` creates a new slide.
+  - `##` creates a vertical sub-slide.
+
+```markdown
+# Slide Title
+
+## Sub-slide 1
+Content here.
+
+## Sub-slide 2
+More content here.
+```
+
+- See [Creating Slides](https://quarto.org/docs/presentations/revealjs/#creating-slides) for more details.
+
+# Embedding Code and Visualizations
+
+## Live R Code Example {.scrollable .nostretch}
+
+```{{r}}
+#| echo: true
+#| code-fold: hide
+
+library(ggplot2)
+ggplot(mtcars, aes(x = mpg, y = wt)) + 
+  geom_point()
+```
+
+**Result:**
+
+```{r}
+#| echo: true
+#| code-fold: hide
+
+library(ggplot2)
+ggplot(mtcars, aes(x = mpg, y = wt)) + 
+  geom_point()
+```
+
+- Outputs are rendered directly within the slide.
+- **Use cases:** Show plots, models, or dynamic data visualizations.
+
+# Adding Interactivity
+
+## Interactive Visuals with `plotly` {.scrollable}
+
+```{{r}}
+#| echo: false
+
+library(plotly)
+plot_ly(
+  data = mtcars,
+  x = ~mpg, y = ~wt,
+  type = 'scatter',
+  mode = 'markers'
+)
+```
+
+**Result:**
+
+```{r}
+#| echo: false
+
+library(plotly)
+plot_ly(data = mtcars, x = ~mpg, y = ~wt, type = 'scatter', mode = 'markers')
+```
+
+- Embed interactive plots directly into slides.
+- Allows users to explore the data during the presentation.
+- See [`plotly` documentation](https://plotly.com/r/) for more details.
+
+# Adding Media
+
+## Embedding images {.scrollable}
+
+- See [Quarto: Figures](https://quarto.org/docs/authoring/figures.html)
+
+```markdown
+![Quarto Logo](https://quarto.org/quarto.png)
+```
+
+![Quarto Logo](https://quarto.org/quarto.png)
+
+## Embedding videos {.scrollable}
+
+- See [Quarto: Videos](https://quarto.org/docs/authoring/videos.html)
+
+```markdown
+{{{< video https://www.youtube.com/embed/wo9vZccmqwc width="100%" height="100%" >}}}
+```
+
+{{< video https://www.youtube.com/embed/wo9vZccmqwc width="100%" height="100%" >}}
+
+# Advanced Features
+
+## Custom Transitions
+
+- Use `transition` in YAML for slide transitions:
+  - `fade`, `slide`, `zoom`, `convex`.
+- See [Slide Transitions](https://quarto.org/docs/presentations/revealjs/advanced.html#slide-transitions) for more details.
+
+## Slide Backgrounds
+
+```yaml
+format:
+  revealjs:
+    background-transition: slide
+```
+
+- Add background images or colors:
+  ```markdown
+  # Slide with Background
+  ---
+  background: bg-image.jpg
+  ---
+  ```
+
+## Code Annotations
+
+- Use `code-annotations` in YAML for code annotations:
+  - `below`, `hover`, `select`.
+
+1. Each annotated line should be terminated with a comment, followed by a `space` and the number of the annotation enclosed in angle brackets.
+    - For example: `# <1>`.
+2. The annotation text should be placed at the end of the code chunk without whitespace.
+
+## Code Annotations Syntax
+
+````{.markdown}
+```r
+library(tidyverse)
+library(palmerpenguins)
+penguins |>                                      # <1>
+  mutate(                                        # <2>
+    bill_ratio = bill_depth_mm / bill_length_mm, # <2>
+    bill_area  = bill_depth_mm * bill_length_mm  # <2>
+  )                                              # <2>
+```
+1. Take `penguins`, and then,
+2. add new columns for the bill ratio and bill area.
+````
+
+```r
+library(tidyverse)
+library(palmerpenguins)
+penguins |>                                      # <1>
+  mutate(                                        # <2>
+    bill_ratio = bill_depth_mm / bill_length_mm, # <2>
+    bill_area  = bill_depth_mm * bill_length_mm  # <2>
+  )                                              # <2>
+```
+1. Take `penguins`, and then,
+2. add new columns for the bill ratio and bill area.
+
+## Code Animations {auto-animate="true" .scrollable .nostretch}
+
+- Create two slides with `{auto-animate="true"}` option, see [Code Animations](https://quarto.org/docs/presentations/revealjs/advanced.html#code-animations)
+- Generally, not desirable but can be useful for code walkthroughs.
+
+```{r}
+#| echo: true
+
+mtcars %>%
+  ggplot(aes(x = mpg, y = wt)) +
+  geom_point()
+```
+
+## Code Animations {auto-animate="true" .scrollable .nostretch}
+
+- Create two slides with `{auto-animate="true"}` option, see [Code Animations](https://quarto.org/docs/presentations/revealjs/advanced.html#code-animations)
+- Generally, not desirable but can be useful for code walkthroughs.
+
+```{r}
+#| echo: true
+
+mtcars %>%
+  ggplot(aes(x = mpg, y = wt, color = cyl)) +
+  geom_point() +
+  scale_color_gradient(low = "blue", high = "red")
+```
+
+## Fragments {.scrollable}
+
+- Use `fragment` class to reveal content incrementally.
+- See [Fragments](https://quarto.org/docs/presentations/revealjs/advanced.html#fragments) for more details.
+
+```markdown
+::: {.fragment}
+Fade in
+:::
+
+::: {.fragment .fade-out}
+Fade out
+:::
+
+::: {.fragment .highlight-red}
+Highlight red
+:::
+
+::: {.fragment .fade-in-then-out}
+Fade in, then out
+:::
+
+::: {.fragment .fade-up}
+Slide up while fading in
+:::
+```
+
+## Fragments: Example
+
+::: {.fragment}
+Fade in
+:::
+
+::: {.fragment .fade-out}
+Fade out
+:::
+
+::: {.fragment .highlight-red}
+Highlight red
+:::
+
+::: {.fragment .fade-in-then-out}
+Fade in, then out
+:::
+
+::: {.fragment .fade-up}
+Slide up while fading in
+:::
+
+# Summary 
+
+## {.scrollable}
+
+- Quarto + Reveal.js = Interactive, data-driven presentations.
+- **Key features:**
+  - Live R code and visualizations.
+  - Full customization of appearance.
+  - Support for images, videos, and interactivity.
+
+**Resources:**
+
+- Quarto: [Reveal.js Overview](https://quarto.org/docs/presentations/revealjs/)
+- Quarto: [Presenting Slides](https://quarto.org/docs/presentations/revealjs/presenting.html)
+- Quarto: [Advanced Reveal Options](https://quarto.org/docs/presentations/revealjs/advanced.html)
+
+Next Steps:
+
+- Practice creating a simple Reveal.js presentation.
+- Explore themes and customization options.
