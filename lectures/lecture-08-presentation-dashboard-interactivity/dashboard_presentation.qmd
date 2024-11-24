@@ -1,0 +1,284 @@
+---
+title: "Introduction to Dashboards in Quarto"
+subtitle: "Interactive and Dynamic Data Exploration"
+author: "Professor Alex"
+date: "2024-11-24"
+format:
+  revealjs:
+    slide-number: true
+    monofont: DejaVu Sans Mono
+    scrollable: true
+    theme: default
+    transition: slide
+---
+
+## What Are Dashboards?
+
+- **Dashboards**:
+  - Dynamic, interactive visualizations for data exploration and communication.
+  - Combine multiple charts, tables, and text in a single view.
+- **Quarto Dashboards**:
+  - Use Markdown for layout and content.
+  - Built on HTML output for web-ready dashboards.
+  - Easily integrate with R and Python code for data analysis.
+
+---
+
+## Why Use Quarto for Dashboards?
+
+1. **Ease of Use**:
+   - Simple YAML-based configuration for layouts.
+   - Markdown + R or Python for content.
+
+2. **Interactivity**:
+   - Add plots, tables, and interactive widgets (e.g., `Shiny` or `plotly`).
+
+3. **Flexibility**:
+   - Responsive designs.
+   - Custom layouts (rows, columns, and heights).
+
+4. **Reproducibility**:
+   - Code, data, and visuals in one document.
+
+---
+
+## Setting Up a Dashboard
+
+### YAML Header Example
+
+```yaml
+---
+title: "My Dashboard"
+author: "Data Science Team"
+format: dashboard
+editor: visual
+---
+```
+
+- Key components:
+  - `format: dashboard` defines the document as a dashboard.
+  - `editor: visual` (Optional).
+
+---
+
+## Dashboard Layouts
+
+### Basic Structure
+
+- Quarto Dashboards use **rows** and **columns** for layout.
+- Each visualization or content block is defined within a row or column.
+
+### Example Layout
+
+```markdown
+## Row {height=50%}
+### Column 1
+- Text or content here.
+
+### Column 2
+- Visualizations or widgets.
+
+## Row {height=50%}
+- Additional content below.
+```
+
+---
+
+## Embedding R Visualizations
+
+- Easily integrate R code for dynamic visualizations.
+
+### Example
+
+```{{r}}
+library(ggplot2)
+ggplot(mtcars, aes(x = mpg, y = wt)) +
+  geom_point()
+```
+
+- Outputs automatically rendered within the dashboard.
+
+---
+
+## Interactivity in Dashboards
+
+### Interactive Plots
+
+- Use libraries like `plotly` or `leaflet` for dynamic visuals.
+
+```{{r}}
+library(plotly)
+plot_ly(data = mtcars, x = ~mpg, y = ~wt, type = 'scatter', mode = 'markers')
+```
+
+### Shiny Integration
+
+- Add widgets like sliders and dropdowns for user interaction.
+- Shiny-based interactivity works seamlessly in dashboards.
+
+## Summary
+
+- Quarto Dashboards:
+  - Combine multiple plots, tables, and content into one document.
+  - Support interactive visualizations and responsive layouts.
+- **Next Steps**:
+  - Explore Quarto’s [Dashboard Documentation](https://quarto.org/docs/dashboards/).
+  - Build a simple dashboard with R.
+
+# Layout Basics
+
+## Dashboard Layout Basics
+
+- **Key Concept**: Quarto dashboards use **rows** and **columns** to organize content.
+- Layout is specified directly in Markdown with flexible configuration options.
+
+### Components:
+1. **Rows**:
+   - Define horizontal sections.
+   - Control height with `{height=X%}`.
+2. **Columns**:
+   - Divide rows into vertical sections.
+   - Control width with `{width=X%}`.
+
+## Creating Rows
+
+### Basic Syntax
+
+```markdown
+## Row {height=50%}
+Content here.
+```
+
+- Define the height of a row as a percentage of the total dashboard height.
+
+### Example
+
+```markdown
+## Row {height=60%}
+- A visualization or table here.
+
+## Row {height=40%}
+- Additional content below.
+```
+
+## Adding Columns
+
+### Basic Syntax
+
+```markdown
+### Column {width=50%}
+Content here.
+```
+
+- Divide rows into multiple columns, each with its own width.
+
+### Example
+
+```markdown
+## Row {height=50%}
+### Column {width=50%}
+- Chart 1
+
+### Column {width=50%}
+- Chart 2
+```
+
+## Full Example Layout
+
+```markdown
+---
+title: "Sales Dashboard"
+format: dashboard
+---
+
+## Row {height=50%}
+### Column {width=70%}
+- Main visualization.
+
+### Column {width=30%}
+- Key summary metrics.
+
+## Row {height=50%}
+### Column {width=50%}
+- Additional chart.
+
+### Column {width=50%}
+- Table or other visualization.
+```
+
+## Nesting Rows and Columns
+
+- **Advanced Layouts**: Combine rows and columns for nested layouts.
+
+### Example
+
+```markdown
+## Row {height=60%}
+### Column {width=50%}
+#### Row {height=50%}
+- Chart 1
+
+#### Row {height=50%}
+- Chart 2
+
+### Column {width=50%}
+- Detailed summary.
+
+## Row {height=40%}
+- Overall analysis.
+```
+
+## Adding Titles to Rows and Columns
+
+- Use `#| title:` to add titles to rows or columns.
+
+### Example
+
+```markdown
+## Row {height=60%}
+#| title: Sales Analysis
+
+### Column {width=50%}
+#| title: Regional Sales
+- Chart here.
+
+### Column {width=50%}
+#| title: Revenue Growth
+- Chart here.
+```
+
+## Using Fixed and Flexible Layouts
+
+- **Fixed Layouts**: Use percentage-based heights and widths.
+  - Example: `{height=50%}`, `{width=30%}`.
+- **Flexible Layouts**: Omit sizes for Quarto to automatically adjust.
+
+### Example
+
+```markdown
+## Row
+### Column
+- Flexible layout.
+
+### Column {width=50%}
+- Fixed width layout.
+```
+
+## Summary of Layout Options
+
+- **Rows**: Control vertical spacing using `{height=X%}`.
+- **Columns**: Divide rows into sections with `{width=X%}`.
+- **Titles**: Add clarity to sections using `#| title:`.
+- **Nesting**: Combine rows and columns for complex layouts.
+- **Flexible Design**: Mix fixed and flexible elements for responsive designs.
+
+**Next Steps**:
+- Experiment with layouts in your own dashboards.
+- Explore the full [Dashboard Layout Documentation](https://quarto.org/docs/dashboards/layout.html).
+
+## Dashboard Examples
+
+- Basics and walkthroughs are presented in the [Quarto Dashboards](https://quarto.org/docs/dashboards/).
+- The full list of dashboard examples is available at [Quarto Gallery: Dashboards](https://quarto.org/docs/gallery/#dashboards)
+    - Dashboards for Python, R, and Shiny.
+    - Good example for R is [Labor and Delivery Dashboard](https://mine-cetinkaya-rundel.github.io/ld-dashboard/) by *Barkamian Analytics*. The full code is available at [GitHub](https://github.com/jjallaire/diamonds-dashboard/blob/main/diamonds.qmd).
