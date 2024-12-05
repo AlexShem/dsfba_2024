@@ -1,0 +1,369 @@
+---
+title: "Nursing home analysis (DEMO)"
+author: "Professor Alex"
+format:
+  html:
+    theme:
+      light: default
+      dark: darkly
+    monofont: DejaVu Sans Mono
+    self-contained: true
+    toc: true
+    toc-depth: 4
+    df-print: paged
+    code-link: true
+---
+
+```{r}
+#| echo: true
+#| warning: false
+
+library(tidyverse)
+library(here)
+library(kableExtra) # for table formatting only (not required for the exam)
+```
+
+# Data Description
+
+In this mock exam, we will go through analysing a synthetic dataset of nursing home residents.
+
+## Data Description
+
+The dataset contains the following columns:
+
+- `id`: The unique identifier of the resident.
+- `age`: The age of the resident.
+- `gender`
+
+::: {.callout-warning}
+Finish describing the dataset.
+:::
+
+# Mock Exam
+
+## 1. Loading the dataset
+
+### Load Demographics Data
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_demographic <- read_csv(
+  here("exam/nursing_home_data_exam/demographics.csv"),
+  col_types = cols(
+    PatientID = col_factor(),
+    DateOfBirth = col_date(),
+    Gender = col_factor(),
+    DateOfAdmission = col_date(),
+    DateOfDeath = col_datetime()
+  )
+)
+```
+
+```{r}
+#| echo: false
+
+data_demographic
+```
+
+### Load Screening data
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_screenings <- read_csv(
+  here("exam/nursing_home_data_exam/health_screenings.csv"),
+  col_types = "fTiiffd"
+)
+```
+
+```{r}
+#| echo: false
+
+data_screenings
+```
+
+## 2. Data Cleaning and Wrangling
+
+### Missing Values
+
+**Demographic Data**
+
+Check if demographic data has missing values.
+
+```{r}
+#| echo: true
+#| eval: true
+
+demographic_missing <- data_demographic %>%
+  summarise(across(everything(), ~ sum(is.na(.))))
+
+demographic_missing %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "responsive")
+```
+
+We see that there are `r demographic_missing %>% pull(DateOfDeath)` missing values in the `DateOfDeath` column. These are residents who are **still alive** by the time of data collection. This corresponds to `r round(demographic_missing %>% pull(DateOfDeath) / nrow(data_demographic) * 100, 2)`% of the data.
+
+**Screening Data**
+
+Check if screening data has missing values.
+
+```{r}
+#| echo: true
+#| eval: true
+
+screening_missing <- data_screenings %>%
+  summarise(across(everything(), ~ sum(is.na(.))))
+
+screening_missing %>%
+  kbl() %>%
+  kable_styling(bootstrap_options = "responsive")
+```
+
+In the **screening data**, we have `r screening_missing %>% pull(SecondaryDiagnosis)` missing data in the `SecondaryDiagnosis` column. This means that out of `r nrow(data_screenings)` health evaluations observed in the data, `r screening_missing %>% pull(SecondaryDiagnosis)` were missing secondary diagnosis information, i.e. do not have a secondary diagnosis. This corresponds to `r round(screening_missing %>% pull(SecondaryDiagnosis) / nrow(data_screenings) * 100, 2)`% of the screening data.
+
+### Variable Transformation
+
+Here, we will transform some variables for better analysis.
+
+**Demographic Data**
+
+1. **Rename columns:**
+  - `PatientID` to `id`
+  - `DateOfBirth` to `date_of_birth`
+  - `Gender` to `gender`
+  - `DateOfAdmission` to `date_of_admission`
+  - `DateOfDeath` to `date_of_death`
+2. **Modify** the `date_of_death` column to indicate only the date of death, omitting the time.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_demographic_cleaned <- data_demographic %>%
+  rename(
+    id = PatientID,
+    date_of_birth = DateOfBirth,
+    gender = Gender,
+    date_of_admission = DateOfAdmission,
+    date_of_death = DateOfDeath
+  ) %>% 
+  mutate(
+    date_of_death = lubridate::as_date(date_of_death)
+  )
+```
+
+The first 10 rows of the cleaned demographic data are as follows:
+
+```{r}
+#| echo: false
+
+data_demographic_cleaned %>% 
+  head(10)
+```
+
+**Screening Data**
+
+1. **Rename columns:**
+  - `PatientID` to `id`
+  - `ScreeningDate` to `screening_date`
+  - `DependenceLevel` to `dependence`
+  - `PhysicalMobility` to `mobility`
+  - `PrimaryDiagnosis` to `D1`
+  - `SecondaryDiagnosis` to `D2`
+  - `CareMinutesPerWeek` to `care_minutes`
+2. **Modify columns:**
+  - `screening_date` to date (omitting time)
+  - `dependence` and `mobility` to factor with levels "Low", "Medium", and "High", where
+    - `"Low"` corresponds to levels 1 -- 5
+    - `"Medium"` corresponds to levels 6 -- 7
+    - `"High"` corresponds to levels 8 -- 9
+  - In `D1` and `D2`, keep only the following pathology groups, combining the rest into the `"Other"` group:
+    - `"Mental"`
+    - `"Nervous"`
+    - `"Osteoarticular"`
+    - `"Tumour"`
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_screenings_cleaned <- data_screenings %>%
+  rename(
+    id = PatientID,
+    screening_date = ScreeningDate,
+    dependence = DependenceLevel,
+    mobility = PhysicalMobility,
+    D1 = PrimaryDiagnosis,
+    D2 = SecondaryDiagnosis,
+    care_minutes = CareMinutesPerWeek
+  ) %>%
+  mutate(
+    screening_date = lubridate::as_date(screening_date),
+    across(
+      .cols = c(dependence, mobility),
+      .fns = \(level) case_when(
+        level <= 5 ~ "Low",
+        level <= 7 ~ "Medium",
+        .default = "High"
+      ) %>% 
+        factor(levels = c("Low", "Medium", "High"))
+    ),
+    across(
+      .cols = c(D1, D2),
+      .fns = \(diagnosis) fct_other(
+        diagnosis,
+        keep = c("Mental", "Nervous", "Osteoarticular", "Tumour"),
+        other_level = "Other"
+      )
+    )
+  )
+```
+
+The first 10 rows of the cleaned screening data are as follows:
+
+```{r}
+#| echo: false
+#| eval: true
+
+data_screenings_cleaned %>% 
+  head(10)
+```
+
+### Merging Data
+
+We will merge the demographic and screening data based on the `id` column.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_merged <- data_demographic_cleaned %>%
+  left_join(data_screenings_cleaned, by = join_by("id"))
+
+data_merged
+```
+
+### Consistent Values
+
+In this section, we will check that the **dates** in the merged data `data_merged` are consistent:
+
+- The `date_of_admission` should be before the `date_of_death`.
+- The `screening_date` should be after the `date_of_admission` and before the `date_of_death`.
+
+**Date of Admission vs. Date of Death**
+
+```{r}
+#| echo: true
+#| eval: true
+
+death_before_admission <- data_merged %>%
+  filter(date_of_death < date_of_admission)
+
+nrow(death_before_admission)
+```
+
+As we see, there are `r nrow(death_before_admission)` rows where the date of death is before the date of admission. So, the data is consistent in this regard.
+
+**Screening Date vs. Admission and Death Dates**
+
+```{r}
+#| echo: true
+#| eval: true
+
+screening_date_inconsistent <- data_merged %>%
+  filter(screening_date < date_of_admission | screening_date > date_of_death)
+
+nrow(screening_date_inconsistent)
+```
+
+Again, we find `r nrow(screening_date_inconsistent)` rows where the screening date is inconsistent with the admission and death dates. So, all health screenings are within the admission and death dates.
+
+### Data preparation
+
+In this section, we will prepare the data for analysis. Our focus will lie on the following:
+
+- **Age at Admission**: Calculate the age of the residents at the time of admission. We will keep only the individuals who are at least 65 years old when they enter the nursing home.
+- **Information at Entry**: We will keep only the information available at the time of admission, removing the consecutive health screenings.
+- **Complete Observations**: We will remove individuals who are still alive at the time of data extraction.
+- **Medical Diagnosis**: We will disregard the secondary diagnosis `D2` and focus on the primary diagnosis `D1`.
+
+At the end, we will calculate the number of observations removed from the dataset and the number of remaining observations for the remaining analysis.
+
+#### Age at Admission
+
+To calculate the `age_at_admission`, will will subtract the `date_of_birth` from the `date_of_admission`. We will keep this number as `double` type for further analysis.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_prepared <- data_merged %>%
+  mutate(
+    age_at_admission = (date_of_birth %--% date_of_admission) / years(1),
+    .after = date_of_birth
+  )
+```
+
+::: {.callout-important}
+Here, we used the `%--%` operator to calculate the difference between two dates using `lubridate` package to get the **time interval**. Then, we divided this by the number of years to get the age at admission.
+
+See more about the time intervals at [R4DS, Dates and times](https://r4ds.hadley.nz/datetimes#sec-intervals).
+:::
+
+The first 10 rows of the prepared data are as follows:
+
+```{r}
+#| echo: false
+#| eval: true
+
+data_prepared %>% 
+  head(10)
+```
+
+#### Information at Entry
+
+We will keep only the information available at the time of admission, removing the consecutive health screenings. To do this, we need to `slice()` the first row for each resident.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_prepared <- data_prepared %>%
+  arrange(id, screening_date) %>%
+  slice(1, .by = "id")
+```
+
+::: {.callout-important}
+Here, we used the `arrange()` function to sort the data by `id` and `screening_date`. It is important to sort the data before using `slice()` to ensure that the first row for each resident is the earliest health screening.
+:::
+
+The first 10 rows of the prepared data are as follows:
+
+```{r}
+#| echo: false
+#| eval: true
+
+data_prepared %>% 
+  head(10)
+```
+
+#### Complete Observations
+
+We will remove the individuals who are still alive at the time of data extraction later. Here, we will count the number of such individuals.
+
+```{r}
+#| echo: true
+#| eval: true
+
+alive_at_extraction <- data_prepared %>%
+  summarise(n_alive = sum(is.na(date_of_death)))
+alive_at_extraction
+```
+
+## 3. Exploratory Data Analysis
+
+###
