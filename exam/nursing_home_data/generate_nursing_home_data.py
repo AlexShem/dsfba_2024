@@ -11,7 +11,7 @@ from health_profiles import HealthProfileType, HealthProfile, rng
 # ---------------------------
 
 # Number of unique patients
-NUM_PATIENTS = 100
+NUM_PATIENTS = 5000
 
 # Number of health observations distribution parameters
 MIN_SCREENINGS_PER_PATIENT = 1
@@ -70,12 +70,9 @@ def random_date(start, end):
     return start + timedelta(days=int(random_day))
 
 def generate_demographics(num_patients, start_dob, end_dob, start_admission, end_admission, gender_probs, health_profile_probs):
-    """
-    Generate demographic data for patients.
-    """
+    """Generate demographic data for patients."""
     ids = ['P{:05d}'.format(i) for i in range(1, num_patients + 1)]
     dates_of_birth = [random_date(start_dob, end_dob) for _ in range(num_patients)]
-    genders = rng.choice(list(gender_probs.keys()), size=num_patients, p=list(gender_probs.values()))
     
     health_profiles = rng.choice(
         list(health_profile_probs.keys()),
@@ -85,19 +82,24 @@ def generate_demographics(num_patients, start_dob, end_dob, start_admission, end
 
     dates_of_admission = []
     dates_of_death = []
-    survival_times = []
-
+    genders = []
+    
+    profiles = []
     for i in range(num_patients):
+        # Create profile and generate parameters
+        profile = HealthProfile(health_profiles[i])
+        profiles.append(profile)
+        
+        # Store gender
+        genders.append(profile.gender)
+        
+        # Generate admission and death dates
         dob = dates_of_birth[i]
         min_admission_date = max(dob + timedelta(days=18*365), start_admission)
         admission_date = random_date(min_admission_date, end_admission)
         dates_of_admission.append(admission_date)
 
-        # Generate survival time based on health profile
-        profile = HealthProfile(health_profiles[i])
         survival_days = profile.get_survival_time()
-        survival_times.append(survival_days)
-
         death_date = admission_date + timedelta(days=survival_days)
         if death_date > STUDY_END_DATE:
             death_date = pd.NaT
@@ -109,13 +111,14 @@ def generate_demographics(num_patients, start_dob, end_dob, start_admission, end
         'Gender': genders,
         'DateOfAdmission': dates_of_admission,
         'DateOfDeath': dates_of_death,
-        'HealthProfile': [profile.name for profile in health_profiles]
+        'HealthProfile': [profile.profile_type.name for profile in profiles]
     }
+    
     df = pd.DataFrame(data)
     df['DateOfBirth'] = pd.to_datetime(df['DateOfBirth'])
     df['DateOfAdmission'] = pd.to_datetime(df['DateOfAdmission'])
     df['DateOfDeath'] = pd.to_datetime(df['DateOfDeath'])
-    return df
+    return df, profiles
 
 def generate_health_screenings(demographics_df, diagnoses, secondary_diag_prob):
     """
@@ -172,7 +175,7 @@ def generate_health_screenings(demographics_df, diagnoses, secondary_diag_prob):
 
 def main():
     # Generate demographics data
-    demographics_df = generate_demographics(
+    demographics_df, profiles = generate_demographics(
         NUM_PATIENTS,
         START_DATE_OF_BIRTH,
         END_DATE_OF_BIRTH,
