@@ -364,6 +364,48 @@ alive_at_extraction <- data_prepared %>%
 alive_at_extraction
 ```
 
+There are `r alive_at_extraction %>% pull(n_alive)` individuals who are still alive at the time of data extraction.
+
+#### Medical Diagnosis
+
+We will disregard the secondary diagnosis `D2` and focus on the primary diagnosis `D1`.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_prepared <- data_prepared %>%
+  select(-D2)
+```
+
+#### Filter Data
+
+We will filter the data to keep only individuals who are
+
+- at least 65 years old when they enter the nursing home,
+- not alive at the time of data extraction.
+
+Since the two conditions are not mutually exclusive, we will calculate the number of observations removed and the number of remaining observations.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_nursing <- data_prepared %>%
+  filter(age_at_admission >= 65, !is.na(date_of_death))
+
+# Number of removed individuals
+nrow(data_prepared) - nrow(data_nursing)
+```
+So, the final dataset contains `r nrow(data_nursing)` observations after filtering and is as follows:
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_nursing
+```
+
 ## 3. Exploratory Data Analysis
 
 ###
