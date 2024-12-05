@@ -5,6 +5,115 @@ from enum import Enum, auto
 seed = 423183873923
 rng = np.random.default_rng(seed)
 
+# care_minutes_dist parameters
+care_minutes_coefficients = {
+    "intercept": {
+        "beta": -3.4955,
+        "theta": 5.6313
+    },
+    "gender": {
+        "Female": {
+            "beta": 0,
+            "theta": 0
+        },
+        "Male": {
+            "beta": 0.0684,
+            "theta": -0.0793
+        }
+    },
+    "dependence_level": {
+        "1-6": {
+            "beta": 0,
+            "theta": 0
+        },
+        "7": {
+            "beta": 0.4308,
+            "theta": -1.0442
+        },
+        "8": {
+            "beta": 0.6946,
+            "theta": -0.7241
+        },
+        "9": {
+            "beta": 0.9084,
+            "theta": -0.7383
+        }
+    },
+    "mobility_level": {
+        "1-5": {
+            "beta": 0,
+            "theta": 0
+        },
+        "6": {
+            "beta": 0.1756,
+            "theta": -0.1266
+        },
+        "7": {
+            "beta": 0.3212,
+            "theta": -0.0973
+        },
+        "8": {
+            "beta": 0.3838,
+            "theta": -0.0077
+        },
+        "9": {
+            "beta": 0.5207,
+            "theta": 0.4890
+        }
+    },
+    "primary_diagnosis": {
+        "Mental": {
+            "beta": 0,
+            "theta": 0
+        },
+        "Nervous": {
+            "beta": 0.0332,
+            "theta": -0.0244
+        },
+        "Osteoarticular": {
+            "beta": 0.0229,
+            "theta": -0.1177
+        },
+        "Tumour": {
+            "beta": 0.0328,
+            "theta": -0.0171
+        },
+        "Other": {
+            "beta": 0.0358,
+            "theta": -0.0864
+        }
+    }
+}
+
+suvival_time_coefficients = {
+    "intercept": 4.9862,
+    "ln_sigma": -0.2702,
+    "gender": {
+        "Female": 0,
+        "Male": -0.3884
+    },
+    "dependence_level": {
+        "1-6": 0,
+        "7": -0.0750,
+        "8": -0.2532,
+        "9": -0.5687
+    },
+    "mobility_level": {
+        "1-5": 0,
+        "6": -0.1407,
+        "7": -0.2299,
+        "8": -0.2930,
+        "9": -0.2842
+    },
+    "primary_diagnosis": {
+        "Mental": 0,
+        "Nervous": -0.0821,
+        "Osteoarticular": 0.0276,
+        "Tumour": -0.8512,
+        "Other": -0.1266
+    }
+}
+
 class HealthProfileType(Enum):
     RELATIVELY_INDEPENDENT = auto()
     VERY_DEPENDENT = auto()
@@ -17,6 +126,7 @@ class HealthProfile:
         self.set_parameters()
 
     def set_parameters(self):
+        # TODO: Improve the `care_minutes_dist` and `survival_time_dist` distributions
         dependence_levels = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         
         if self.profile_type == HealthProfileType.RELATIVELY_INDEPENDENT:
