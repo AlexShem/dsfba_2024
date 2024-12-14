@@ -408,4 +408,12 @@ data_nursing
 
 ## 3. Exploratory Data Analysis
 
-###
+In this section, we will perform exploratory data analysis on the nursing home dataset. We will focus on the following aspects:
+
+- Age at admission and gender distribution.
+- Prevalence of dependence and mobility levels.
+- Most common primary diagnosis.
+- Distribution of care minutes per week across other covariates.
+
+### Age at Admission and Gender Distribution
+
