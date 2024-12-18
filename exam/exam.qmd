@@ -1,0 +1,748 @@
+---
+title: "Data Science in Business Analytics 2024"
+subtitle: "Nursing home analysis (Demo Mock Exam)"
+author: "Professor Alex"
+bibliography: references.bib
+format:
+  html:
+    theme:
+      light: default
+      dark: darkly
+    monofont: DejaVu Sans Mono
+    self-contained: true
+    toc: true
+    toc-depth: 4
+    df-print: paged
+    code-link: true
+---
+
+```{r}
+#| echo: true
+#| warning: false
+
+library(tidyverse)
+library(here)
+library(broom) # for tidying model outputs
+library(patchwork) # for arranging plots
+library(kableExtra) # for table formatting only (not required for the exam)
+```
+
+# Data Description
+
+In this mock exam, we will go through analysing a synthetic dataset of nursing home residents.
+
+::: {.callout-note}
+
+The data is generated synthetically and does not represent any real-world nursing home residents. The algorithm used to generate the data is based on the following literature:
+
+1. @Bladt_Fuino_Shemendyuk_Wagner_2023
+2. @SHEMENDYUK2024223
+3. @SHEMENDYUK2025107
+
+:::
+
+## Data Description
+
+The dataset consists of two data files:
+
+1. **Demographics Data** available from the file `demographics.csv`.
+2. **Health Screenings Data** available from the file `health_screenings.csv`.
+
+### Demographics Data
+
+- `PatientID`: The unique identifier of the resident.
+- `DateOfBirth`: The date of birth of the resident.
+  - Format: "YYYY-MM-DD".
+- `Gender`: The gender of the resident.
+  - Possible values: "Female", "Male".
+- `DateOfAdmission`: The date of admission to the nursing home.
+  - Format: "YYYY-MM-DD".
+- `DateOfDeath`: The date of death of the resident.
+  - Format: "YYYY-MM-DD HH:MM:SS".
+  - If the resident is still alive by the date of the data extraction, this field will be missing.
+
+### Health Screenings Data
+
+- `PatientID`: The unique identifier of the resident.
+- `ScreeningDate`: The date of the health screening.
+  - Format: "YYYY-MM-DD HH:MM:SS".
+- `DependenceLevel`: The level of dependence of the resident.
+  - Values: integers from 1 to 9.
+- `PhysicalMobility`: The physical mobility level of the resident.
+  - Values: integers from 1 to 9.
+- `PrimaryDiagnosis`: The primary diagnosis of the resident.
+  - Possible values: "Respiratory", "Nervous", "Osteoarticular", "Heart", "Tumour", "Mental".
+- `SecondaryDiagnosis`: The secondary diagnosis of the resident, can be missing.
+  - Possible values: Same as `PrimaryDiagnosis` plus "NA".
+- `CareMinutesPerWeek`: The number of care minutes per week for the resident.
+  - Values: positive floating-point numbers from 0 to 10'080.
+
+# Mock Exam
+
+## 1. Loading the dataset
+
+### Load Demographics Data
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_demographic <- read_csv(
+  here("exam/nursing_home_data_exam/demographics.csv"),
+  col_types = cols(
+    PatientID = col_factor(),
+    DateOfBirth = col_date(),
+    Gender = col_factor(),
+    DateOfAdmission = col_date(),
+    DateOfDeath = col_datetime()
+  )
+)
+```
+
+```{r}
+#| echo: false
+
+data_demographic
+```
+
+### Load Screening data
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_screenings <- read_csv(
+  here("exam/nursing_home_data_exam/health_screenings.csv"),
+  col_types = "fTiiffd"
+)
+```
+
+```{r}
+#| echo: false
+
+data_screenings
+```
+
+## 2. Data Cleaning and Wrangling
+
+### Missing Values
+
+**Demographic Data**
+
+Check if demographic data has missing values.
+
+```{r}
+#| echo: true
+#| eval: true
+
+demographic_missing <- data_demographic %>%
+  summarise(across(everything(), ~ sum(is.na(.))))
+
+demographic_missing %>% 
+  kbl() %>% 
+  kable_styling(bootstrap_options = "responsive")
+```
+
+We see that there are `r demographic_missing %>% pull(DateOfDeath)` missing values in the `DateOfDeath` column. These are residents who are **still alive** by the time of data collection. This corresponds to `r round(demographic_missing %>% pull(DateOfDeath) / nrow(data_demographic) * 100, 2)`% of the data.
+
+**Screening Data**
+
+Check if screening data has missing values.
+
+```{r}
+#| echo: true
+#| eval: true
+
+screening_missing <- data_screenings %>%
+  summarise(across(everything(), ~ sum(is.na(.))))
+
+screening_missing %>%
+  kbl() %>%
+  kable_styling(bootstrap_options = "responsive")
+```
+
+In the **screening data**, we have `r screening_missing %>% pull(SecondaryDiagnosis)` missing data in the `SecondaryDiagnosis` column. This means that out of `r nrow(data_screenings)` health evaluations observed in the data, `r screening_missing %>% pull(SecondaryDiagnosis)` were missing secondary diagnosis information, i.e. do not have a secondary diagnosis. This corresponds to `r round(screening_missing %>% pull(SecondaryDiagnosis) / nrow(data_screenings) * 100, 2)`% of the screening data.
+
+### Variable Transformation
+
+Here, we will transform some variables for better analysis.
+
+**Demographic Data**
+
+1. **Rename columns:**
+  - `PatientID` to `id`
+  - `DateOfBirth` to `date_of_birth`
+  - `Gender` to `gender`
+  - `DateOfAdmission` to `date_of_admission`
+  - `DateOfDeath` to `date_of_death`
+2. **Modify** the `date_of_death` column to indicate only the date of death, omitting the time.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_demographic_cleaned <- data_demographic %>%
+  rename(
+    id = PatientID,
+    date_of_birth = DateOfBirth,
+    gender = Gender,
+    date_of_admission = DateOfAdmission,
+    date_of_death = DateOfDeath
+  ) %>% 
+  mutate(
+    date_of_death = lubridate::as_date(date_of_death)
+  )
+```
+
+The first 10 rows of the cleaned demographic data are as follows:
+
+```{r}
+#| echo: false
+
+data_demographic_cleaned %>% 
+  head(10)
+```
+
+**Screening Data**
+
+1. **Rename columns:**
+  - `PatientID` to `id`
+  - `ScreeningDate` to `screening_date`
+  - `DependenceLevel` to `dependence`
+  - `PhysicalMobility` to `mobility`
+  - `PrimaryDiagnosis` to `D1`
+  - `SecondaryDiagnosis` to `D2`
+  - `CareMinutesPerWeek` to `care_minutes`
+2. **Modify columns:**
+  - `screening_date` to date (omitting time)
+  - `dependence` and `mobility` to factor with levels "Low", "Medium", and "High", where
+    - `"Low"` corresponds to levels 1 -- 5
+    - `"Medium"` corresponds to levels 6 -- 7
+    - `"High"` corresponds to levels 8 -- 9
+  - In `D1` and `D2`, keep only the following pathology groups, combining the rest into the `"Other"` group:
+    - `"Mental"`
+    - `"Nervous"`
+    - `"Osteoarticular"`
+    - `"Tumour"`
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_screenings_cleaned <- data_screenings %>%
+  rename(
+    id = PatientID,
+    screening_date = ScreeningDate,
+    dependence = DependenceLevel,
+    mobility = PhysicalMobility,
+    D1 = PrimaryDiagnosis,
+    D2 = SecondaryDiagnosis,
+    care_minutes = CareMinutesPerWeek
+  ) %>%
+  mutate(
+    screening_date = lubridate::as_date(screening_date),
+    across(
+      .cols = c(dependence, mobility),
+      .fns = \(level) case_when(
+        level <= 5 ~ "Low",
+        level <= 7 ~ "Medium",
+        .default = "High"
+      ) %>% 
+        factor(levels = c("Low", "Medium", "High"))
+    ),
+    across(
+      .cols = c(D1, D2),
+      .fns = \(diagnosis) fct_other(
+        diagnosis,
+        keep = c("Mental", "Nervous", "Osteoarticular", "Tumour"),
+        other_level = "Other"
+      )
+    )
+  )
+```
+
+The first 10 rows of the cleaned screening data are as follows:
+
+```{r}
+#| echo: false
+#| eval: true
+
+data_screenings_cleaned %>% 
+  head(10)
+```
+
+### Merging Data
+
+We will merge the demographic and screening data based on the `id` column.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_merged <- data_demographic_cleaned %>%
+  left_join(data_screenings_cleaned, by = join_by("id"))
+
+data_merged
+```
+
+### Consistent Values
+
+In this section, we will check that the **dates** in the merged data `data_merged` are consistent:
+
+- The `date_of_admission` should be before the `date_of_death`.
+- The `screening_date` should be after the `date_of_admission` and before the `date_of_death`.
+
+**Date of Admission vs. Date of Death**
+
+```{r}
+#| echo: true
+#| eval: true
+
+death_before_admission <- data_merged %>%
+  filter(date_of_death < date_of_admission)
+
+nrow(death_before_admission)
+```
+
+As we see, there are `r nrow(death_before_admission)` rows where the date of death is before the date of admission. So, the data is consistent in this regard.
+
+**Screening Date vs. Admission and Death Dates**
+
+```{r}
+#| echo: true
+#| eval: true
+
+screening_date_inconsistent <- data_merged %>%
+  filter(screening_date < date_of_admission | screening_date > date_of_death)
+
+nrow(screening_date_inconsistent)
+```
+
+Again, we find `r nrow(screening_date_inconsistent)` rows where the screening date is inconsistent with the admission and death dates. So, all health screenings are within the admission and death dates.
+
+### Data preparation
+
+In this section, we will prepare the data for analysis. Our focus will lie on the following:
+
+- **Age at Admission**: Calculate the age of the residents at the time of admission. We will keep only the individuals who are at least 65 years old when they enter the nursing home.
+- **Information at Entry**: We will keep only the information available at the time of admission, removing the consecutive health screenings.
+- **Complete Observations**: We will remove individuals who are still alive at the time of data extraction.
+- **Medical Diagnosis**: We will disregard the secondary diagnosis `D2` and focus on the primary diagnosis `D1`.
+
+At the end, we will calculate the number of observations removed from the dataset and the number of remaining observations for the remaining analysis.
+
+#### Age at Admission
+
+To calculate the `age_at_admission`, will will subtract the `date_of_birth` from the `date_of_admission`. We will keep this number as `double` type for further analysis.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_prepared <- data_merged %>%
+  mutate(
+    age_at_admission = (date_of_birth %--% date_of_admission) / years(1),
+    .after = date_of_birth
+  )
+```
+
+::: {.callout-important}
+Here, we used the `%--%` operator to calculate the difference between two dates using `lubridate` package to get the **time interval**. Then, we divided this by the number of years to get the age at admission.
+
+See more about the time intervals at [R4DS, Dates and times](https://r4ds.hadley.nz/datetimes#sec-intervals).
+:::
+
+The first 10 rows of the prepared data are as follows:
+
+```{r}
+#| echo: false
+#| eval: true
+
+data_prepared %>% 
+  head(10)
+```
+
+#### Information at Entry
+
+We will keep only the information available at the time of admission, removing the consecutive health screenings. To do this, we need to `slice()` the first row for each resident.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_prepared <- data_prepared %>%
+  arrange(id, screening_date) %>%
+  slice(1, .by = "id")
+```
+
+::: {.callout-important}
+Here, we used the `arrange()` function to sort the data by `id` and `screening_date`. It is important to sort the data before using `slice()` to ensure that the first row for each resident is the earliest health screening.
+:::
+
+The first 10 rows of the prepared data are as follows:
+
+```{r}
+#| echo: false
+#| eval: true
+
+data_prepared %>% 
+  head(10)
+```
+
+#### Complete Observations
+
+We will remove the individuals who are still alive at the time of data extraction later. Here, we will count the number of such individuals.
+
+```{r}
+#| echo: true
+#| eval: true
+
+alive_at_extraction <- data_prepared %>%
+  summarise(n_alive = sum(is.na(date_of_death)))
+alive_at_extraction
+```
+
+There are `r alive_at_extraction %>% pull(n_alive)` individuals who are still alive at the time of data extraction.
+
+#### Medical Diagnosis
+
+We will disregard the secondary diagnosis `D2` and focus on the primary diagnosis `D1`.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_prepared <- data_prepared %>%
+  select(-D2)
+```
+
+#### Filter Data
+
+We will filter the data to keep only individuals who are
+
+- at least 65 years old when they enter the nursing home,
+- not alive at the time of data extraction.
+
+Since the two conditions are not mutually exclusive, we will calculate the number of observations removed and the number of remaining observations.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_nursing <- data_prepared %>%
+  filter(age_at_admission >= 65, !is.na(date_of_death))
+
+# Number of removed individuals
+nrow(data_prepared) - nrow(data_nursing)
+```
+So, the final dataset contains `r nrow(data_nursing)` observations after filtering and is as follows:
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_nursing
+```
+
+## 3. Exploratory Data Analysis
+
+In this section, we will perform exploratory data analysis on the nursing home dataset. We will focus on the following aspects:
+
+- Age at admission and gender distribution.
+- Prevalence of dependence and mobility levels.
+- Most common primary diagnosis.
+- Distribution of care minutes per week across other covariates.
+
+### Age at Admission and Gender Distribution
+
+Create a boxplot to show the distribution of age at admission by gender.
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_nursing %>% 
+  ggplot() +
+  geom_boxplot(aes(x = age_at_admission, y = gender)) +
+  labs(
+    title = "Boxplot of Age at Admission",
+    x = "Age at Admission",
+    y = "Gender"
+  ) +
+  theme_minimal()
+```
+We see from the boxplots that the median age at admission is higher for males compared to females. Also, the spread (IQR) is shifted towards higher values.
+ 
+To quantify the differences between two genders and their age at admission, we will create a summary table.
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: tbl-age-summary
+#| tbl-cap: Summary of Age at Admission by Gender
+
+age_summary <- data_nursing %>% 
+  group_by(gender) %>% 
+  summarise(
+    n = n(),
+    percentage = n() / nrow(data_nursing) * 100,
+    mean_age = mean(age_at_admission),
+    median_age = median(age_at_admission, na.rm = TRUE),
+    IQR_age = IQR(age_at_admission, na.rm = TRUE)
+  )
+
+age_summary %>% 
+  kbl() %>%
+  kable_styling(bootstrap_options = "responsive")
+```
+
+In @tbl-age-summary, we see that `r age_summary$n[1]` of the residents, which constitutes `r round(age_summary$percentage[1], 1)`% of the data, are females.
+
+### Prevalence of Dependence and Mobility Levels
+
+Create a bar plot to show the prevalence of dependence and mobility levels.
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: fig-dependence-mobility
+#| fig-cap: Prevalence of Dependence and Mobility Levels
+
+data_nursing %>% 
+  pivot_longer(
+    cols = c(dependence, mobility),
+    names_to = "variable",
+    values_to = "level"
+  ) %>% 
+  ggplot() +
+  geom_bar(aes(x = level, fill = variable), position = "dodge") +
+  scale_fill_discrete(guide = "none") +
+  facet_grid(~variable) +
+  labs(
+    title = "Prevalence of Dependence and Mobility Levels",
+    x = "Level",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+In @fig-dependence-mobility, we see that the majority of residents have a **medium** level of dependence, while the mobility levels are progressively increasing from **low** to **high**.
+
+### Most Common Primary Diagnosis
+
+Create a summary table to show the most common primary diagnosis.
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: tbl-diagnosis-summary
+#| tbl-cap: Summary of Primary Diagnosis
+
+diagnosis_summary <- data_nursing %>%
+  reframe(fct_count(D1, prop = TRUE)) %>% 
+  mutate(percentage = p * 100, .keep = "unused") %>% 
+  rename(D1 = f) %>% 
+  arrange(desc(n))
+
+diagnosis_summary %>% 
+  kbl() %>%
+  kable_styling(bootstrap_options = "responsive")
+```
+
+The summary in @tbl-diagnosis-summary shows that the most common primary diagnosis is `r diagnosis_summary$D1[1]`, constituting `r round(diagnosis_summary$percentage[1], 1)`% of the residents.
+
+### Distribution of Care Minutes per Week
+
+At first, we will create a density plot to show the distribution of care minutes per week.
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: fig-care-minutes-density
+#| fig-cap: Density Plot of Care Minutes per Week
+
+data_nursing %>% 
+  ggplot() +
+  geom_density(aes(x = care_minutes), fill = "skyblue", alpha = 0.7) +
+  labs(
+    title = "Density Plot of Care Minutes per Week",
+    x = "Care Minutes per Week",
+    y = "Density"
+  ) +
+  theme_minimal()
+```
+
+@fig-care-minutes-density shows that the distribution of care minutes per week is right-skewed, with a peak around 400 minutes per week (approximately 6.7 hours).
+
+To study the distribution of care minutes per week across other covariates, we will group the care minutes per week by dependence, mobility, and primary diagnosis. To make the visualisations, we will create a custom function that generates a density plot for a given groupping variable.
+
+```{r}
+#| echo: true
+#| eval: true
+
+plot_density <- function(data, group, title) {
+  data %>%
+    ggplot() +
+    geom_density(aes(x = care_minutes, color = {{ group }})) +
+    labs(
+      title = title,
+      x = "Care Minutes per Week",
+      y = "Density"
+    ) +
+    theme_minimal()
+}
+```
+
+Now, we will use this function to create density plots for care minutes per week grouped by dependence, mobility, and primary diagnosis, and arrange the plots using `patchwork`.
+
+```{r}
+#| echo: true
+#| eval: true
+#| label: fig-care-minutes-grouped
+#| fig-cap: Density Plots of Care Minutes per Week Grouped by Covariates
+#| fig-height: 12
+
+p1 <- data_nursing %>% 
+  plot_density(dependence, "Care Minutes per Week by Dependence")
+p2 <- data_nursing %>% 
+  plot_density(mobility, "Care Minutes per Week by Mobility")
+p3 <- data_nursing %>%
+  plot_density(D1, "Care Minutes per Week by Primary Diagnosis")
+
+p1 / p2 / p3
+```
+
+From @fig-care-minutes-grouped, we see that the distribution of care minutes per week shifts upwards across levels of dependence, mobility, but remains relatively unchanged across different primary diagnoses. For example, residents with a **high** level of dependence require more care minutes per week compared to those with **low** or **medium** dependence.
+
+## 4. Analysis
+
+In this section, we will build a simple regression model to explain the minutes of care per week based on the residents' characteristics.
+
+As the output variable `care_minutes` is continuous and strictly positive, we will transform it using the natural logarithm to ensure it is always positive:
+
+### Full Model
+
+$$
+\log(\text{care\_minutes}) = \beta_0 + \beta_1 \cdot \text{age\_at\_admission} + \\
+\beta_2 \cdot \text{dependence} + \\
+\beta_3 \cdot \text{mobility} + \\
+\beta_4 \cdot \text{gender} + \\
+\beta_5 \cdot \text{D1} + \epsilon
+$$
+
+:::{.callout-warning}
+In practice, this model should not be used for predicting the average care minutes per week for a new resident, because it suffers from the [**Jensen's inequality bias**](https://en.wikipedia.org/wiki/Jensen%27s_inequality). However, it can be used to understand the relationship between the variables and the care minutes per week.
+:::
+
+:::{.callout-note}
+Here, the variables `dependence`, `mobility`, `gender`, and `D1` are categorical variables, so we will use dummy encoding to include them in the model (it is doen automatically by the `lm()` function).
+:::
+
+```{r}
+#| echo: true
+#| eval: true
+
+data_model <- data_nursing %>%
+  mutate(
+    care_minutes = log(care_minutes)
+  )
+
+full_model <- lm(
+  care_minutes ~ age_at_admission + dependence + mobility + gender + D1,
+  data = data_model
+)
+```
+
+The summary of the regression model is as follows:
+
+::: {#tbl-model-summary}
+
+```{r}
+#| echo: true
+#| eval: true
+
+full_model_summary <- tidy(full_model) %>%
+  mutate(across(
+    .cols = where(is.numeric),
+    .fns = ~ round(., 4)
+  )) %>%
+  mutate(significance = case_when(
+    p.value < 0.001 ~ "***",
+    p.value < 0.01 ~ "**",
+    p.value < 0.05 ~ "*",
+    .default = ""
+  ))
+
+full_model_summary %>%
+  kbl() %>% 
+  kable_styling(bootstrap_options = "responsive")
+```
+
+Note: `***` indicates p-value < 0.001, `**` indicates p-value < 0.01, and `*` indicates p-value < 0.05.
+
+Summary of the Regression Model
+
+:::
+
+### Model Selection
+
+In this section, we will perform model selection to find the best model to explain the care minutes per week. We will use the *backward* `step()` function to perform the model selection based on the [Akaike Information Criterion (AIC)](https://en.wikipedia.org/wiki/Akaike_information_criterion).
+
+```{r}
+#| echo: true
+#| eval: true
+
+step_model <- step(full_model, direction = "backward")
+```
+
+The summary of the selected model is as follows:
+
+::: {#tbl-step-model-summary}
+
+```{r}
+#| echo: true
+#| eval: true
+
+step_model_summary <- tidy(step_model) %>%
+  mutate(across(
+    .cols = where(is.numeric),
+    .fns = ~ round(., 4)
+  )) %>%
+  mutate(significance = case_when(
+    p.value < 0.001 ~ "***",
+    p.value < 0.01 ~ "**",
+    p.value < 0.05 ~ "*",
+    .default = ""
+  ))
+
+step_model_summary %>%
+  kbl() %>% 
+  kable_styling(bootstrap_options = "responsive")
+```
+
+Note: `***` indicates p-value < 0.001, `**` indicates p-value < 0.01, and `*` indicates p-value < 0.05.
+
+Summary of the Selected Model
+
+:::
+
+## 5. Conclusion
+
+In this mock exam, we have analysed a synthetic dataset of nursing home residents. We have performed data cleaning, wrangling, exploratory data analysis, and built a regression model to explain the care minutes per week based on the residents' characteristics.
+
+# References
+
+::: {#refs}
+:::
+
+- [Posit Cheat Sheets](https://posit.co/resources/cheatsheets/):
+  - [`readr`](https://rstudio.github.io/cheatsheets/data-import.pdf) for data import.
+  - [`tidyr`](https://rstudio.github.io/cheatsheets/tidyr.pdf) for data tidying.
+  - [`dplyr`](https://rstudio.github.io/cheatsheets/data-transformation.pdf) for data transformation.
+  - [`lubridate`](https://rstudio.github.io/cheatsheets/lubridate.pdf) for working with dates.
+  - [`forcats`](https://rstudio.github.io/cheatsheets/factors.pdf) for working with factors.
+  - [`purrr`](https://rstudio.github.io/cheatsheets/purrr.pdf) for functional programming.
+  - [`stringr`](https://rstudio.github.io/cheatsheets/strings.pdf) for working with strings.
+  - [`ggplot2`](https://rstudio.github.io/cheatsheets/data-visualization.pdf) for data visualisation.
+- [`patchwork`](https://patchwork.data-imaginist.com/) for arranging plots.
+- [`broom`](https://broom.tidymodels.org/) for tidying model outputs.
