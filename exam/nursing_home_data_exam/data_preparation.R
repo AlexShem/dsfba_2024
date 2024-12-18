@@ -16,6 +16,11 @@ demographics <- data_ind %>%
 health_screenings <- data_img %>%
   semi_join(demographics, by = join_by(indiv_id))
 
+## Modify the `date_exit` column:
+# If the `is_dead` if `FALSE`, then make the `date_exit` column `NA`
+demographics <- demographics %>%
+  mutate(date_exit = if_else(is_dead, date_exit, NA_Date_))
+
 ## Select the desired columns
 
 demographics <- demographics %>%
@@ -86,6 +91,10 @@ health_screenings <- health_screenings %>%
       )
     )
   )
+
+# Remove the RowID column
+demographics <- demographics %>%
+  select(-RowId)
 
 ## Save the data
 write_csv(demographics, here("exam/nursing_home_data_exam/demographics.csv"))
