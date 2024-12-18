@@ -48,3 +48,4 @@ rsconnect/
 # PyCache
 __pycache__/
 exam/__pycache__/
+exam/nursing_home_data/data_OPAS.RData
